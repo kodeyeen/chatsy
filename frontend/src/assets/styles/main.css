@@ -1,0 +1,78 @@
+@import './base.css';
+
+@import './button.css';
+@import './button-ghost.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+    /* Hide scrollbar for Chrome, Safari and Opera */
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+  
+    /* Hide scrollbar for IE, Edge and Firefox */
+    .no-scrollbar {
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+  
+    .wrap-anywhere {
+        word-wrap: anywhere;
+    }
+}
+
+#app {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.options-menu {
+    @apply
+    p-[4px]
+    overflow-y-auto
+    bg-primary-brand-white
+    rounded-[6px]
+    shadow-elevation-3
+    ;
+}
+
+.group-heading {
+    @apply
+    px-[10px]
+    pt-[8px]
+    pb-[6px]
+  
+    text-primary-seattle-100
+  
+    text-caption-12
+    font-medium
+    uppercase
+    ;
+}
+  
+.option-button {
+    @apply
+    flex
+    items-center
+    w-full
+    px-[10px]
+    py-[8px]
+    rounded-[4px]
+    bg-primary-brand-white
+    hover:bg-primary-seattle-10
+    transition-colors
+  
+    text-m-14
+    font-medium
+    text-left
+    text-primary-brand-primary
+    ;
+}
+  
+.option-button.active {
+    @apply bg-primary-seattle-10;
+}
