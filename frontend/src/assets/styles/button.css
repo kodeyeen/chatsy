@@ -1,225 +1,197 @@
 @layer components {
-  .button {
-    @apply
-    box-border
-    flex
-    justify-center
-    items-center
-    border
-    border-transparent
-    font-medium
-    transition-[transform,background-color,border-color,box-shadow]
-    outline-none
-    cursor-pointer
-    shrink-0
+    .button {
+        @apply box-border
+      flex
+      justify-center
+      items-center
+      border
+      border-transparent
+      font-medium
+      transition-[transform,background-color,border-color,box-shadow]
+      outline-none
+      cursor-pointer
+      shrink-0
+  
+      disabled:cursor-not-allowed
+      [&.loading]:pointer-events-none
+  
+      [&:not(.loading):not(:disabled)]:active:scale-[.96];
+    }
 
-    disabled:cursor-not-allowed
-    [&.loading]:pointer-events-none
+    .button.accent {
+        @apply border-primary-brand-accent
+      bg-primary-brand-accent
+      text-primary-brand-white
+      [&:not(.loading):not(:disabled)]:hover:bg-primary-brand-onAccent
+      [&:not(.loading):not(:disabled)]:active:bg-primary-brand-onAccent
+      disabled:opacity-30
+  
+      disabled:bg-primary-brand-accent
+  
+      [&.loading]:bg-primary-london-100
+      [&.loading]:border-primary-london-100
+      [&.loading]:text-primary-london-120;
+    }
 
-    [&:not(.loading):not(:disabled)]:active:scale-[.96]
-    ;
-  }
+    .button.primary {
+        @apply border-primary-brand-primary
+      bg-primary-brand-primary
+      text-primary-brand-white
+      [&:not(.loading):not(:disabled)]:hover:bg-primary-brand-onPrimary
+      [&:not(.loading):not(:disabled)]:active:bg-primary-brand-onPrimary
+      disabled:bg-primary-london-110
+      disabled:text-primary-london-120
+      disabled:border-transparent
+  
+      [&.loading]:bg-primary-london-110
+      [&.loading]:border-primary-london-110
+      [&.loading]:text-primary-london-120;
+    }
 
-  .button.accent {
-    @apply
-    border-primary-brand-accent
-    bg-primary-brand-accent
-    text-primary-brand-white
-    [&:not(.loading):not(:disabled)]:hover:bg-primary-brand-onAccent
-    [&:not(.loading):not(:disabled)]:active:bg-primary-brand-onAccent
-    disabled:opacity-30
+    .button.outlined {
+        @apply border-primary-seattle-30
+      bg-transparent
+      text-primary-brand-primary
+      [&:not(.loading):not(:disabled)]:hover:border-primary-seattle-60
+      [&:not(.loading):not(:disabled)]:active:border-primary-seattle-60
+      disabled:bg-transparent
+      disabled:text-primary-london-120
+      disabled:border-primary-seattle-10
+  
+      [&.loading]:border-primary-seattle-10
+      [&.loading]:text-primary-london-120
+      [&.loading]:bg-transparent;
+    }
 
-    disabled:bg-primary-brand-accent
+    .button.critical {
+        @apply border-primary-accentOpacity-14
+      bg-primary-accentOpacity-7
+      text-utilitarian-moscow-100
+      [&:not(.loading):not(:disabled)]:hover:bg-primary-accentOpacity-14
+      [&:not(.loading):not(:disabled)]:active:bg-primary-accentOpacity-14
+      disabled:bg-primary-london-100
+      disabled:text-primary-london-120
+      disabled:border-transparent
+  
+      [&.loading]:border-primary-london-100
+      [&.loading]:text-primary-london-120
+      [&.loading]:bg-primary-london-100;
+    }
 
-    [&.loading]:bg-primary-london-100
-    [&.loading]:border-primary-london-100
-    [&.loading]:text-primary-london-120
-    ;
-  }
+    .button.clear {
+        @apply border-transparent
+      bg-primary-london-100
+      text-primary-brand-primary
+      [&:not(.loading):not(:disabled)]:hover:bg-primary-london-110
+      [&:not(.loading):not(:disabled)]:active:bg-primary-london-110
+      disabled:bg-primary-london-100
+      disabled:text-primary-london-120
+      disabled:border-transparent
+  
+      [&.loading]:border-primary-london-100
+      [&.loading]:text-primary-london-120
+      [&.loading]:bg-primary-london-100;
+    }
 
-  .button.primary {
-    @apply
-    border-primary-brand-primary
-    bg-primary-brand-primary
-    text-primary-brand-white
-    [&:not(.loading):not(:disabled)]:hover:bg-primary-brand-onPrimary
-    [&:not(.loading):not(:disabled)]:active:bg-primary-brand-onPrimary
-    disabled:bg-primary-london-110
-    disabled:text-primary-london-120
-    disabled:border-transparent
+    .button.ghost {
+        @apply border-transparent
+      bg-transparent
+      text-primary-seattle-100
+      [&:not(.loading):not(:disabled)]:hover:border-transparent
+      [&:not(.loading):not(:disabled)]:hover:bg-primary-london-100
+      [&:not(.loading):not(:disabled)]:hover:text-primary-brand-primary
+      [&:not(.loading):not(:disabled)]:active:bg-primary-london-100
+      [&:not(.loading):not(:disabled)]:active:text-primary-brand-primary
+      disabled:bg-transparent
+      disabled:text-primary-london-120
+      disabled:border-transparent
+  
+      [&.loading]:border-transparent
+      [&.loading]:text-primary-london-120
+      [&.loading]:bg-transparent
+  
+      focus-visible:text-primary-brand-primary;
+    }
 
-    [&.loading]:bg-primary-london-110
-    [&.loading]:border-primary-london-110
-    [&.loading]:text-primary-london-120
-    ;
-  }
+    .button.white {
+        @apply border-transparent
+      bg-primary-brand-white
+      text-primary-brand-primary
+      [&:not(.loading):not(:disabled)]:hover:bg-primary-seattle-1
+      [&:not(.loading):not(:disabled)]:active:bg-primary-seattle-1
+      disabled:bg-primary-seattle-1
+      disabled:text-primary-london-120
+  
+      [&.loading]:text-primary-london-120
+  
+      focus-visible:bg-primary-brand-white;
 
-  .button.outlined {
-    @apply
-    border-primary-seattle-30
-    bg-transparent
-    text-primary-brand-primary
-    [&:not(.loading):not(:disabled)]:hover:border-primary-seattle-60
-    [&:not(.loading):not(:disabled)]:active:border-primary-seattle-60
-    disabled:bg-transparent
-    disabled:text-primary-london-120
-    disabled:border-primary-seattle-10
+        box-shadow:
+            0px 0px 0px 1px rgba(32, 35, 51, 0.1),
+            0px 2px 4px -1px rgba(32, 35, 51, 0.15);
+    }
 
-    [&.loading]:border-primary-seattle-10
-    [&.loading]:text-primary-london-120
-    [&.loading]:bg-transparent
-    ;
-  }
+    .button {
+        @apply focus-visible:border
+      focus-visible:border-primary-atlantic-120;
+    }
 
-  .button.critical {
-    @apply
-    border-primary-accentOpacity-14
-    bg-primary-accentOpacity-7
-    text-utilitarian-moscow-100
-    [&:not(.loading):not(:disabled)]:hover:bg-primary-accentOpacity-14
-    [&:not(.loading):not(:disabled)]:active:bg-primary-accentOpacity-14
-    disabled:bg-primary-london-100
-    disabled:text-primary-london-120
-    disabled:border-transparent
+    .button.xl {
+        @apply px-[23px]
+      py-[13px]
+      rounded-[10px]
+      text-l-long-16;
+    }
 
-    [&.loading]:border-primary-london-100
-    [&.loading]:text-primary-london-120
-    [&.loading]:bg-primary-london-100
-    ;
-  }
+    .button.xl.only-icon {
+        @apply w-[52px] px-[14px];
+    }
 
-  .button.clear {
-    @apply
-    border-transparent
-    bg-primary-london-100
-    text-primary-brand-primary
-    [&:not(.loading):not(:disabled)]:hover:bg-primary-london-110
-    [&:not(.loading):not(:disabled)]:active:bg-primary-london-110
-    disabled:bg-primary-london-100
-    disabled:text-primary-london-120
-    disabled:border-transparent
+    .button.l {
+        @apply px-[19px]
+      py-[9px]
+      rounded-[8px]
+      text-l-long-16;
+    }
 
-    [&.loading]:border-primary-london-100
-    [&.loading]:text-primary-london-120
-    [&.loading]:bg-primary-london-100
-    ;
-  }
+    .button.l.only-icon {
+        @apply w-[44px] px-[10px];
+    }
 
-  .button.ghost {
-    @apply
-    border-transparent
-    bg-transparent
-    text-primary-seattle-100
-    [&:not(.loading):not(:disabled)]:hover:border-transparent
-    [&:not(.loading):not(:disabled)]:hover:bg-primary-london-100
-    [&:not(.loading):not(:disabled)]:hover:text-primary-brand-primary
-    [&:not(.loading):not(:disabled)]:active:bg-primary-london-100
-    [&:not(.loading):not(:disabled)]:active:text-primary-brand-primary
-    disabled:bg-transparent
-    disabled:text-primary-london-120
-    disabled:border-transparent
+    .button.m {
+        @apply px-[19px]
+      py-[7px]
+      rounded-[8px]
+      text-m-14;
+    }
 
-    [&.loading]:border-transparent
-    [&.loading]:text-primary-london-120
-    [&.loading]:bg-transparent
+    .button.m.only-icon {
+        @apply w-[36px] px-[7px];
+    }
 
-    focus-visible:text-primary-brand-primary
-    ;
-  }
+    .button.s {
+        @apply px-[15px]
+      py-[5px]
+      rounded-[8px]
+      text-m-14;
+    }
 
-  .button.white {
-    @apply
-    border-transparent
-    bg-primary-brand-white
-    text-primary-brand-primary
-    [&:not(.loading):not(:disabled)]:hover:bg-primary-seattle-1
-    [&:not(.loading):not(:disabled)]:active:bg-primary-seattle-1
-    disabled:bg-primary-seattle-1
-    disabled:text-primary-london-120
+    .button.s.only-icon {
+        @apply w-[32px] px-[6px];
+    }
 
-    [&.loading]:text-primary-london-120
+    .button.xs {
+        @apply px-[11px]
+      py-[3px]
+      rounded-[4px]
+      text-s-12;
+    }
 
-    focus-visible:bg-primary-brand-white
-    ;
+    .button.xs.only-icon {
+        @apply w-[24px] px-[4px];
+    }
 
-    box-shadow: 0px 0px 0px 1px rgba(32, 35, 51, 0.1), 0px 2px 4px -1px rgba(32, 35, 51, 0.15);
-  }
-
-
-  .button {
-    @apply
-    focus-visible:border
-    focus-visible:border-primary-atlantic-120
-    ;
-  }
-
-
-  .button.xl {
-    @apply
-    px-[23px]
-    py-[13px]
-    rounded-[10px]
-    text-l-long-16
-    ;
-  }
-
-  .button.xl.only-icon {
-    @apply w-[52px] px-[14px];
-  }
-
-  .button.l {
-    @apply
-    px-[19px]
-    py-[9px]
-    rounded-[8px]
-    text-l-long-16
-    ;
-  }
-
-  .button.l.only-icon {
-    @apply w-[44px] px-[10px];
-  }
-
-  .button.m {
-    @apply
-    px-[19px]
-    py-[7px]
-    rounded-[8px]
-    text-m-14
-    ;
-  }
-
-  .button.m.only-icon {
-    @apply w-[36px] px-[7px];
-  }
-
-  .button.s {
-    @apply
-    px-[15px]
-    py-[5px]
-    rounded-[8px]
-    text-m-14
-    ;
-  }
-
-  .button.s.only-icon {
-    @apply w-[32px] px-[6px];
-  }
-
-  .button.xs {
-    @apply
-    px-[11px]
-    py-[3px]
-    rounded-[4px]
-    text-s-12
-    ;
-  }
-
-  .button.xs.only-icon {
-    @apply w-[24px] px-[4px];
-  }
-
-  .button.round {
-    @apply !rounded-full;
-  }
+    .button.round {
+        @apply !rounded-full;
+    }
 }

@@ -1,48 +1,69 @@
 @import './base.css';
-
 @import './button.css';
 @import './button-ghost.css';
+@import './fonts.css';
+@import './input.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+#app {
+    height: 100%;
+}
 
 @layer utilities {
     /* Hide scrollbar for Chrome, Safari and Opera */
     .no-scrollbar::-webkit-scrollbar {
         display: none;
     }
-  
+
     /* Hide scrollbar for IE, Edge and Firefox */
     .no-scrollbar {
-        -ms-overflow-style: none;  /* IE and Edge */
-        scrollbar-width: none;  /* Firefox */
+        -ms-overflow-style: none; /* IE and Edge */
+        scrollbar-width: none; /* Firefox */
     }
-  
+
     .wrap-anywhere {
         word-wrap: anywhere;
     }
 }
 
-#app {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
+.drop-list {
+    position: relative;
+}
+
+.drop-list__header {
+    height: 100%;
+}
+
+.drop-list__body {
+    display: none;
+}
+
+.drop-list.active .drop-list__body {
+    display: block;
 }
 
 .options-menu {
-    @apply
-    p-[4px]
+    /* max-h-[206px]
+    pt-[4px]
+    px-[4px] */
+    @apply p-[4px]
     overflow-y-auto
     bg-primary-brand-white
     rounded-[6px]
-    shadow-elevation-3
-    ;
+    shadow-elevation-3;
 }
 
+/* .options-menu ul{
+     @apply
+     pb-[4px]
+     ;
+  } */
+
 .group-heading {
-    @apply
-    px-[10px]
+    @apply px-[10px]
     pt-[8px]
     pb-[6px]
   
@@ -50,13 +71,11 @@
   
     text-caption-12
     font-medium
-    uppercase
-    ;
+    uppercase;
 }
-  
+
 .option-button {
-    @apply
-    flex
+    @apply flex
     items-center
     w-full
     px-[10px]
@@ -69,10 +88,9 @@
     text-m-14
     font-medium
     text-left
-    text-primary-brand-primary
-    ;
+    text-primary-brand-primary;
 }
-  
+
 .option-button.active {
     @apply bg-primary-seattle-10;
 }
