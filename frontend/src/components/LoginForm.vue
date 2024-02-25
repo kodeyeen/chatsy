@@ -31,16 +31,25 @@ const logout = async () => {
 
 <template>
     <form action="#" @submit.prevent="onSubmit">
-        <input type="email" placeholder="email" name="email" v-model="data.email" autocomplete="off" required /><br />
-        <input type="password" placeholder="password" name="password" v-model="data.password" required /><br />
+        <input
+            type="email"
+            placeholder="email"
+            name="email"
+            v-model="data.email"
+            autocomplete="off"
+            required
+        /><br />
+        <input
+            type="password"
+            placeholder="password"
+            name="password"
+            v-model="data.password"
+            required
+        /><br />
         <button type="submit">
-            <span>
-                Login
-            </span>
+            <span> Login </span>
         </button>
     </form>
 
-    <button @click="logout">
-        Logout
-    </button>
+    <button @click="logout">Logout</button>
 </template>

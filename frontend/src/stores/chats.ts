@@ -1,61 +1,63 @@
 // @ts-nocheck
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useWebSocket } from '@vueuse/core'
 import { defineStore } from 'pinia'
+import { useChatClient } from '@/composables/chatClient'
+
+enum State {
+    DEFAULT = 'default',
+    CHAT_MESSAGES = 'chat_messages',
+    GROUP_DETAIL = 'group_detail',
+    GROUP_EDIT_FORM = 'group_edit_form',
+}
 
 export const useChatsStore = defineStore('chats', () => {
-    const State = {
-        CHAT_MESSAGES: 'chat_messages',
-        GROUP_DETAIL: 'group_detail',
-        GROUP_EDIT_FORM: 'group_edit_form',
-    }
-
-    const client = ref(null)
+    // const client = ref(null)
     // сообщения, которые собираемся переслать
-    const messagesToForward = ref([])
+    const messagesToForward = ref<any[]>([])
     // просматриваемый чат
     // состояние, определяет, что показывается справа в области контента
-    const currentState = ref(null)
-    const back = ref('/')
+    const currentState = ref<State>(null)
+
+    const ticket = ref(null)
+    const wsURL = computed(() => {
+        const url = new URL('ws://localhost:8080/ws')
+
+        if (ticket.value) {
+            url.searchParams.set('ticket', ticket.value)
+        }
+
+        return url
+    })
+
+    const client = useChatClient(wsURL, {
+        // autoReconnect: true,
+        immediate: false,
+        onConnected: (ws) => {
+            console.log('CONNECTED')
+        },
+        //     onMessage: (ws, event) => {
+        //         const message = JSON.parse(event.data)
+
+        //         console.log('WS MESSAGE', message)
+        //     },
+    })
+
+    const init = (t) => {
+        ticket.value = t
+        client.open()
+    }
 
     const isFirstInGroup = (messages, message, index) => {
-        return index === messages.length - 1 || messages[index + 1].author.id !== message.author.id
+        return index === messages.length - 1 || messages[index + 1].authorId !== message.authorId
     }
 
     const isLastInGroup = (messages, message, index) => {
-        return index === 0 || messages[index - 1].author.id !== message.author.id
-    }
-
-    const init = (ticket) => {
-        // const url = new URL(runtimeConfig.chatsSocketBaseUrl)
-        const url = new URL('ws://localhost:8080/ws')
-        url.searchParams.set('ticketID', ticket.id)
-
-        client.value = useWebSocket(url, {
-            // autoReconnect: true,
-
-            onMessage: (ws, event) => {
-                const message = JSON.parse(event.data)
-
-                console.log('WS MESSAGE', message)
-            },
-        })
-        console.log('INITED', client.value)
+        return index === 0 || messages[index - 1].authorId !== message.authorId
     }
 
     const sendJson = (content) => {
-        return client.value.send(JSON.stringify(content))
-    }
-
-    const fetchChats = (params = {}) => {
-        return sendJson({
-            type: 'fetch_chats',
-            payload: {
-                // is_forward_form: params.is_forward_form ?? false,
-                limit: params.limit ?? 10,
-                offset: params.offset ?? 0,
-            },
-        })
+        return client.send(JSON.stringify(content))
     }
 
     const fetchChat = (chatId) => {
@@ -85,7 +87,11 @@ export const useChatsStore = defineStore('chats', () => {
         })
     }
 
-    const sendMessageForm = (chatId, newMessageData, messagesToForward = []) => {
+    const sendMessageForm = (
+        chatId: number,
+        newMessageData: any,
+        messagesToForward: any[] = [],
+    ) => {
         const messageIds = messagesToForward.map((message) => message.id)
 
         return sendJson({
@@ -203,14 +209,12 @@ export const useChatsStore = defineStore('chats', () => {
         client,
         init,
         currentState,
-        back,
         messagesToForward,
 
         isFirstInGroup,
         isLastInGroup,
         State,
 
-        fetchChats,
         fetchChat,
         fetchMessages,
         sendMessageForm,

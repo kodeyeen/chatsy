@@ -1,8 +1,8 @@
 <template>
-    <svg width="9" height="16" viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="0 0 9 16" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path
             fill="currentColor"
-            d="M0 0C0 5.14286 2.64706 12.2857 7.94118 13.7143C7.94118 13.7143 9 13.7143 9 14.8571C9 16 7.94118 16 7.94118 16L0 16V0Z"
+            d="M9 0C9 5.14286 6.35294 12.2857 1.05882 13.7143C1.05882 13.7143 0 13.7143 0 14.8571C0 16 1.05882 16 1.05882 16L9 16V0Z"
         />
     </svg>
 </template>

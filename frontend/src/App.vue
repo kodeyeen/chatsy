@@ -17,10 +17,11 @@ onMounted(() => {
         .then(() => {
             return chats.init(auth.ticket)
         })
-        .catch(() => {
-            router.push({
-                name: 'login',
-            })
+        .catch((e) => {
+            // router.push({
+            //     name: 'login',
+            // })
+            console.log(e)
         })
 })
 </script>

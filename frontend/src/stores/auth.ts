@@ -1,6 +1,14 @@
-import { ref, computed } from 'vue'
+import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { ofetch } from 'ofetch'
+
+interface User {
+    id: number
+}
+
+interface Ticket {
+    id: string
+}
 
 interface Credentials {
     email: string
@@ -8,8 +16,8 @@ interface Credentials {
 }
 
 export const useAuthStore = defineStore('auth', () => {
-    const currentUser = ref(null)
-    const ticket = ref(null)
+    const currentUser = ref<User | null>(null)
+    const ticket = ref<Ticket | null>(null)
 
     const register = async (regData: any) => {
         return ofetch('/auth/register', {
@@ -46,6 +54,7 @@ export const useAuthStore = defineStore('auth', () => {
     const createTicket = async () => {
         ticket.value = await ofetch('/auth/ticket', {
             baseURL: 'http://localhost:8080',
+            method: 'POST',
             credentials: 'include',
         })
     }

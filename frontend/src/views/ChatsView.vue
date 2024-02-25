@@ -1,12 +1,15 @@
 <script lang="ts" setup>
 import { ref, watch, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
 import { useChatsStore } from '@/stores/chats'
+import ChatCard from '@/components/Chat/Card.vue'
 import ChatSearchBar from '@/components/Chat/SearchBar.vue'
+import ChatContent from '@/components/Chat/Content.vue'
 
 const isContentActive = ref(false)
 
-const toggleContent = (force = null) => {
+const toggleContent = (force: boolean | null = null) => {
     isContentActive.value = force ?? !isContentActive.value
 }
 
@@ -14,11 +17,11 @@ const toggleContent = (force = null) => {
 
 // const { currentUser } = useAuth()
 // const route = useRoute()
-// const router = useRouter()
-const store = useChatsStore()
+const router = useRouter()
+const chatsStore = useChatsStore()
 
-// const chats = ref(null)
-// const activeChat = ref(null)
+const chats = ref<any>(null)
+const activeChat = ref<any>(null)
 const title = ref('')
 
 // const filteredChats = computed(() => {
@@ -41,28 +44,10 @@ const title = ref('')
 // })
 
 const eventHandlers: any = {
-    //   fetch_chats(event) {
-    //     if (event.is_forward_form) {
-    //       return
-    //     }
-    //     if (!chats.value) {
-    //       chats.value = event.chats
-    //     } else {
-    //       chats.value.count = event.chats.count
-    //       chats.value.has_more = event.chats.has_more
-    //       chats.value.results.push(...event.chats.results)
-    //     }
-    //   },
-    //   open_chat(event) {
-    //     if (!event.chat) {
-    //       return
-    //     }
-    //     if (!event.chat.is_joined) {
-    //       chats.value.results.unshift(event.chat)
-    //     }
-    //     activeChat.value = event.chat
-    //     store.currentState = store.State.CHAT_MESSAGES
-    //   },
+    connected: (event: any) => {
+        chats.value = event.payload.chats
+    },
+
     //   fetch_or_create_chat(event) {
     //     if (!event.is_created) {
     //       const index = chats.value.results.findIndex(chat => chat.id === event.chat.id)
@@ -105,10 +90,10 @@ const eventHandlers: any = {
     //   toggle_notifications(event) {
     //     const chat = chats.value.results.find(chat => chat.id === event.chat_id)
     //     if (chat) {
-    //       chat.are_notifications_enabled = event.are_notifications_enabled
+    //       chat.areNotificationsEnabled = event.areNotificationsEnabled
     //     }
     //     if (activeChat.value && activeChat.value.id === event.chat_id) {
-    //       activeChat.value.are_notifications_enabled = event.are_notifications_enabled
+    //       activeChat.value.areNotificationsEnabled = event.areNotificationsEnabled
     //     }
     //   },
     //   create_group(event) {
@@ -187,16 +172,19 @@ const eventHandlers: any = {
 }
 
 onMounted(() => {
-      setTimeout(() => {
-        watch(() => store.client.data, (data) => {
+    watch(
+        () => chatsStore.client.data,
+        (data) => {
             const message = JSON.parse(data)
+
             if (eventHandlers[message.type]) {
-            eventHandlers[message.type](message)
+                eventHandlers[message.type](message)
             }
-        })
-        store.fetchChats()
-      }, 3000)
-    //   store.back = router.options.history.state.back
+        },
+    )
+
+    // chatsStore.client.getChats(10, 0)
+
     //   if (route.hash) {
     //     const chatId = Number(route.hash.slice(1))
     //     store.openChat(chatId)
@@ -228,20 +216,21 @@ onMounted(() => {
 //   activeChat.value = event.targetChat
 // }
 
-// const onChatEnter = (chat, toggleContent) => {
-//   toggleContent(true)
+const onChatOpen = (chat: any) => {
+    toggleContent(true)
 
-//   if (activeChat.value && activeChat.value.id === chat.id) {
-//     return
-//   }
+    if (activeChat.value && activeChat.value.id === chat.id) {
+        return
+    }
 
-//   router.push({
-//     hash: `#${chat.id}`,
-//     query: {},
-//   })
+    router.push({
+        hash: `#${chat.id}`,
+        query: {},
+    })
 
-//   store.openChat(chat.id)
-// }
+    activeChat.value = chat
+    chatsStore.currentState = chatsStore.State.CHAT_MESSAGES
+}
 </script>
 
 <template>
@@ -265,16 +254,16 @@ onMounted(() => {
                         >
                             <div class="h-full">
                                 <div>
-                                    <div>
-                                        <!-- <ChatCard
-                                            v-for="chat in sortedChats"
+                                    <div v-if="chats">
+                                        <ChatCard
+                                            v-for="chat in chats.items"
                                             :key="chat.id"
                                             :chat="chat"
                                             :class="{
-                                            'active': activeChat && activeChat.id === chat.id,
+                                                active: activeChat && activeChat.id === chat.id,
                                             }"
-                                            @click="onChatEnter(chat, toggleContent)"
-                                        /> -->
+                                            @click="onChatOpen(chat)"
+                                        />
                                     </div>
 
                                     <!-- <div v-if="chats && chats.has_more" class="flex justify-center items-center my-[16px]">
@@ -294,11 +283,12 @@ onMounted(() => {
                 }"
                 @click="isContentActive = true"
             >
-                <!-- <ChatContent
-                    v-if="store.currentState === store.State.CHAT_MESSAGES"
+                <ChatContent
+                    v-if="chatsStore.currentState === chatsStore.State.CHAT_MESSAGES"
                     :chat="activeChat"
-                    @forwardMessages="onMessagesForward"
+                    forwardMessages="onMessagesForward"
                 />
+                <!-- 
                 <ChatGroupDetail v-else-if="store.currentState === store.State.GROUP_DETAIL" :chat="activeChat"/>
                 <ChatGroupEditForm v-else-if="store.currentState === store.State.GROUP_EDIT_FORM" :chat="activeChat"/>
                 <ChatGroupRequests v-else-if="store.currentState === store.State.GROUP_REQUESTS"/> -->

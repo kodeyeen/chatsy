@@ -6,14 +6,14 @@ import { useChatsStore } from '@/stores/chats'
 
 import Avatar from '@/components/Avatar.vue'
 import Popup from '@/components/Popup.vue'
-import IconArrowDownSmall from '@/components/icons/ArrowDownSmall.vue'
-import IconArrowLeft from '@/components/icons/ArrowLeft.vue'
-import IconDoneCheck from '@/components/icons/DoneCheck.vue'
-import IconDotsMenu from '@/components/icons/DotsMenu.vue'
-import IconRotateRefreshLoading from '@/components/icons/RotateRefreshLoading.vue'
-import IconSearch from '@/components/icons/Search.vue'
-import IconSettingsEditFilterGear from '@/components/icons/SettingsEditFilterGear.vue'
-import IconUsers from '@/components/icons/Users.vue'
+import ArrowDownSmallIcon from '@/components/icons/ArrowDownSmall.vue'
+import ArrowLeftIcon from '@/components/icons/ArrowLeft.vue'
+import DoneCheckIcon from '@/components/icons/DoneCheck.vue'
+import DotsMenuIcon from '@/components/icons/DotsMenu.vue'
+import RotateRefreshLoadingIcon from '@/components/icons/RotateRefreshLoading.vue'
+import SearchIcon from '@/components/icons/Search.vue'
+import SettingsEditFilterGearIcon from '@/components/icons/SettingsEditFilterGear.vue'
+import UsersIcon from '@/components/icons/Users.vue'
 
 const props = defineProps<{
     filter: string
@@ -49,7 +49,7 @@ watch(filter, (newFilter) => {
                     type="button"
                     click="navigateTo(chats.back)"
                 >
-                    <IconArrowLeft width="20" height="20" />
+                    <ArrowLeftIcon width="20" height="20" />
 
                     <span> Вернуться </span>
                 </button>
@@ -75,7 +75,7 @@ watch(filter, (newFilter) => {
                     >
                         <Avatar class="w-[36px] h-[36px] rounded-full" />
 
-                        <IconArrowDownSmall width="24" height="24" />
+                        <ArrowDownSmallIcon width="24" height="24" />
                     </button>
 
                     <template #content="{ hide }">
@@ -95,7 +95,7 @@ watch(filter, (newFilter) => {
 
                                             <span class="grow"> Иван Сизых </span>
 
-                                            <IconDoneCheck
+                                            <DoneCheckIcon
                                                 v-show="true"
                                                 class="shrink-0"
                                                 width="20"
@@ -123,7 +123,7 @@ watch(filter, (newFilter) => {
                                                 Клиника профессора Калинченко
                                             </span>
 
-                                            <IconDoneCheck
+                                            <DoneCheckIcon
                                                 v-show="false"
                                                 class="shrink-0"
                                                 width="20"
@@ -158,7 +158,7 @@ watch(filter, (newFilter) => {
                         type="button"
                         click="$showPopup('sidebarMenuPopup')"
                     >
-                        <IconDotsMenu width="20" height="20" />
+                        <DotsMenuIcon width="20" height="20" />
                     </button>
 
                     <template #content="{ hide }">
@@ -170,21 +170,21 @@ watch(filter, (newFilter) => {
                                         type="button"
                                         click="$showPopup('groupCreationPopup')"
                                     >
-                                        <IconUsers width="20" height="20" />
+                                        <UsersIcon width="20" height="20" />
 
                                         <span> Создать группу </span>
                                     </button>
                                 </li>
                                 <li v-if="false" @click="hide">
                                     <button class="option-button gap-x-[6px]" type="button">
-                                        <IconRotateRefreshLoading width="20" height="20" />
+                                        <RotateRefreshLoadingIcon width="20" height="20" />
 
                                         <span> Сменить роль </span>
                                     </button>
                                 </li>
                                 <li @click="hide">
                                     <RouterLink class="option-button gap-x-[6px]" to="/account/">
-                                        <IconSettingsEditFilterGear width="20" height="20" />
+                                        <SettingsEditFilterGearIcon width="20" height="20" />
 
                                         <span> Настройки </span>
                                     </RouterLink>
@@ -205,7 +205,7 @@ watch(filter, (newFilter) => {
                     xv-model="filter"
                 />
 
-                <IconSearch
+                <SearchIcon
                     class="absolute top-[8px] left-[12px] text-primary-seattle-100 pointer-events-none"
                     width="20"
                     height="20"
@@ -224,7 +224,7 @@ watch(filter, (newFilter) => {
                                 data-popup-closer
                                 click="$showPopup('groupCreationPopup')"
                             >
-                                <IconUsers width="20" height="20" />
+                                <UsersIcon width="20" height="20" />
 
                                 <span> Создать группу </span>
                             </button>
@@ -235,14 +235,14 @@ watch(filter, (newFilter) => {
                                 type="button"
                                 data-popup-closer
                             >
-                                <IconRotateRefreshLoading width="20" height="20" />
+                                <RotateRefreshLoadingIcon width="20" height="20" />
 
                                 <span> Сменить роль </span>
                             </button>
                         </li>
                         <li>
                             <RouterLink class="option-button gap-x-[6px]" to="/account/">
-                                <IconSettingsEditFilterGear width="20" height="20" />
+                                <SettingsEditFilterGearIcon width="20" height="20" />
 
                                 <span> Настройки </span>
                             </RouterLink>
@@ -268,7 +268,7 @@ watch(filter, (newFilter) => {
 
                         <span class="grow ml-[8px] mr-[6px]"> Иван Сизых </span>
 
-                        <IconDoneCheck v-show="true" class="shrink-0" width="20" height="20" />
+                        <DoneCheckIcon v-show="true" class="shrink-0" width="20" height="20" />
                     </button>
 
                     <div class="pt-[20px] pb-[12px]">
@@ -282,7 +282,7 @@ watch(filter, (newFilter) => {
 
                         <span class="grow ml-[8px] mr-[6px]"> Клиника профессора Калинченко </span>
 
-                        <IconDoneCheck v-show="false" class="shrink-0" width="20" height="20" />
+                        <DoneCheckIcon v-show="false" class="shrink-0" width="20" height="20" />
                     </button>
                 </div>
 

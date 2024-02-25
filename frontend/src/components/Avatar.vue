@@ -4,7 +4,7 @@ const props = withDefaults(
         src?: string
     }>(),
     {
-        src: '/avatar',
+        src: '/defaultAvatar.svg',
     },
 )
 </script>

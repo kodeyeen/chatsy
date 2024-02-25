@@ -1,7 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 export default {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx,vue}'],
-    important: '#app',
+    // important: '#app',
     theme: {
         screens: {
             '2xs': '320px',
