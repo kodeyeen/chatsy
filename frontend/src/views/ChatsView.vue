@@ -67,7 +67,7 @@ const eventHandlers: any = {
     //     }
     //     // и добавляем обновленную версию
     //     chats.value.results.push(event.chat)
-    //     if (event.messages[0].author.id !== currentUser.value.id) {
+    //     if (event.messages[0].senderId !== currentUser.value.id) {
     //       currentUser.value.unseen_message_count += event.messages.length
     //     }
     //   },

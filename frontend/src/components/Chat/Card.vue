@@ -43,7 +43,7 @@ const auth = useAuthStore()
 
                 <span v-if="chat.lastMessage" class="shrink-0 flex items-center gap-x-[3px]">
                     <svg
-                        v-if="chat.lastMessage.authorId === auth.currentUser?.id"
+                        v-if="chat.lastMessage.senderId === auth.currentUser?.id"
                         class="text-utilitarian-geneva-100 [.chat-card.active_&]:text-primary-brand-white"
                         width="24"
                         height="24"
@@ -72,11 +72,11 @@ const auth = useAuthStore()
                     <span
                         v-if="
                             chat.type === 'group' &&
-                            chat.lastMessage.authorId !== auth.currentUser?.id
+                            chat.lastMessage.senderId !== auth.currentUser?.id
                         "
                         class="text-primary-brand-onPrimary [.chat-card.active_&]:text-primary-brand-white whitespace-nowrap"
                     >
-                        {{ chat.lastMessage.authorFullName }}:
+                        {{ chat.lastMessage.senderFullName }}:
                     </span>
 
                     <span

@@ -49,11 +49,11 @@ export const useChatsStore = defineStore('chats', () => {
     }
 
     const isFirstInGroup = (messages, message, index) => {
-        return index === messages.length - 1 || messages[index + 1].authorId !== message.authorId
+        return index === messages.length - 1 || messages[index + 1].senderId !== message.senderId
     }
 
     const isLastInGroup = (messages, message, index) => {
-        return index === 0 || messages[index - 1].authorId !== message.authorId
+        return index === 0 || messages[index - 1].senderId !== message.senderId
     }
 
     const sendJson = (content) => {

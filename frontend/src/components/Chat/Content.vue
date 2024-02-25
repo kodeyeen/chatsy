@@ -303,7 +303,7 @@ const onMessageView = (entries: IntersectionObserverEntry[], observer: Intersect
         const messageId = Number(messageElement.dataset.messageId)
         const message = messages.value?.find((message: any) => message.id === messageId)
 
-        if (!message.is_new || message.authorId === auth.currentUser?.id) {
+        if (!message.is_new || message.senderId === auth.currentUser?.id) {
             continue
         }
 
@@ -773,14 +773,14 @@ const onContextMenu = (event: any, message: any) => {
                                             :key="message.id"
                                             ref="messageCards"
                                             :class="{
-                                                own: message.authorId === auth.currentUser?.id,
+                                                own: message.senderId === auth.currentUser?.id,
                                                 selected:
                                                     contextMenuMessage &&
                                                     contextMenuMessage.id === message.id,
                                             }"
                                             :message="message"
                                             :selectable="isSelecting"
-                                            :own="message.authorId === auth.currentUser?.id"
+                                            :own="message.senderId === auth.currentUser?.id"
                                             :showUserInfo="chat.type === 'group'"
                                             :firstInGroup="
                                                 store.isFirstInGroup(messages, message, index)

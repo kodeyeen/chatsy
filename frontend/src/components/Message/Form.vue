@@ -150,6 +150,7 @@ const submit = () => {
         chatId: props.chat.id,
         parentId: data.parentId,
         originalId: null,
+        authorFullName: null,
         text: data.text.trim(),
     }
 
@@ -157,6 +158,7 @@ const submit = () => {
         chatId: props.chat.id,
         parentId: message.parentId,
         originalId: message.id,
+        authorFullName: message.senderFullName,
         text: message.text,
     }))
 
