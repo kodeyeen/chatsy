@@ -76,7 +76,7 @@ const auth = useAuthStore()
                         "
                         class="text-primary-brand-onPrimary [.chat-card.active_&]:text-primary-brand-white whitespace-nowrap"
                     >
-                        {{ chat.lastMessage.senderFullName }}:
+                        {{ chat.lastMessage.senderName }}:
                     </span>
 
                     <span

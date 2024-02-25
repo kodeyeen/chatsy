@@ -412,7 +412,7 @@ const onGoDown = () => {
 
 const onContextMenu = (event: any, message: any) => {
     event.preventDefault()
-    console.log('CONTEXT MENU')
+
     contextMenuMessage.value = message
 
     contextMenu.value.setProps({
@@ -434,7 +434,7 @@ const onContextMenu = (event: any, message: any) => {
     <div class="relative flex h-full">
         <div class="relative bg-[#EEEAE3] grow">
             <div
-                class="absolute top-0 left-0 w-full h-full bg-[url('@/assets/images/chat/bg.png')] bg-[length:670px] bg-[0_0] opacity-[.25] pointer-events-none"
+                class="absolute top-0 left-0 w-full h-full bg-[url('@/assets/images/bg.png')] bg-[length:670px] bg-[0_0] opacity-[.25] pointer-events-none"
             ></div>
 
             <div class="relative flex flex-col h-full">
@@ -774,9 +774,7 @@ const onContextMenu = (event: any, message: any) => {
                                             ref="messageCards"
                                             :class="{
                                                 own: message.senderId === auth.currentUser?.id,
-                                                selected:
-                                                    contextMenuMessage &&
-                                                    contextMenuMessage.id === message.id,
+                                                selected: contextMenuMessage?.id === message.id,
                                             }"
                                             :message="message"
                                             :selectable="isSelecting"
@@ -874,7 +872,7 @@ const onContextMenu = (event: any, message: any) => {
                         ref="messageForm"
                         class="mx-auto"
                         :chat="chat"
-                        :messageToReply="messageToReply"
+                        :parent="messageToReply"
                         @cancelReplying="messageToReply = null"
                         @toggleEmojiPicker="isPanelActive = !isPanelActive"
                         @closeEmojiPicker="isPanelActive = false"

@@ -39,10 +39,6 @@ const model = computed({
     },
 })
 
-// const author = props.message.forward_original
-//     ? props.message.forward_original.author
-//     : props.message.author
-
 const isSelected = computed(() => {
     return model.value.some((message: any) => message.id === props.message.id)
 })
@@ -145,14 +141,14 @@ const onParentClick = () => {
 
                                 <RouterLink class="button-ghost m-medium link !font-bold" to="$userLink(author)">
                                     <span>
-                                        {{ message.authorFullName }}
+                                        {{ message.authorName }}
                                     </span>
                                 </RouterLink>
                             </span>
                             <span v-else class="flex items-center gap-x-[4px]">
                                 <RouterLink class="button-ghost m-medium link !font-bold" to="$userLink(author)">
                                     <span>
-                                        {{ message.senderFullName }}
+                                        {{ message.senderName }}
                                     </span>
                                 </RouterLink>
                             </span>

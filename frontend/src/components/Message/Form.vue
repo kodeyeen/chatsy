@@ -11,12 +11,13 @@ import MentionMenu from '@/components/MentionMenu.vue'
 import AttachIcon from '@/components/icons/Attach.vue'
 import CameraIcon from '@/components/icons/Camera.vue'
 import CornerIcon from '@/components/icons/Corner.vue'
-import SendIcon from '@/components/icons/Send.vue'
+import DeleteDisabledSmallIcon from '@/components/icons/DeleteDisabledSmall.vue'
 import EmojiIcon from '@/components/icons/Emoji.vue'
+import SendIcon from '@/components/icons/Send.vue'
 
 const props = defineProps<{
     chat: any
-    messageToReply: any
+    parent: any
 }>()
 
 const emit = defineEmits(['cancelReplying', 'toggleEmojiPicker', 'closeEmojiPicker'])
@@ -44,7 +45,7 @@ const showMentionTooltip = () => {
 }
 
 watch(
-    () => props.messageToReply,
+    () => props.parent,
     (newParent) => {
         data.parentId = newParent ? newParent.id : null
     },
@@ -150,7 +151,7 @@ const submit = () => {
         chatId: props.chat.id,
         parentId: data.parentId,
         originalId: null,
-        authorFullName: null,
+        authorName: null,
         text: data.text.trim(),
     }
 
@@ -158,7 +159,7 @@ const submit = () => {
         chatId: props.chat.id,
         parentId: message.parentId,
         originalId: message.id,
-        authorFullName: message.senderFullName,
+        authorName: message.senderName,
         text: message.text,
     }))
 
@@ -223,19 +224,19 @@ defineExpose({
             </template>
         </Tippy>
 
-        <div class="relative grow flex items-end">
+        <div class="relative grow flex items-end shadow-elevation-1">
             <div
                 class="grow px-[12px] py-[8px] bg-primary-brand-white rounded-[12px] rounded-br-none"
             >
-                <div v-if="messageToReply" class="flex items-end mb-[12px]">
-                    <MessageParent class="grow" :message="messageToReply" />
+                <div v-if="parent" class="flex items-end mb-[12px]">
+                    <MessageParent class="grow" :message="parent" />
 
                     <button
-                        class="shrink-0 button m ghost only-icon p-[5px]"
+                        class="shrink-0 button m ghost only-icon !p-[5px]"
                         type="button"
                         @click="$emit('cancelReplying')"
                     >
-                        <i class="icon dd-Delete-Disabled-small text-[24px]"></i>
+                        <DeleteDisabledSmallIcon width="24" height="24"/>
                     </button>
                 </div>
                 <div v-else-if="store.messagesToForward.length !== 0">

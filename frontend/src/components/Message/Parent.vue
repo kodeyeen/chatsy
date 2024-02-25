@@ -18,7 +18,7 @@ const props = defineProps<{
 
         <div class="grow">
             <div class="text-m-14 font-medium text-primary-brand-primary">
-                {{ message.senderFullName }}
+                {{ message.senderName }}
             </div>
 
             <div class="mt-[-2px] text-s-12 line-clamp-1 text-primary-brand-onPrimary">
