@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 const props = defineProps<{
-    message: any
+    senderName: string
+    text: string
 }>()
 </script>
 
@@ -18,11 +19,11 @@ const props = defineProps<{
 
         <div class="grow">
             <div class="text-m-14 font-medium text-primary-brand-primary">
-                {{ message.senderName }}
+                {{ senderName }}
             </div>
 
             <div class="mt-[-2px] text-s-12 line-clamp-1 text-primary-brand-onPrimary">
-                {{ message.text }}
+                {{ text }}
             </div>
         </div>
     </div>

@@ -1,7 +1,6 @@
 package websocket
 
 import (
-	"fmt"
 	"log"
 	"time"
 
@@ -13,28 +12,26 @@ const (
 	pingInterval = (pongWait * 9) / 10
 )
 
-type Client struct {
-	conn     *websocket.Conn
-	connMngr *ConnManager
+type client struct {
+	conn *websocket.Conn
 
 	chatroom string
 	// egress is used to avoid concurrent writes on the websocket connection
-	Egress chan Event
+	egress chan Event
+	usrID  int
 }
 
-func NewClient(conn *websocket.Conn, connMngr *ConnManager) *Client {
-	return &Client{
-		conn:     conn,
-		connMngr: connMngr,
-		Egress:   make(chan Event),
+func newClient(conn *websocket.Conn, usrID int) *client {
+	return &client{
+		conn:   conn,
+		egress: make(chan Event),
+		usrID:  usrID,
 	}
 }
 
-func (c *Client) readMessages() {
-	defer func() {
-		// cleanup connection
-		c.connMngr.removeClient(c)
-	}()
+func (c *client) readMessages(mng *Manager) {
+	// cleanup connection
+	defer mng.disconnect(c)
 
 	err := c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	if err != nil {
@@ -50,26 +47,21 @@ func (c *Client) readMessages() {
 		err := c.conn.ReadJSON(&request)
 		if err != nil {
 			log.Printf("error reading message: %v", err)
-			continue
+			break
 		}
 
-		err = c.connMngr.routeEvent(request, c)
-		if err != nil {
-			log.Println("error handeling message: ", err)
-		}
+		mng.routeEvent(request, c)
 	}
 }
 
-func (c *Client) writeMessages() {
-	defer func() {
-		c.connMngr.removeClient(c)
-	}()
+func (c *client) writeMessages(mng *Manager) {
+	defer mng.disconnect(c)
 
 	ticker := time.NewTicker(pingInterval)
 
 	for {
 		select {
-		case message, ok := <-c.Egress:
+		case message, ok := <-c.egress:
 			// if channel is closed
 			if !ok {
 				// send message to the client, that we're closing the connection
@@ -101,7 +93,11 @@ func (c *Client) writeMessages() {
 	}
 }
 
-func (c *Client) pongHandler(pongMsg string) error {
+func (c *client) pongHandler(pongMsg string) error {
 	log.Println("pong", pongMsg)
 	return c.conn.SetReadDeadline(time.Now().Add(pongWait))
+}
+
+func (c *client) sendEvent(evt Event) {
+	c.egress <- evt
 }

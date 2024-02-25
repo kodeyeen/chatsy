@@ -9,7 +9,7 @@ import (
 	"github.com/kodeyeen/chatsy/internal/auth"
 	"github.com/kodeyeen/chatsy/internal/chat"
 	"github.com/kodeyeen/chatsy/internal/config"
-	"github.com/kodeyeen/chatsy/internal/ticket"
+	"github.com/kodeyeen/chatsy/internal/message"
 	"github.com/kodeyeen/chatsy/internal/user"
 	"github.com/kodeyeen/chatsy/internal/websocket"
 	"github.com/kodeyeen/chatsy/pkg/database"
@@ -39,21 +39,22 @@ func main() {
 		log.Fatalf("failed to ping db: %s", err.Error())
 	}
 
-	ticketRepo := ticket.NewInmemoryRepository(ctx, cfg.TicketTTL)
-
 	userRepo := user.NewPostgresRepository(dbpool)
 
-	authSvc := auth.NewDefaultService(cfg.Secret, cfg.TokenTTL, userRepo, ticketRepo)
-	authHlr := auth.NewHandler(authSvc)
+	authSvc := auth.NewDefaultService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
+	authHlr := auth.NewHTTPHandler(authSvc)
 
 	chatRepo := chat.NewPostgresRepository(dbpool)
 	chatSvc := chat.NewDefaultService(chatRepo)
-	chatHlr := chat.NewWsHandler(chatSvc)
 
-	wsConnMng := websocket.NewConnManager(ticketRepo, userRepo)
-	wsConnMng.Handle(websocket.EventFetchChats, chatHlr.FetchChats)
+	msgRepo := message.NewPostgresRepository(dbpool)
+	msgSvc := message.NewDefaultService(msgRepo, userRepo)
+
+	eventHandler := websocket.NewEventHandler(chatSvc, msgSvc)
+	wsMng := websocket.NewManager(eventHandler)
 
 	checkJWT := auth.NewCheckJWTMiddleware(cfg.Secret)
+	checkTicket := auth.NewCheckTicketMiddleware(cfg.Secret)
 
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("/auth/register", authHlr.Register)
@@ -61,7 +62,7 @@ func main() {
 	serveMux.HandleFunc("/auth/logout", authHlr.Logout)
 	serveMux.HandleFunc("/auth/me", checkJWT(authHlr.Me))
 	serveMux.HandleFunc("/auth/ticket", checkJWT(authHlr.CreateTicket))
-	serveMux.HandleFunc("/ws", wsConnMng.ServeWS)
+	serveMux.HandleFunc("/ws", checkTicket(wsMng.ServeWS))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   cfg.Cors.AllowedOrigins,

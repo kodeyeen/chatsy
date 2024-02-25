@@ -10,8 +10,9 @@ var (
 )
 
 type repository interface {
-	Add(context.Context, *Chat) (int, error)
+	Add(context.Context, *Chat) error
 	FindByID(context.Context, int) (*Chat, error)
-	FindUserChats(ctx context.Context, userID int, limit, offset int) ([]*Chat, error)
-	CountUserChats(ctx context.Context, userID int) (int, error)
+	FindForUser(ctx context.Context, userID int, limit, offset int) ([]*Chat, error)
+	FindAllForUser(ctx context.Context, userID int) ([]*Chat, error)
+	CountForUser(ctx context.Context, userID int) (int, error)
 }

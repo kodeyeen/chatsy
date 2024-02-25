@@ -157,7 +157,8 @@ const onParentClick = () => {
                         <div>
                             <MessageParent
                                 v-if="message.parentId"
-                                :message="message.parentId"
+                                :senderName="message.parentSenderName"
+                                :text="message.parentText"
                                 @click="onParentClick"
                             />
 

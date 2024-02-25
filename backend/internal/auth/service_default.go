@@ -5,38 +5,33 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/internal/ticket"
 	"github.com/kodeyeen/chatsy/internal/user"
 )
 
 type userRepository interface {
-	Add(ctx context.Context, u *user.User) (int, error)
+	Add(ctx context.Context, usr *user.User) error
 	FindByID(ctx context.Context, id int) (*user.User, error)
 	FindByEmail(ctx context.Context, email string) (*user.User, error)
 }
 
-type ticketSaver interface {
-	Add(ctx context.Context, t *ticket.Ticket) string
-}
-
 type defaultService struct {
-	userRepo    userRepository
-	secret      string
-	tokenTTL    time.Duration
-	ticketSaver ticketSaver
+	userRepo  userRepository
+	secret    string
+	tokenTTL  time.Duration
+	ticketTTL time.Duration
 }
 
 func NewDefaultService(
 	secret string,
 	tokenTTL time.Duration,
+	ticketTTL time.Duration,
 	userRepo userRepository,
-	ticketSaver ticketSaver,
 ) *defaultService {
 	return &defaultService{
-		secret:      secret,
-		tokenTTL:    tokenTTL,
-		userRepo:    userRepo,
-		ticketSaver: ticketSaver,
+		secret:    secret,
+		tokenTTL:  tokenTTL,
+		ticketTTL: ticketTTL,
+		userRepo:  userRepo,
 	}
 }
 
@@ -46,28 +41,26 @@ func (s *defaultService) Register(ctx context.Context, regData *RegisterData) (*
 		return &user.GetDTO{}, err
 	}
 
-	u := &user.User{
+	usr := &user.User{
 		FirstName:    regData.FirstName,
 		LastName:     regData.LastName,
 		Username:     regData.Username,
 		Email:        regData.Email,
-		PasswordHash: passwordHash,
+		PasswordHash: &passwordHash,
 	}
 
-	userID, err := s.userRepo.Add(ctx, u)
+	err = s.userRepo.Add(ctx, usr)
 	if err != nil {
 		return &user.GetDTO{}, err
 	}
 
-	u.ID = userID
-
 	userDTO := &user.GetDTO{
-		ID:        u.ID,
-		Username:  u.Username,
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		Email:     u.Email,
-		JoinedAt:  u.JoinedAt,
+		ID:        usr.ID,
+		Username:  usr.Username,
+		FirstName: usr.FirstName,
+		LastName:  usr.LastName,
+		Email:     usr.Email,
+		JoinedAt:  usr.JoinedAt,
 	}
 
 	return userDTO, nil
@@ -77,20 +70,20 @@ func (s *defaultService) Login(ctx context.Context, creds *Credentials) (*LoginR
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 
-	u, err := s.userRepo.FindByEmail(ctx, creds.Email)
+	usr, err := s.userRepo.FindByEmail(ctx, *creds.Email)
 	if err != nil {
 		return &LoginResult{}, ErrWrongCreds
 	}
 
-	err = creds.Password.Matches(u.PasswordHash)
+	err = creds.Password.Matches(*usr.PasswordHash)
 	if err != nil {
 		return &LoginResult{}, ErrWrongCreds
 	}
 
 	exp := time.Now().Add(s.tokenTTL)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, Claims{
-		UserID:    u.ID,
-		UserEmail: u.Email,
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, TokenClaims{
+		UserID:    *usr.ID,
+		UserEmail: *usr.Email,
 		Exp:       exp.Unix(),
 	})
 
@@ -100,51 +93,52 @@ func (s *defaultService) Login(ctx context.Context, creds *Credentials) (*LoginR
 	}
 
 	userDTO := user.GetDTO{
-		ID:        u.ID,
-		Username:  u.Username,
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		Email:     u.Email,
-		JoinedAt:  u.JoinedAt,
+		ID:        usr.ID,
+		Username:  usr.Username,
+		FirstName: usr.FirstName,
+		LastName:  usr.LastName,
+		Email:     usr.Email,
+		JoinedAt:  usr.JoinedAt,
 	}
 
 	return &LoginResult{
-		AccessToken: tokenString,
-		Exp:         exp,
-		User:        userDTO,
+		AccessToken: &tokenString,
+		Exp:         &exp,
+		User:        &userDTO,
 	}, nil
 }
 
 func (s *defaultService) GetUserByID(ctx context.Context, id int) (*user.GetDTO, error) {
-	u, err := s.userRepo.FindByID(ctx, id)
+	usr, err := s.userRepo.FindByID(ctx, id)
 	if err != nil {
 		return &user.GetDTO{}, err
 	}
 
 	userDTO := user.GetDTO{
-		ID:        u.ID,
-		Username:  u.Username,
-		FirstName: u.FirstName,
-		LastName:  u.LastName,
-		Email:     u.Email,
-		JoinedAt:  u.JoinedAt,
+		ID:        usr.ID,
+		Username:  usr.Username,
+		FirstName: usr.FirstName,
+		LastName:  usr.LastName,
+		Email:     usr.Email,
+		JoinedAt:  usr.JoinedAt,
 	}
 
 	return &userDTO, nil
 }
 
-func (s *defaultService) CreateTicket(ctx context.Context, userID int) *TicketDTO {
-	t := &ticket.Ticket{
+func (s *defaultService) CreateTicket(ctx context.Context, userID int) (string, error) {
+	exp := time.Now().Add(s.ticketTTL)
+	claims := TicketClaims{
 		UserID: userID,
+		Exp:    exp.Unix(),
 	}
 
-	ticketID := s.ticketSaver.Add(ctx, t)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	t.ID = ticketID
-
-	ticketDTO := &TicketDTO{
-		ID: t.ID,
+	tokenString, err := token.SignedString([]byte(s.secret))
+	if err != nil {
+		return "", err
 	}
 
-	return ticketDTO
+	return tokenString, nil
 }

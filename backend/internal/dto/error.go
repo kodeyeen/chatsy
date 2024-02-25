@@ -1,5 +1,5 @@
-package api
+package dto
 
-type Error struct {
+type APIError struct {
 	Message string `json:"message"`
 }

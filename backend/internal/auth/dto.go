@@ -9,31 +9,33 @@ import (
 )
 
 type RegisterData struct {
-	Username  string            `json:"username"`
-	FirstName string            `json:"firstName"`
-	LastName  string            `json:"lastName"`
-	Email     string            `json:"email"`
-	Password  security.Password `json:"password"`
+	Username  *string            `json:"username"`
+	FirstName *string            `json:"firstName"`
+	LastName  *string            `json:"lastName"`
+	Email     *string            `json:"email"`
+	Password  *security.Password `json:"password"`
 }
 
 type Credentials struct {
-	Email    string            `json:"email"`
-	Password security.Password `json:"password"`
+	Email    *string            `json:"email"`
+	Password *security.Password `json:"password"`
 }
 
 type LoginResult struct {
-	AccessToken string `json:"accessToken"`
-	Exp         time.Time
-	User        user.GetDTO
+	AccessToken *string `json:"accessToken"`
+	Exp         *time.Time
+	User        *user.GetDTO
 }
 
-type Claims struct {
+type TokenClaims struct {
 	jwt.RegisteredClaims
 	UserID    int    `json:"userID"`
 	UserEmail string `json:"userEmail"`
 	Exp       int64  `json:"exp"`
 }
 
-type TicketDTO struct {
-	ID string `json:"id"`
+type TicketClaims struct {
+	jwt.RegisteredClaims
+	UserID int   `json:"userID"`
+	Exp    int64 `json:"exp"`
 }

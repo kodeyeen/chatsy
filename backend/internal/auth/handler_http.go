@@ -5,20 +5,20 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kodeyeen/chatsy/internal/api"
+	"github.com/kodeyeen/chatsy/internal/dto"
 )
 
-type handler struct {
+type httpHandler struct {
 	svc service
 }
 
-func NewHandler(s service) *handler {
-	return &handler{
+func NewHTTPHandler(s service) *httpHandler {
+	return &httpHandler{
 		svc: s,
 	}
 }
 
-func (h *handler) Register(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) Register(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
@@ -27,7 +27,7 @@ func (h *handler) Register(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(api.Error{
+		json.NewEncoder(w).Encode(dto.APIError{
 			Message: "invalid input data",
 		})
 		return
@@ -36,7 +36,7 @@ func (h *handler) Register(w http.ResponseWriter, r *http.Request) {
 	userDTO, err := h.svc.Register(r.Context(), &regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(api.Error{
+		json.NewEncoder(w).Encode(dto.APIError{
 			Message: err.Error(),
 		})
 		return
@@ -46,12 +46,12 @@ func (h *handler) Register(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userDTO)
 }
 
-func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) Login(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(api.Error{
+		json.NewEncoder(w).Encode(dto.APIError{
 			Message: "invalid input data",
 		})
 		return
@@ -60,7 +60,7 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 	loginResult, err := h.svc.Login(r.Context(), &creds)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(api.Error{
+		json.NewEncoder(w).Encode(dto.APIError{
 			Message: "wrong credentials",
 		})
 		return
@@ -68,9 +68,9 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 
 	http.SetCookie(w, &http.Cookie{
 		Name:     "accessToken",
-		Value:    loginResult.AccessToken,
+		Value:    *loginResult.AccessToken,
 		Path:     "/",
-		Expires:  loginResult.Exp,
+		Expires:  *loginResult.Exp,
 		Secure:   true,
 		HttpOnly: true,
 		SameSite: http.SameSiteNoneMode,
@@ -79,7 +79,7 @@ func (h *handler) Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(loginResult.User)
 }
 
-func (h *handler) Logout(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "accessToken",
 		Value:    "",
@@ -91,27 +91,7 @@ func (h *handler) Logout(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *handler) Me(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	userID, ok := ctx.Value("userID").(int)
-	if !ok {
-		w.WriteHeader(http.StatusInternalServerError)
-		return
-	}
-
-	userDTO, err := h.svc.GetUserByID(r.Context(), userID)
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		// json.NewEncoder(w).Encode(api.Error{
-		// 	Message: "invalid accessToken was provided",
-		// })
-		return
-	}
-
-	json.NewEncoder(w).Encode(userDTO)
-}
-
-func (h *handler) CreateTicket(w http.ResponseWriter, r *http.Request) {
+func (h *httpHandler) Me(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
@@ -123,7 +103,35 @@ func (h *handler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ticketDTO := h.svc.CreateTicket(ctx, userID)
+	userDTO, err := h.svc.GetUserByID(ctx, userID)
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		// json.NewEncoder(w).Encode(dto.APIError{
+		// 	Message: "invalid accessToken was provided",
+		// })
+		return
+	}
 
-	json.NewEncoder(w).Encode(ticketDTO)
+	json.NewEncoder(w).Encode(userDTO)
+}
+
+func (h *httpHandler) CreateTicket(w http.ResponseWriter, r *http.Request) {
+	headers := w.Header()
+	headers.Set("Content-Type", "application/json; charset=utf-8")
+	headers.Set("X-Content-Type-Options", "nosniff")
+
+	ctx := r.Context()
+	userID, ok := ctx.Value("userID").(int)
+	if !ok {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	ticket, err := h.svc.CreateTicket(ctx, userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	json.NewEncoder(w).Encode(ticket)
 }

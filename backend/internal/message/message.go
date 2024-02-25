@@ -3,10 +3,21 @@ package message
 import "time"
 
 type Message struct {
-	ChatID            int
-	AuthorID          int
-	ForwardOriginalID int
-	ReplyToID         int
-	Text              string
-	SentAt            time.Time
+	ID               *int
+	ChatID           *int
+	SenderID         *int
+	SenderName       *string
+	AuthorName       *string
+	OriginalID       *int
+	ParentID         *int
+	ParentSenderName *string
+	ParentText       *string
+	Text             *string
+	IsViewed         *bool
+	SentAt           *time.Time
+}
+
+type MessageView struct {
+	MessageID *int
+	UserID    *int
 }

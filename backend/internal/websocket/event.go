@@ -2,15 +2,22 @@ package websocket
 
 import (
 	"encoding/json"
-	"fmt"
 	"time"
+
+	"github.com/kodeyeen/chatsy/internal/chat"
+	"github.com/kodeyeen/chatsy/internal/dto"
+	"github.com/kodeyeen/chatsy/internal/message"
 )
 
 type EventType string
 
 const (
-	EventFetchChats   EventType = "fetch_chats"
-	EventChatsFetched EventType = "chats_fetched"
+	EventConnected    EventType = "connected"
+	EventDisconnected EventType = "disconnected"
+	EventOpenChat     EventType = "open_chat"
+	EventChatOpened   EventType = "chat_opened"
+	EventSendMessages EventType = "send_messages"
+	EventNewMessages  EventType = "new_messages"
 
 	EventSendMessage EventType = "send_message"
 	EventNewMessage  EventType = "new_message"
@@ -22,7 +29,31 @@ type Event struct {
 	Payload json.RawMessage `json:"payload"`
 }
 
-type EventHandler func(event Event, c *Client) error
+type HandlerFunc func(event Event, cl *client, mng *Manager)
+
+type ConnectedEvent struct {
+	Chats dto.Page[chat.GetDTO] `json:"chats"`
+}
+
+type OpenChatEvent struct {
+	ChatID int `json:"chatId"`
+}
+
+type ChatOpenedEvent struct {
+	Messages dto.Page[message.GetDTO] `json:"messages"`
+}
+
+type SendMessagesEvent struct {
+	ChatID   int                  `json:"chatId"`
+	Messages []*message.CreateDTO `json:"messages"`
+}
+
+type NewMessagesEvent struct {
+	ChatID   int               `json:"chatId"`
+	Messages []*message.GetDTO `json:"messages"`
+}
+
+//
 
 type SendMessageEvent struct {
 	Message string `json:"message"`
@@ -38,45 +69,41 @@ type ChangeRoomEvent struct {
 	Name string `json:"name"`
 }
 
-func SendMessage(event Event, c *Client) error {
-	var chatevent SendMessageEvent
-	err := json.Unmarshal(event.Payload, &chatevent)
-	if err != nil {
-		return fmt.Errorf("bad payload in request: %v", err)
-	}
+func SendMessage(event Event, cl *client, mng *Manager) {
+	// var chatevent SendMessageEvent
+	// err := json.Unmarshal(event.Payload, &chatevent)
+	// if err != nil {
+	// 	return
+	// }
 
-	var broadMessage NewMessageEvent
-	broadMessage.Message = chatevent.Message
-	broadMessage.From = chatevent.From
-	broadMessage.SentAt = time.Now()
+	// var broadMessage NewMessageEvent
+	// broadMessage.Message = chatevent.Message
+	// broadMessage.From = chatevent.From
+	// broadMessage.SentAt = time.Now()
 
-	data, err := json.Marshal(broadMessage)
-	if err != nil {
-		return fmt.Errorf("failed to marshal broadcast message: %v", err)
-	}
+	// data, err := json.Marshal(broadMessage)
+	// if err != nil {
+	// 	return
+	// }
 
-	outgoinEvent := Event{
-		Type:    EventNewMessage,
-		Payload: data,
-	}
+	// outgoinEvent := Event{
+	// 	Type:    EventNewMessage,
+	// 	Payload: data,
+	// }
 
-	for client := range c.connMngr.clients {
-		if client.chatroom == c.chatroom {
-			client.Egress <- outgoinEvent
-		}
-	}
-
-	return nil
+	// for client := range m.clients {
+	// 	if client.chatroom == c.chatroom {
+	// 		client.Egress <- outgoinEvent
+	// 	}
+	// }
 }
 
-func ChatRoomHandler(event Event, c *Client) error {
+func ChatRoomHandler(event Event, cl *client, mng *Manager) {
 	var changeRoomEvent ChangeRoomEvent
 	err := json.Unmarshal(event.Payload, &changeRoomEvent)
 	if err != nil {
-		return fmt.Errorf("bad payload in request: %v", err)
+		return
 	}
 
-	c.chatroom = changeRoomEvent.Name
-
-	return nil
+	cl.chatroom = changeRoomEvent.Name
 }

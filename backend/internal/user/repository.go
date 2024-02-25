@@ -12,6 +12,7 @@ var (
 )
 
 type repository interface {
-	Add(ctx context.Context, u *User) (int, error)
+	Add(ctx context.Context, u *User) error
+	FindByID(ctx context.Context, id int) (*User, error)
 	FindByEmail(ctx context.Context, email string) (*User, error)
 }

@@ -229,7 +229,7 @@ defineExpose({
                 class="grow px-[12px] py-[8px] bg-primary-brand-white rounded-[12px] rounded-br-none"
             >
                 <div v-if="parent" class="flex items-end mb-[12px]">
-                    <MessageParent class="grow" :message="parent" />
+                    <MessageParent class="grow" :senderName="parent.senderName" :text="parent.text" />
 
                     <button
                         class="shrink-0 button m ghost only-icon !p-[5px]"
