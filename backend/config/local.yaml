@@ -1,5 +1,5 @@
 env: local
-token_ttl: 1h
+token_ttl: 3h
 ticket_ttl: 5s
 secret: somesecret
 http_server:
