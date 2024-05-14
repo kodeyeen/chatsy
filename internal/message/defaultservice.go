@@ -24,10 +24,10 @@ func NewDefaultService(repo repository, usrRepo userRepository) *defaultService 
 	}
 }
 
-func (s *defaultService) Create(ctx context.Context, createDTO *CreateDTO, senderID int) (*GetDTO, error) {
+func (s *defaultService) Create(ctx context.Context, createDTO *CreateDTO, senderID int) (*GetResponse, error) {
 	sender, err := s.usrRepo.FindByID(ctx, senderID)
 	if err != nil {
-		return &GetDTO{}, err
+		return &GetResponse{}, err
 	}
 
 	msg := &Message{
@@ -43,10 +43,10 @@ func (s *defaultService) Create(ctx context.Context, createDTO *CreateDTO, sende
 
 	err = s.repo.Add(ctx, msg)
 	if err != nil {
-		return &GetDTO{}, err
+		return &GetResponse{}, err
 	}
 
-	msgDTO := &GetDTO{
+	msgDTO := &GetResponse{
 		ID:         msg.ID,
 		ChatID:     msg.ChatID,
 		SenderID:   msg.SenderID,
@@ -62,23 +62,23 @@ func (s *defaultService) Create(ctx context.Context, createDTO *CreateDTO, sende
 	return msgDTO, nil
 }
 
-func (s *defaultService) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[GetDTO], error) {
+func (s *defaultService) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[GetResponse], error) {
 	msgs, err := s.repo.FindForChat(ctx, chatID, limit, offset)
 	if err != nil {
 		log.Println("HERE 1", err)
-		return &api.PageResponse[GetDTO]{}, err
+		return &api.PageResponse[GetResponse]{}, err
 	}
 
 	cnt, err := s.repo.CountForChat(ctx, chatID)
 	if err != nil {
 		log.Println("HERE 2", ctx)
-		return &api.PageResponse[GetDTO]{}, err
+		return &api.PageResponse[GetResponse]{}, err
 	}
 
-	dtos := make([]*GetDTO, 0, len(msgs))
+	dtos := make([]*GetResponse, 0, len(msgs))
 
 	for _, msg := range msgs {
-		getDTO := &GetDTO{
+		getDTO := &GetResponse{
 			ID:               msg.ID,
 			ChatID:           msg.ChatID,
 			SenderID:         msg.SenderID,
@@ -96,7 +96,7 @@ func (s *defaultService) GetForChat(ctx context.Context, chatID int, limit, offs
 		dtos = append(dtos, getDTO)
 	}
 
-	page := &api.PageResponse[GetDTO]{
+	page := &api.PageResponse[GetResponse]{
 		Items:  dtos,
 		Count:  cnt,
 		Limit:  limit,

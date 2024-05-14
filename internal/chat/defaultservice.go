@@ -21,13 +21,13 @@ func (s *defaultService) Create(ctx context.Context) error {
 	return nil
 }
 
-func (s *defaultService) GetByID(ctx context.Context, id int) (*GetDTO, error) {
+func (s *defaultService) GetByID(ctx context.Context, id int) (*GetResponse, error) {
 	c, err := s.repo.FindByID(ctx, id)
 	if err != nil {
-		return &GetDTO{}, err
+		return &GetResponse{}, err
 	}
 
-	getDTO := &GetDTO{
+	getDTO := &GetResponse{
 		ID:              c.ID,
 		Type:            c.Type,
 		Title:           c.Title,
@@ -39,7 +39,7 @@ func (s *defaultService) GetByID(ctx context.Context, id int) (*GetDTO, error) {
 	}
 
 	if c.LastMessage != nil {
-		getDTO.LastMessage = &message.GetDTO{
+		getDTO.LastMessage = &message.GetResponse{
 			ID:         c.LastMessage.ID,
 			ChatID:     c.LastMessage.ChatID,
 			SenderID:   c.LastMessage.SenderID,
@@ -56,16 +56,16 @@ func (s *defaultService) GetByID(ctx context.Context, id int) (*GetDTO, error) {
 	return getDTO, nil
 }
 
-func (s *defaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetDTO, error) {
+func (s *defaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse, error) {
 	cs, err := s.repo.FindAllForUser(ctx, userID)
 	if err != nil {
-		return []*GetDTO{}, err
+		return []*GetResponse{}, err
 	}
 
-	dtos := make([]*GetDTO, 0, len(cs))
+	dtos := make([]*GetResponse, 0, len(cs))
 
 	for _, c := range cs {
-		getDTO := &GetDTO{
+		getDTO := &GetResponse{
 			ID:                      c.ID,
 			Type:                    c.Type,
 			Title:                   c.Title,
@@ -85,21 +85,21 @@ func (s *defaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetD
 	return dtos, nil
 }
 
-func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[GetDTO], error) {
+func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[GetResponse], error) {
 	cs, err := s.repo.FindForUser(ctx, userID, limit, offset)
 	if err != nil {
-		return &api.PageResponse[GetDTO]{}, err
+		return &api.PageResponse[GetResponse]{}, err
 	}
 
 	cnt, err := s.repo.CountForUser(ctx, userID)
 	if err != nil {
-		return &api.PageResponse[GetDTO]{}, err
+		return &api.PageResponse[GetResponse]{}, err
 	}
 
-	dtos := make([]*GetDTO, 0, len(cs))
+	dtos := make([]*GetResponse, 0, len(cs))
 
 	for _, c := range cs {
-		getDTO := &GetDTO{
+		getDTO := &GetResponse{
 			ID:                      c.ID,
 			Type:                    c.Type,
 			Title:                   c.Title,
@@ -114,7 +114,7 @@ func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offs
 		}
 
 		if c.LastMessage != nil {
-			getDTO.LastMessage = &message.GetDTO{
+			getDTO.LastMessage = &message.GetResponse{
 				ID:         c.LastMessage.ID,
 				ChatID:     c.LastMessage.ChatID,
 				SenderID:   c.LastMessage.SenderID,
@@ -131,7 +131,7 @@ func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offs
 		dtos = append(dtos, getDTO)
 	}
 
-	page := &api.PageResponse[GetDTO]{
+	page := &api.PageResponse[GetResponse]{
 		Items:  dtos,
 		Count:  cnt,
 		Limit:  limit,

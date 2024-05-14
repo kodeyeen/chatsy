@@ -12,14 +12,14 @@ import (
 )
 
 type chatService interface {
-	GetByID(ctx context.Context, id int) (*chat.GetDTO, error)
-	GetAllForUser(ctx context.Context, userID int) ([]*chat.GetDTO, error)
-	GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[chat.GetDTO], error)
+	GetByID(ctx context.Context, id int) (*chat.GetResponse, error)
+	GetAllForUser(ctx context.Context, userID int) ([]*chat.GetResponse, error)
+	GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[chat.GetResponse], error)
 }
 
 type messageService interface {
-	Create(ctx context.Context, createDTO *message.CreateDTO, senderID int) (*message.GetDTO, error)
-	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[message.GetDTO], error)
+	Create(ctx context.Context, createDTO *message.CreateDTO, senderID int) (*message.GetResponse, error)
+	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[message.GetResponse], error)
 }
 
 func userGroupName(userID int) string {
@@ -124,7 +124,7 @@ func (h *EventHandler) onSendMessages(evt Event, cl *client, mng *Manager) {
 		return
 	}
 
-	var msgs []*message.GetDTO
+	var msgs []*message.GetResponse
 
 	// TODO: bulk create
 	for _, dto := range sendMsgsEvt.Messages {

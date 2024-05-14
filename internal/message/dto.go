@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type GetDTO struct {
+type GetResponse struct {
 	ID               *int       `json:"id"`
 	ChatID           *int       `json:"chatId"`
 	SenderID         *int       `json:"senderId"`
