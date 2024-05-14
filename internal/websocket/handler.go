@@ -6,20 +6,20 @@ import (
 	"fmt"
 	"log"
 
+	"github.com/kodeyeen/chatsy/internal/api"
 	"github.com/kodeyeen/chatsy/internal/chat"
-	"github.com/kodeyeen/chatsy/internal/dto"
 	"github.com/kodeyeen/chatsy/internal/message"
 )
 
 type chatService interface {
 	GetByID(ctx context.Context, id int) (*chat.GetDTO, error)
 	GetAllForUser(ctx context.Context, userID int) ([]*chat.GetDTO, error)
-	GetForUser(ctx context.Context, userID int, limit, offset int) (*dto.PageResponse[chat.GetDTO], error)
+	GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[chat.GetDTO], error)
 }
 
 type messageService interface {
 	Create(ctx context.Context, createDTO *message.CreateDTO, senderID int) (*message.GetDTO, error)
-	GetForChat(ctx context.Context, chatID int, limit, offset int) (*dto.PageResponse[message.GetDTO], error)
+	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[message.GetDTO], error)
 }
 
 func userGroupName(userID int) string {

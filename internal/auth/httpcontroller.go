@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kodeyeen/chatsy/internal/dto"
+	"github.com/kodeyeen/chatsy/internal/api"
 )
 
 type httpController struct {
@@ -27,7 +27,7 @@ func (c *httpController) Register(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.APIError{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: "invalid input data",
 		})
 		return
@@ -36,7 +36,7 @@ func (c *httpController) Register(w http.ResponseWriter, r *http.Request) {
 	userDTO, err := c.service.Register(r.Context(), &regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.APIError{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
@@ -51,7 +51,7 @@ func (c *httpController) Login(w http.ResponseWriter, r *http.Request) {
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.APIError{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: "invalid input data",
 		})
 		return
@@ -60,7 +60,7 @@ func (c *httpController) Login(w http.ResponseWriter, r *http.Request) {
 	loginResult, err := c.service.Login(r.Context(), &creds)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(dto.APIError{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: "wrong credentials",
 		})
 		return
@@ -106,7 +106,7 @@ func (c *httpController) Me(w http.ResponseWriter, r *http.Request) {
 	userDTO, err := c.service.GetUserByID(ctx, userID)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		// json.NewEncoder(w).Encode(dto.APIError{
+		// json.NewEncoder(w).Encode(api.ErrorResponse{
 		// 	Message: "invalid accessToken was provided",
 		// })
 		return

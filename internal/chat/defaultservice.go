@@ -3,7 +3,7 @@ package chat
 import (
 	"context"
 
-	"github.com/kodeyeen/chatsy/internal/dto"
+	"github.com/kodeyeen/chatsy/internal/api"
 	"github.com/kodeyeen/chatsy/internal/message"
 )
 
@@ -85,15 +85,15 @@ func (s *defaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetD
 	return dtos, nil
 }
 
-func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*dto.PageResponse[GetDTO], error) {
+func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[GetDTO], error) {
 	cs, err := s.repo.FindForUser(ctx, userID, limit, offset)
 	if err != nil {
-		return &dto.PageResponse[GetDTO]{}, err
+		return &api.PageResponse[GetDTO]{}, err
 	}
 
 	cnt, err := s.repo.CountForUser(ctx, userID)
 	if err != nil {
-		return &dto.PageResponse[GetDTO]{}, err
+		return &api.PageResponse[GetDTO]{}, err
 	}
 
 	dtos := make([]*GetDTO, 0, len(cs))
@@ -131,7 +131,7 @@ func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offs
 		dtos = append(dtos, getDTO)
 	}
 
-	page := &dto.PageResponse[GetDTO]{
+	page := &api.PageResponse[GetDTO]{
 		Items:  dtos,
 		Count:  cnt,
 		Limit:  limit,

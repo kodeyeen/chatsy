@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/internal/dto"
+	"github.com/kodeyeen/chatsy/internal/api"
 )
 
 func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFunc {
@@ -15,7 +15,7 @@ func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFun
 			cookie, err := r.Cookie("accessToken")
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(dto.APIError{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "accessToken was not provided",
 				})
 				return
@@ -26,7 +26,7 @@ func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFun
 			})
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(dto.APIError{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "malformed accessToken",
 				})
 				return
@@ -35,7 +35,7 @@ func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFun
 			claims, ok := token.Claims.(*TokenClaims)
 			if !ok {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(dto.APIError{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "unknown claims type, cannot proceed",
 				})
 				return
@@ -62,7 +62,7 @@ func NewCheckTicketMiddleware(secret string) func(http.HandlerFunc) http.Handler
 			})
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(dto.APIError{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "malformed accessToken",
 				})
 				return
@@ -71,7 +71,7 @@ func NewCheckTicketMiddleware(secret string) func(http.HandlerFunc) http.Handler
 			claims, ok := token.Claims.(*TicketClaims)
 			if !ok {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(dto.APIError{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "unknown claims type, cannot proceed",
 				})
 				return

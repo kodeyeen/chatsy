@@ -1,4 +1,4 @@
-package dto
+package api
 
 type Pagination struct {
 	Limit  int `json:"limit"`

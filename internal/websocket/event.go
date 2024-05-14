@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/kodeyeen/chatsy/internal/api"
 	"github.com/kodeyeen/chatsy/internal/chat"
-	"github.com/kodeyeen/chatsy/internal/dto"
 	"github.com/kodeyeen/chatsy/internal/message"
 )
 
@@ -32,7 +32,7 @@ type Event struct {
 type HandlerFunc func(event Event, cl *client, mng *Manager)
 
 type ConnectedEvent struct {
-	Chats dto.PageResponse[chat.GetDTO] `json:"chats"`
+	Chats api.PageResponse[chat.GetDTO] `json:"chats"`
 }
 
 type OpenChatEvent struct {
@@ -40,7 +40,7 @@ type OpenChatEvent struct {
 }
 
 type ChatOpenedEvent struct {
-	Messages dto.PageResponse[message.GetDTO] `json:"messages"`
+	Messages api.PageResponse[message.GetDTO] `json:"messages"`
 }
 
 type SendMessagesEvent struct {
