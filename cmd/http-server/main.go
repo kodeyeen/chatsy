@@ -42,7 +42,7 @@ func main() {
 	userRepo := user.NewPostgresRepository(dbpool)
 
 	authSvc := auth.NewDefaultService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
-	authHlr := auth.NewHTTPHandler(authSvc)
+	authClr := auth.NewHTTPController(authSvc)
 
 	chatRepo := chat.NewPostgresRepository(dbpool)
 	chatSvc := chat.NewDefaultService(chatRepo)
@@ -57,11 +57,11 @@ func main() {
 	checkTicket := auth.NewCheckTicketMiddleware(cfg.Secret)
 
 	serveMux := http.NewServeMux()
-	serveMux.HandleFunc("/auth/register", authHlr.Register)
-	serveMux.HandleFunc("/auth/login", authHlr.Login)
-	serveMux.HandleFunc("/auth/logout", authHlr.Logout)
-	serveMux.HandleFunc("/auth/me", checkJWT(authHlr.Me))
-	serveMux.HandleFunc("/auth/ticket", checkJWT(authHlr.CreateTicket))
+	serveMux.HandleFunc("/auth/register", authClr.Register)
+	serveMux.HandleFunc("/auth/login", authClr.Login)
+	serveMux.HandleFunc("/auth/logout", authClr.Logout)
+	serveMux.HandleFunc("/auth/me", checkJWT(authClr.Me))
+	serveMux.HandleFunc("/auth/ticket", checkJWT(authClr.CreateTicket))
 	serveMux.HandleFunc("/ws", checkTicket(wsMng.ServeWS))
 
 	c := cors.New(cors.Options{

@@ -8,17 +8,17 @@ import (
 	"github.com/kodeyeen/chatsy/internal/dto"
 )
 
-type httpHandler struct {
-	svc service
+type httpController struct {
+	service service
 }
 
-func NewHTTPHandler(s service) *httpHandler {
-	return &httpHandler{
-		svc: s,
+func NewHTTPController(svc service) *httpController {
+	return &httpController{
+		service: svc,
 	}
 }
 
-func (h *httpHandler) Register(w http.ResponseWriter, r *http.Request) {
+func (c *httpController) Register(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
@@ -33,7 +33,7 @@ func (h *httpHandler) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDTO, err := h.svc.Register(r.Context(), &regData)
+	userDTO, err := c.service.Register(r.Context(), &regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(dto.APIError{
@@ -46,7 +46,7 @@ func (h *httpHandler) Register(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userDTO)
 }
 
-func (h *httpHandler) Login(w http.ResponseWriter, r *http.Request) {
+func (c *httpController) Login(w http.ResponseWriter, r *http.Request) {
 	var creds Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
@@ -57,7 +57,7 @@ func (h *httpHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	loginResult, err := h.svc.Login(r.Context(), &creds)
+	loginResult, err := c.service.Login(r.Context(), &creds)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		json.NewEncoder(w).Encode(dto.APIError{
@@ -79,7 +79,7 @@ func (h *httpHandler) Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(loginResult.User)
 }
 
-func (h *httpHandler) Logout(w http.ResponseWriter, r *http.Request) {
+func (c *httpController) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "accessToken",
 		Value:    "",
@@ -91,7 +91,7 @@ func (h *httpHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (h *httpHandler) Me(w http.ResponseWriter, r *http.Request) {
+func (c *httpController) Me(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
@@ -103,7 +103,7 @@ func (h *httpHandler) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDTO, err := h.svc.GetUserByID(ctx, userID)
+	userDTO, err := c.service.GetUserByID(ctx, userID)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		// json.NewEncoder(w).Encode(dto.APIError{
@@ -115,7 +115,7 @@ func (h *httpHandler) Me(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userDTO)
 }
 
-func (h *httpHandler) CreateTicket(w http.ResponseWriter, r *http.Request) {
+func (c *httpController) CreateTicket(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
@@ -127,7 +127,7 @@ func (h *httpHandler) CreateTicket(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ticket, err := h.svc.CreateTicket(ctx, userID)
+	ticket, err := c.service.CreateTicket(ctx, userID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
