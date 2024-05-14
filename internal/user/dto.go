@@ -4,7 +4,7 @@ import (
 	"time"
 )
 
-type GetDTO struct {
+type Response struct {
 	ID           *int       `json:"id" db:"id"`
 	Username     *string    `json:"username" db:"username"`
 	FirstName    *string    `json:"firstName" db:"first_name"`

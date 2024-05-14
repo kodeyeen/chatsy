@@ -12,13 +12,13 @@ func NewDefaultService(repo repository) *defaultService {
 	}
 }
 
-func (s *defaultService) GetByID(ctx context.Context, id int) (*GetDTO, error) {
+func (s *defaultService) GetByID(ctx context.Context, id int) (*Response, error) {
 	u, err := s.repo.FindByID(ctx, id)
 	if err != nil {
-		return &GetDTO{}, err
+		return &Response{}, err
 	}
 
-	userDTO := GetDTO{
+	userDTO := Response{
 		ID:        u.ID,
 		Username:  u.Username,
 		FirstName: u.FirstName,
