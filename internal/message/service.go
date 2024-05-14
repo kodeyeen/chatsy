@@ -8,5 +8,5 @@ import (
 
 type service interface {
 	Create(ctx context.Context) error
-	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[GetResponse], error)
+	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.Page[GetResponse], error)
 }

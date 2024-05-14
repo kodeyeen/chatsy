@@ -35,10 +35,10 @@ func NewDefaultService(
 	}
 }
 
-func (s *defaultService) Register(ctx context.Context, regData *RegistrationRequest) (*user.Response, error) {
+func (s *defaultService) Register(ctx context.Context, regData *RegistrationRequest) (*user.GetResponse, error) {
 	passwordHash, err := regData.Password.Hash()
 	if err != nil {
-		return &user.Response{}, err
+		return &user.GetResponse{}, err
 	}
 
 	usr := &user.User{
@@ -51,10 +51,10 @@ func (s *defaultService) Register(ctx context.Context, regData *RegistrationRequ
 
 	err = s.userRepo.Add(ctx, usr)
 	if err != nil {
-		return &user.Response{}, err
+		return &user.GetResponse{}, err
 	}
 
-	userDTO := &user.Response{
+	userDTO := &user.GetResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -92,7 +92,7 @@ func (s *defaultService) Login(ctx context.Context, creds *Credentials) (*LoginR
 		return &LoginResult{}, err
 	}
 
-	userDTO := user.Response{
+	userDTO := user.GetResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -108,13 +108,13 @@ func (s *defaultService) Login(ctx context.Context, creds *Credentials) (*LoginR
 	}, nil
 }
 
-func (s *defaultService) GetUserByID(ctx context.Context, id int) (*user.Response, error) {
+func (s *defaultService) GetUserByID(ctx context.Context, id int) (*user.GetResponse, error) {
 	usr, err := s.userRepo.FindByID(ctx, id)
 	if err != nil {
-		return &user.Response{}, err
+		return &user.GetResponse{}, err
 	}
 
-	userDTO := user.Response{
+	userDTO := user.GetResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,

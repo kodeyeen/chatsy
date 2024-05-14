@@ -14,12 +14,12 @@ import (
 type chatService interface {
 	GetByID(ctx context.Context, id int) (*chat.GetResponse, error)
 	GetAllForUser(ctx context.Context, userID int) ([]*chat.GetResponse, error)
-	GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[chat.GetResponse], error)
+	GetForUser(ctx context.Context, userID int, limit, offset int) (*api.Page[chat.GetResponse], error)
 }
 
 type messageService interface {
 	Create(ctx context.Context, createDTO *message.CreateDTO, senderID int) (*message.GetResponse, error)
-	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[message.GetResponse], error)
+	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.Page[message.GetResponse], error)
 }
 
 func userGroupName(userID int) string {

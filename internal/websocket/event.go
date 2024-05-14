@@ -32,7 +32,7 @@ type Event struct {
 type HandlerFunc func(event Event, cl *client, mng *Manager)
 
 type ConnectedEvent struct {
-	Chats api.PageResponse[chat.GetResponse] `json:"chats"`
+	Chats api.Page[chat.GetResponse] `json:"chats"`
 }
 
 type OpenChatEvent struct {
@@ -40,7 +40,7 @@ type OpenChatEvent struct {
 }
 
 type ChatOpenedEvent struct {
-	Messages api.PageResponse[message.GetResponse] `json:"messages"`
+	Messages api.Page[message.GetResponse] `json:"messages"`
 }
 
 type SendMessagesEvent struct {

@@ -24,7 +24,7 @@ type Credentials struct {
 type LoginResult struct {
 	AccessToken *string `json:"accessToken"`
 	Exp         *time.Time
-	User        *user.Response
+	User        *user.GetResponse
 }
 
 type TokenClaims struct {

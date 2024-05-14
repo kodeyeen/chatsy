@@ -5,7 +5,7 @@ type Pagination struct {
 	Offset int `json:"offset"`
 }
 
-type PageResponse[T any] struct {
+type Page[T any] struct {
 	Items  []*T `json:"items"`
 	Count  int  `json:"count"`
 	Limit  int  `json:"limit"`
