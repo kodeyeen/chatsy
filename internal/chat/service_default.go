@@ -85,15 +85,15 @@ func (s *defaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetD
 	return dtos, nil
 }
 
-func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*dto.Page[GetDTO], error) {
+func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*dto.PageResponse[GetDTO], error) {
 	cs, err := s.repo.FindForUser(ctx, userID, limit, offset)
 	if err != nil {
-		return &dto.Page[GetDTO]{}, err
+		return &dto.PageResponse[GetDTO]{}, err
 	}
 
 	cnt, err := s.repo.CountForUser(ctx, userID)
 	if err != nil {
-		return &dto.Page[GetDTO]{}, err
+		return &dto.PageResponse[GetDTO]{}, err
 	}
 
 	dtos := make([]*GetDTO, 0, len(cs))
@@ -131,7 +131,7 @@ func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offs
 		dtos = append(dtos, getDTO)
 	}
 
-	page := &dto.Page[GetDTO]{
+	page := &dto.PageResponse[GetDTO]{
 		Items:  dtos,
 		Count:  cnt,
 		Limit:  limit,

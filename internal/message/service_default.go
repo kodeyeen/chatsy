@@ -62,17 +62,17 @@ func (s *defaultService) Create(ctx context.Context, createDTO *CreateDTO, sende
 	return msgDTO, nil
 }
 
-func (s *defaultService) GetForChat(ctx context.Context, chatID int, limit, offset int) (*dto.Page[GetDTO], error) {
+func (s *defaultService) GetForChat(ctx context.Context, chatID int, limit, offset int) (*dto.PageResponse[GetDTO], error) {
 	msgs, err := s.repo.FindForChat(ctx, chatID, limit, offset)
 	if err != nil {
 		log.Println("HERE 1", err)
-		return &dto.Page[GetDTO]{}, err
+		return &dto.PageResponse[GetDTO]{}, err
 	}
 
 	cnt, err := s.repo.CountForChat(ctx, chatID)
 	if err != nil {
 		log.Println("HERE 2", ctx)
-		return &dto.Page[GetDTO]{}, err
+		return &dto.PageResponse[GetDTO]{}, err
 	}
 
 	dtos := make([]*GetDTO, 0, len(msgs))
@@ -96,7 +96,7 @@ func (s *defaultService) GetForChat(ctx context.Context, chatID int, limit, offs
 		dtos = append(dtos, getDTO)
 	}
 
-	page := &dto.Page[GetDTO]{
+	page := &dto.PageResponse[GetDTO]{
 		Items:  dtos,
 		Count:  cnt,
 		Limit:  limit,
