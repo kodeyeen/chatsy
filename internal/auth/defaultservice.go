@@ -35,7 +35,7 @@ func NewDefaultService(
 	}
 }
 
-func (s *defaultService) Register(ctx context.Context, regData *RegisterData) (*user.GetDTO, error) {
+func (s *defaultService) Register(ctx context.Context, regData *RegistrationRequest) (*user.GetDTO, error) {
 	passwordHash, err := regData.Password.Hash()
 	if err != nil {
 		return &user.GetDTO{}, err

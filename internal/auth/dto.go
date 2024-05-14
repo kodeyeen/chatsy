@@ -8,7 +8,7 @@ import (
 	"github.com/kodeyeen/chatsy/internal/user"
 )
 
-type RegisterData struct {
+type RegistrationRequest struct {
 	Username  *string            `json:"username"`
 	FirstName *string            `json:"firstName"`
 	LastName  *string            `json:"lastName"`

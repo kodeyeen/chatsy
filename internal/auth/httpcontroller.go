@@ -23,7 +23,7 @@ func (c *httpController) Register(w http.ResponseWriter, r *http.Request) {
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
 
-	var regData RegisterData
+	var regData RegistrationRequest
 	err := json.NewDecoder(r.Body).Decode(&regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
