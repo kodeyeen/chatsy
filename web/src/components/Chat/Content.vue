@@ -471,7 +471,7 @@ const onContextMenu = (event: any, message: any) => {
                                 <RouterLink
                                     v-if="chat.type === 'personal'"
                                     class="whitespace-nowrap"
-                                    to="$userLink(chat.other_user)"
+                                    to="/"
                                 >
                                     <span>
                                         {{ chat.title }}
@@ -1009,7 +1009,7 @@ const onContextMenu = (event: any, message: any) => {
                             </button>
                         </li>
                         <li>
-                            <RouterLink class="option-button gap-x-[6px]" to="$userLink(chat)">
+                            <RouterLink class="option-button gap-x-[6px]" to="/">
                                 <i class="icon dd-Single-user text-[20px]"></i>
 
                                 <span> Профиль пользователя </span>
@@ -1181,32 +1181,32 @@ const onContextMenu = (event: any, message: any) => {
                 contentClass="md:px-[16px] md:py-[20px]"
                 @hidden="messageToDelete = null"
             >
-                <ChatMessageDeletionForm
+                <!-- <ChatMessageDeletionForm
                     :messages="messageToDelete ? [messageToDelete] : selectedMessages"
                     @submit="onMessagesDelete"
-                />
+                /> -->
             </Popup>
 
             <Popup id="forwardPopup">
-                <ChatMessageForwardForm @submit="onMessagesForward" />
+                <!-- <ChatMessageForwardForm @submit="onMessagesForward" /> -->
             </Popup>
 
-            <PopupConfirm
+            <!-- <PopupConfirm
                 id="confirmChatDeletionPopup"
                 confirmText="Удалить"
                 cancelText="Отмена"
                 title="Удалить чат"
                 description="Вы уверены, что хотите удалить чат?"
                 @confirm="onChatDelete"
-            />
+            /> -->
 
-            <PopupShare
+            <!-- <PopupShare
                 v-if="chat.type === 'personal'"
                 id="userSharePopup"
                 url="$userLink(chat.other_user)"
                 :title="chat.other_user.display_name"
                 :text="chat.other_user.display_name"
-            />
+            /> -->
         </Teleport>
     </div>
 </template>
