@@ -2,7 +2,7 @@ import { useWebSocket } from '@vueuse/core'
 import type { MaybeRefOrGetter } from 'vue'
 import type { UseWebSocketOptions } from '@vueuse/core'
 
-interface Event {
+interface ChatEvent {
     type: string
     payload: any
 }
@@ -31,7 +31,7 @@ export const useChatClient = (
 ) => {
     const { data, close, send, open, ws } = useWebSocket(url, options)
 
-    const sendEvent = (event: Event): boolean => {
+    const sendEvent = (event: ChatEvent): boolean => {
         return send(JSON.stringify(event))
     }
 
