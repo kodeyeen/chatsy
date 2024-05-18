@@ -51,7 +51,7 @@ watch(filter, (newFilter) => {
                 >
                     <ArrowLeftIcon width="20" height="20" />
 
-                    <span> Вернуться </span>
+                    <span> Go Back </span>
                 </button>
             </div>
 
@@ -199,9 +199,9 @@ watch(filter, (newFilter) => {
         <div class="px-[16px] py-[8px] border-b border-b-primary-london-110 bg-primary-brand-white">
             <div class="relative">
                 <input
-                    class="input m filled pl-[40px]"
+                    class="input m filled !pl-[40px]"
                     type="search"
-                    placeholder="Поиск или новый чат"
+                    placeholder="Search"
                     xv-model="filter"
                 />
 
