@@ -12,12 +12,14 @@ import (
 type EventType string
 
 const (
-	EventConnected    EventType = "connected"
-	EventDisconnected EventType = "disconnected"
-	EventOpenChat     EventType = "open_chat"
-	EventChatOpened   EventType = "chat_opened"
-	EventSendMessages EventType = "send_messages"
-	EventNewMessages  EventType = "new_messages"
+	EventConnected       EventType = "connected"
+	EventDisconnected    EventType = "disconnected"
+	EventOpenChat        EventType = "open_chat"
+	EventChatOpened      EventType = "chat_opened"
+	EventSendMessages    EventType = "send_messages"
+	EventNewMessages     EventType = "new_messages"
+	EventFetchMessages   EventType = "fetch_messages"
+	EventMessagesFetched EventType = "messages_fetched"
 
 	EventSendMessage EventType = "send_message"
 	EventNewMessage  EventType = "new_message"
@@ -51,6 +53,17 @@ type SendMessagesEvent struct {
 type NewMessagesEvent struct {
 	ChatID   int                    `json:"chatId"`
 	Messages []*message.GetResponse `json:"messages"`
+}
+
+type FetchMessagesEvent struct {
+	ChatID int `json:"chatId"`
+	Limit  int `json:"limit"`
+	Offset int `json:"offset"`
+}
+
+type LoadMessagesEvent struct {
+	ChatID   int                           `json:"chatId"`
+	Messages api.Page[message.GetResponse] `json:"messages"`
 }
 
 //

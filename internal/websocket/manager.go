@@ -53,6 +53,7 @@ func NewManager(handler *EventHandler) *Manager {
 func (m *Manager) setupEventHandlers() {
 	m.handlers[EventOpenChat] = m.handler.onOpenChat
 	m.handlers[EventSendMessages] = m.handler.onSendMessages
+	m.handlers[EventFetchMessages] = m.handler.onFetchMessages
 
 	m.handlers[EventSendMessage] = SendMessage
 	m.handlers[EventChangeRoom] = ChatRoomHandler

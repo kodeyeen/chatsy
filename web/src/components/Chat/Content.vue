@@ -15,6 +15,7 @@ import CheckmarkBigCircleIcon from '@/components/icons/CheckmarkBigCircle.vue'
 import TrashDeleteBinIcon from '@/components/icons/TrashDeleteBin.vue'
 import ReplyIcon from '@/components/icons/Reply.vue'
 import ShareArrowIcon from '@/components/icons/ShareArrow.vue'
+import SpinnerIcon from '@/components/icons/Spinner.vue'
 import MessageCard from '@/components/Message/Card.vue'
 import MessageForm from '@/components/Message/Form.vue'
 import Popup from '@/components/Popup.vue'
@@ -32,7 +33,7 @@ const auth = useAuthStore()
 const store = useChatsStore()
 
 const messages = ref<any | null>(null)
-const limit = ref(30)
+const limit = ref(7)
 const offsetStart = ref(0)
 const offsetEnd = ref(0)
 const count = ref<number | null>(null)
@@ -148,6 +149,13 @@ const scrollToMessageOrFetch = (messageId: number, highlight: boolean = true) =>
 
 const eventHandlers: any = {
     'chat_opened': (event: any) => {
+        messages.value = event.payload.messages.items
+        count.value = event.payload.messages.count
+
+        isFetchingMessages.value = false
+    },
+
+    'messages_fetched': (event: any) => {
         // if (event.is_searching) {
         //   return
         // }
@@ -161,9 +169,9 @@ const eventHandlers: any = {
             // сохраняем старую позицию скролла
             const oldScrollTop = scrollableContainer.value?.scrollTop || 0
 
-            if (event.payload.offset === offsetEnd.value + limit.value) {
+            if (event.payload.messages.offset === offsetEnd.value + limit.value) {
                 // подгрузка сообщений сверху (когда скроллим наверх)
-                messages.value.push(...event.payload.items)
+                messages.value.push(...event.payload.messages.items)
 
                 // после вставки сообщений, когда они отрисуются
                 // устанавливаем старую позицию скролла
@@ -173,14 +181,14 @@ const eventHandlers: any = {
                     }
                 })
 
-                offsetEnd.value = event.payload.offset
-            } else if (event.payload.offset === Math.max(0, offsetStart.value - limit.value)) {
+                offsetEnd.value = event.payload.messages.offset
+            } else if (event.payload.messages.offset === Math.max(0, offsetStart.value - limit.value)) {
                 // сохраняем старую высоту контейнера с сообщениями
                 const oldHeight = scrollableContainer.value?.scrollHeight || 0
 
                 // подгрузка сообщений снизу (когда скроллим вниз)
                 // (может быть при поиске сообщений)
-                messages.value.unshift(...event.payload.items)
+                messages.value.unshift(...event.payload.messages.items)
 
                 // после вставки сообщений, когда они отрисуются
                 // высчитываем позицию скролла с учетом нового контента
@@ -193,25 +201,23 @@ const eventHandlers: any = {
                     }
                 })
 
-                offsetStart.value = event.payload.offset
+                offsetStart.value = event.payload.messages.offset
             }
         }
 
-        count.value = event.payload.count
+        count.value = event.payload.messages.count
 
-        if (event.payload.include) {
-            offsetStart.value = offsetEnd.value = event.payload.offset
+        // if (event.payload.include) {
+        //     offsetStart.value = offsetEnd.value = event.payload.offset
 
-            try {
-                nextTick(() => {
-                    scrollToMessage(event.payload.include, event.payload.highlight)
+        //     try {
+        //         nextTick(() => {
+        //             scrollToMessage(event.payload.include, event.payload.highlight)
 
-                    setTimeout(() => (canFetch.value = true), 1000)
-                })
-            } catch {}
-        }
-
-        isFetchingMessages.value = false
+        //             setTimeout(() => (canFetch.value = true), 1000)
+        //         })
+        //     } catch {}
+        // }
     },
 
     'new_messages': (event: any) => {
@@ -323,9 +329,13 @@ useIntersectionObserver(
             return
         }
 
-        store.fetchMessages(props.chat.id, {
-            limit: limit.value,
-            offset: offsetEnd.value + limit.value,
+        store.client.sendEvent({
+            type: 'fetch_messages',
+            payload: {
+                chatId: props.chat.id,
+                limit: limit.value,
+                offset: offsetEnd.value + limit.value,
+            },
         })
     },
     {
@@ -749,9 +759,7 @@ const onContextMenu = (event: any, message: any) => {
                                 class="flex justify-center items-center py-[16px]"
                             >
                                 <span ref="topSpinner">
-                                    <i
-                                        class="icon dd-Spiner-l text-[32px] text-primary-brand-accent animate-spin"
-                                    ></i>
+                                    <SpinnerIcon width="32" height="32" class="text-primary-brand-accent animate-spin"/>
                                 </span>
                             </div>
 

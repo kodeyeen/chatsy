@@ -98,7 +98,7 @@ func (h *EventHandler) onOpenChat(evt Event, cl *client, mng *Manager) {
 		return
 	}
 
-	page, err := h.msgSvc.GetForChat(mng.ctx, openChatEvt.ChatID, 30, 0)
+	page, err := h.msgSvc.GetForChat(mng.ctx, openChatEvt.ChatID, 7, 0)
 	if err != nil {
 		log.Println("GetForChat err", err)
 		return
@@ -149,4 +149,30 @@ func (h *EventHandler) onSendMessages(evt Event, cl *client, mng *Manager) {
 		Type:    EventNewMessages,
 		Payload: data,
 	}, chatGroupName(sendMsgsEvt.ChatID))
+}
+
+func (h *EventHandler) onFetchMessages(evt Event, cl *client, mng *Manager) {
+	var fetchMsgsEvt FetchMessagesEvent
+	err := json.Unmarshal(evt.Payload, &fetchMsgsEvt)
+	if err != nil {
+		return
+	}
+
+	page, err := h.msgSvc.GetForChat(mng.ctx, fetchMsgsEvt.ChatID, fetchMsgsEvt.Limit, fetchMsgsEvt.Offset)
+	if err != nil {
+		return
+	}
+
+	data, err := json.Marshal(LoadMessagesEvent{
+		ChatID:   fetchMsgsEvt.ChatID,
+		Messages: *page,
+	})
+	if err != nil {
+		return
+	}
+
+	mng.sendEvent(Event{
+		Type:    EventMessagesFetched,
+		Payload: data,
+	}, chatGroupName(fetchMsgsEvt.ChatID))
 }
