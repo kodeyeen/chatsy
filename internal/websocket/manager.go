@@ -59,7 +59,7 @@ func (m *Manager) setupEventHandlers() {
 	m.handlers[EventChangeRoom] = ChatRoomHandler
 }
 
-func (m *Manager) ServeWS(w http.ResponseWriter, r *http.Request) {
+func (m *Manager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	userID, ok := r.Context().Value("userID").(int)
 	if !ok {
 		w.WriteHeader(http.StatusInternalServerError)

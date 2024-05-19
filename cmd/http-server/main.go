@@ -62,7 +62,7 @@ func main() {
 	serveMux.HandleFunc("/auth/logout", authClr.Logout)
 	serveMux.HandleFunc("/auth/me", checkJWT(authClr.Me))
 	serveMux.HandleFunc("/auth/ticket", checkJWT(authClr.CreateTicket))
-	serveMux.HandleFunc("/ws", checkTicket(wsMng.ServeWS))
+	serveMux.HandleFunc("/ws", checkTicket(wsMng.ServeHTTP))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   cfg.Cors.AllowedOrigins,
