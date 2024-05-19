@@ -9,26 +9,10 @@ import (
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin:     checkOrigin,
-}
-
-func checkOrigin(r *http.Request) bool {
-	origin := r.Header.Get("Origin")
-
-	switch origin {
-	case "http://127.0.0.1:5173", "http://localhost:5173":
-		return true
-	default:
-		return false
-	}
-}
-
 type Manager struct {
 	sync.RWMutex
 
+	upgrader *websocket.Upgrader
 	groups   map[string]map[*client]struct{}
 	handlers map[EventType]HandlerFunc
 
@@ -43,6 +27,12 @@ func NewManager(handler *EventHandler) *Manager {
 
 		handler: handler,
 		ctx:     context.Background(),
+	}
+
+	m.upgrader = &websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin:     m.checkOrigin,
 	}
 
 	m.setupEventHandlers()
@@ -67,7 +57,7 @@ func (m *Manager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// upgrade regular http connection into websocket
-	conn, err := upgrader.Upgrade(w, r, nil)
+	conn, err := m.upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
@@ -147,5 +137,16 @@ func (m *Manager) sendEvent(evt Event, groupName string) {
 
 	for cl := range group {
 		cl.sendEvent(evt)
+	}
+}
+
+func (m *Manager) checkOrigin(r *http.Request) bool {
+	origin := r.Header.Get("Origin")
+
+	switch origin {
+	case "http://127.0.0.1:5173", "http://localhost:5173":
+		return true
+	default:
+		return false
 	}
 }
