@@ -1,23 +1,24 @@
-package message
+package postgres
 
 import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/kodeyeen/chatsy/internal/message"
 )
 
-type postgresRepository struct {
+type messageRepository struct {
 	dbpool *pgxpool.Pool
 }
 
-func NewPostgresRepository(dbpool *pgxpool.Pool) *postgresRepository {
-	return &postgresRepository{
+func NewMessageRepository(dbpool *pgxpool.Pool) *messageRepository {
+	return &messageRepository{
 		dbpool: dbpool,
 	}
 }
 
-func (r *postgresRepository) Add(ctx context.Context, msg *Message) error {
+func (r *messageRepository) Add(ctx context.Context, msg *message.Message) error {
 	query := `
 		INSERT INTO
 			messages (chat_id, sender_id, original_id, parent_id, text)
@@ -41,7 +42,7 @@ func (r *postgresRepository) Add(ctx context.Context, msg *Message) error {
 	return nil
 }
 
-func (r *postgresRepository) FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*Message, error) {
+func (r *messageRepository) FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*message.Message, error) {
 	query := `
 		SELECT
 			m.id,
@@ -92,10 +93,10 @@ func (r *postgresRepository) FindForChat(ctx context.Context, chatID int, limit,
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var msgs []*Message
+	var msgs []*message.Message
 
 	for rows.Next() {
-		var msg Message
+		var msg message.Message
 
 		err := rows.Scan(
 			&msg.ID,
@@ -112,7 +113,7 @@ func (r *postgresRepository) FindForChat(ctx context.Context, chatID int, limit,
 			&msg.IsViewed,
 		)
 		if err != nil {
-			return []*Message{}, err
+			return []*message.Message{}, err
 		}
 
 		msgs = append(msgs, &msg)
@@ -121,7 +122,7 @@ func (r *postgresRepository) FindForChat(ctx context.Context, chatID int, limit,
 	return msgs, nil
 }
 
-func (r *postgresRepository) CountForChat(ctx context.Context, chatID int) (int, error) {
+func (r *messageRepository) CountForChat(ctx context.Context, chatID int) (int, error) {
 	query := `
 		SELECT
 			COUNT(*)

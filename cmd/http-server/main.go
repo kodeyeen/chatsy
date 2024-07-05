@@ -11,7 +11,7 @@ import (
 	"github.com/kodeyeen/chatsy/internal/config"
 	"github.com/kodeyeen/chatsy/internal/database"
 	"github.com/kodeyeen/chatsy/internal/message"
-	"github.com/kodeyeen/chatsy/internal/user"
+	"github.com/kodeyeen/chatsy/internal/postgres"
 	"github.com/kodeyeen/chatsy/internal/websocket"
 	"github.com/rs/cors"
 )
@@ -39,15 +39,15 @@ func main() {
 		log.Fatalf("failed to ping db: %s", err.Error())
 	}
 
-	userRepo := user.NewPostgresRepository(dbpool)
+	userRepo := postgres.NewUserRepository(dbpool)
 
 	authSvc := auth.NewDefaultService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
 	authClr := auth.NewHTTPController(authSvc)
 
-	chatRepo := chat.NewPostgresRepository(dbpool)
+	chatRepo := postgres.NewChatRepository(dbpool)
 	chatSvc := chat.NewDefaultService(chatRepo)
 
-	msgRepo := message.NewPostgresRepository(dbpool)
+	msgRepo := postgres.NewMessageRepository(dbpool)
 	msgSvc := message.NewDefaultService(msgRepo, userRepo)
 
 	eventHandler := websocket.NewEventHandler(chatSvc, msgSvc)

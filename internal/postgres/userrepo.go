@@ -1,8 +1,10 @@
-package user
+package postgres
 
 import (
 	"context"
 	"errors"
+
+	"github.com/kodeyeen/chatsy/internal/user"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -10,17 +12,23 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-type postgresRepository struct {
+var (
+	ErrUsernameAlreadyExists = errors.New("username already exists")
+	ErrEmailAlreadyExists    = errors.New("email already exists")
+	ErrNotFound              = errors.New("user not found")
+)
+
+type userRepository struct {
 	dbpool *pgxpool.Pool
 }
 
-func NewPostgresRepository(dbpool *pgxpool.Pool) *postgresRepository {
-	return &postgresRepository{
+func NewUserRepository(dbpool *pgxpool.Pool) *userRepository {
+	return &userRepository{
 		dbpool: dbpool,
 	}
 }
 
-func (r *postgresRepository) Add(ctx context.Context, usr *User) error {
+func (r *userRepository) Add(ctx context.Context, usr *user.User) error {
 	query := `
 		INSERT INTO users (first_name, last_name, username, email, password_hash)
 		VALUES (@first_name, @last_name, @username, @email, @password_hash)
@@ -53,7 +61,7 @@ func (r *postgresRepository) Add(ctx context.Context, usr *User) error {
 	return nil
 }
 
-func (r *postgresRepository) FindByID(ctx context.Context, ID int) (*User, error) {
+func (r *userRepository) FindByID(ctx context.Context, ID int) (*user.User, error) {
 	query := `
 		SELECT
 			id,
@@ -71,7 +79,7 @@ func (r *postgresRepository) FindByID(ctx context.Context, ID int) (*User, error
 		"id": ID,
 	}
 
-	var usr User
+	var usr user.User
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&usr.ID,
 		&usr.FirstName,
@@ -83,13 +91,13 @@ func (r *postgresRepository) FindByID(ctx context.Context, ID int) (*User, error
 		&usr.JoinedAt,
 	)
 	if err != nil {
-		return &User{}, err
+		return &user.User{}, err
 	}
 
 	return &usr, nil
 }
 
-func (r *postgresRepository) FindByEmail(ctx context.Context, email string) (*User, error) {
+func (r *userRepository) FindByEmail(ctx context.Context, email string) (*user.User, error) {
 	query := `
 		SELECT id, first_name, last_name, username, email, password_hash, joined_at
 		FROM users
@@ -100,12 +108,12 @@ func (r *postgresRepository) FindByEmail(ctx context.Context, email string) (*Us
 	}
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
-	userDTO, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[GetResponse])
+	userDTO, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[user.GetResponse])
 	if err != nil {
-		return &User{}, err
+		return &user.User{}, err
 	}
 
-	usr := &User{
+	usr := &user.User{
 		ID:           userDTO.ID,
 		FirstName:    userDTO.FirstName,
 		LastName:     userDTO.LastName,

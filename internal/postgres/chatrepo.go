@@ -1,24 +1,25 @@
-package chat
+package postgres
 
 import (
 	"context"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"github.com/kodeyeen/chatsy/internal/chat"
 	"github.com/kodeyeen/chatsy/internal/message"
 )
 
-type postgresRepository struct {
+type chatRepository struct {
 	dbpool *pgxpool.Pool
 }
 
-func NewPostgresRepository(dbpool *pgxpool.Pool) *postgresRepository {
-	return &postgresRepository{
+func NewChatRepository(dbpool *pgxpool.Pool) *chatRepository {
+	return &chatRepository{
 		dbpool: dbpool,
 	}
 }
 
-func (r *postgresRepository) Add(ctx context.Context, c *Chat) error {
+func (r *chatRepository) Add(ctx context.Context, c *chat.Chat) error {
 	query := `
 		INSERT INTO
 			chats (type, title, invite_hash)
@@ -40,7 +41,7 @@ func (r *postgresRepository) Add(ctx context.Context, c *Chat) error {
 	return nil
 }
 
-func (r *postgresRepository) FindByID(ctx context.Context, id int) (*Chat, error) {
+func (r *chatRepository) FindByID(ctx context.Context, id int) (*chat.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -96,17 +97,17 @@ func (r *postgresRepository) FindByID(ctx context.Context, id int) (*Chat, error
 		"id": id,
 	}
 
-	var chat Chat
+	var cht chat.Chat
 	var lastMsg message.Message
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
-		&chat.ID,
-		&chat.Type,
-		&chat.Title,
-		&chat.Description,
-		&chat.InviteHash,
-		&chat.JoinByLinkCount,
-		&chat.IsPrivate,
-		&chat.JoinByRequest,
+		&cht.ID,
+		&cht.Type,
+		&cht.Title,
+		&cht.Description,
+		&cht.InviteHash,
+		&cht.JoinByLinkCount,
+		&cht.IsPrivate,
+		&cht.JoinByRequest,
 
 		&lastMsg.ID,
 		&lastMsg.ChatID,
@@ -120,17 +121,17 @@ func (r *postgresRepository) FindByID(ctx context.Context, id int) (*Chat, error
 		&lastMsg.IsViewed,
 	)
 	if err != nil {
-		return &Chat{}, err
+		return &chat.Chat{}, err
 	}
 
 	if lastMsg.ID != nil {
-		chat.LastMessage = &lastMsg
+		cht.LastMessage = &lastMsg
 	}
 
-	return &chat, nil
+	return &cht, nil
 }
 
-func (r *postgresRepository) FindAllForUser(ctx context.Context, userID int) ([]*Chat, error) {
+func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*chat.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -154,32 +155,32 @@ func (r *postgresRepository) FindAllForUser(ctx context.Context, userID int) ([]
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var chats []*Chat
+	var chats []*chat.Chat
 
 	for rows.Next() {
-		var chat Chat
+		var cht chat.Chat
 
 		err := rows.Scan(
-			&chat.ID,
-			&chat.Type,
-			&chat.Title,
-			&chat.Description,
-			&chat.InviteHash,
-			&chat.JoinByLinkCount,
-			&chat.IsPrivate,
-			&chat.JoinByRequest,
+			&cht.ID,
+			&cht.Type,
+			&cht.Title,
+			&cht.Description,
+			&cht.InviteHash,
+			&cht.JoinByLinkCount,
+			&cht.IsPrivate,
+			&cht.JoinByRequest,
 		)
 		if err != nil {
-			return []*Chat{}, err
+			return []*chat.Chat{}, err
 		}
 
-		chats = append(chats, &chat)
+		chats = append(chats, &cht)
 	}
 
 	return chats, nil
 }
 
-func (r *postgresRepository) FindForUser(ctx context.Context, userID int, limit, offset int) ([]*Chat, error) {
+func (r *chatRepository) FindForUser(ctx context.Context, userID int, limit, offset int) ([]*chat.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -252,24 +253,24 @@ func (r *postgresRepository) FindForUser(ctx context.Context, userID int, limit,
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var chats []*Chat
+	var chats []*chat.Chat
 
 	for rows.Next() {
-		var chat Chat
+		var cht chat.Chat
 		var lastMsg message.Message
 
 		err := rows.Scan(
-			&chat.ID,
-			&chat.Type,
-			&chat.Title,
-			&chat.Description,
-			&chat.InviteHash,
-			&chat.JoinByLinkCount,
-			&chat.IsPrivate,
-			&chat.JoinByRequest,
-			&chat.IsJoined,
-			&chat.ParticipantCount,
-			&chat.AreNotificationsEnabled,
+			&cht.ID,
+			&cht.Type,
+			&cht.Title,
+			&cht.Description,
+			&cht.InviteHash,
+			&cht.JoinByLinkCount,
+			&cht.IsPrivate,
+			&cht.JoinByRequest,
+			&cht.IsJoined,
+			&cht.ParticipantCount,
+			&cht.AreNotificationsEnabled,
 
 			&lastMsg.ID,
 			&lastMsg.ChatID,
@@ -283,20 +284,20 @@ func (r *postgresRepository) FindForUser(ctx context.Context, userID int, limit,
 			&lastMsg.IsViewed,
 		)
 		if err != nil {
-			return []*Chat{}, err
+			return []*chat.Chat{}, err
 		}
 
 		if lastMsg.ID != nil {
-			chat.LastMessage = &lastMsg
+			cht.LastMessage = &lastMsg
 		}
 
-		chats = append(chats, &chat)
+		chats = append(chats, &cht)
 	}
 
 	return chats, nil
 }
 
-func (r *postgresRepository) CountForUser(ctx context.Context, userID int) (int, error) {
+func (r *chatRepository) CountForUser(ctx context.Context, userID int) (int, error) {
 	query := `
 		SELECT
 			COUNT(*)

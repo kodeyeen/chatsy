@@ -7,21 +7,29 @@ import (
 	"github.com/kodeyeen/chatsy/internal/message"
 )
 
-type defaultService struct {
+type repository interface {
+	Add(context.Context, *Chat) error
+	FindByID(context.Context, int) (*Chat, error)
+	FindForUser(ctx context.Context, userID int, limit, offset int) ([]*Chat, error)
+	FindAllForUser(ctx context.Context, userID int) ([]*Chat, error)
+	CountForUser(ctx context.Context, userID int) (int, error)
+}
+
+type service struct {
 	repo repository
 }
 
-func NewDefaultService(repo repository) *defaultService {
-	return &defaultService{
+func NewDefaultService(repo repository) *service {
+	return &service{
 		repo: repo,
 	}
 }
 
-func (s *defaultService) Create(ctx context.Context) error {
+func (s *service) Create(ctx context.Context) error {
 	return nil
 }
 
-func (s *defaultService) GetByID(ctx context.Context, id int) (*GetResponse, error) {
+func (s *service) GetByID(ctx context.Context, id int) (*GetResponse, error) {
 	c, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return &GetResponse{}, err
@@ -56,7 +64,7 @@ func (s *defaultService) GetByID(ctx context.Context, id int) (*GetResponse, err
 	return getDTO, nil
 }
 
-func (s *defaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse, error) {
+func (s *service) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse, error) {
 	cs, err := s.repo.FindAllForUser(ctx, userID)
 	if err != nil {
 		return []*GetResponse{}, err
@@ -85,7 +93,7 @@ func (s *defaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetR
 	return dtos, nil
 }
 
-func (s *defaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.Page[GetResponse], error) {
+func (s *service) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.Page[GetResponse], error) {
 	cs, err := s.repo.FindForUser(ctx, userID, limit, offset)
 	if err != nil {
 		return &api.Page[GetResponse]{}, err

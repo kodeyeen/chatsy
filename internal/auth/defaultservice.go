@@ -2,10 +2,15 @@ package auth
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kodeyeen/chatsy/internal/user"
+)
+
+var (
+	ErrWrongCreds = errors.New("wrong credentials")
 )
 
 type userRepository interface {
