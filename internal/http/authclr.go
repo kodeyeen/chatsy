@@ -1,4 +1,4 @@
-package auth
+package http
 
 import (
 	"context"
@@ -7,32 +7,33 @@ import (
 	"time"
 
 	"github.com/kodeyeen/chatsy/internal/api"
+	"github.com/kodeyeen/chatsy/internal/auth"
 	"github.com/kodeyeen/chatsy/internal/user"
 )
 
-type service interface {
-	Register(ctx context.Context, regData *RegistrationRequest) (*user.GetResponse, error)
-	Login(ctx context.Context, creds *Credentials) (*LoginResult, error)
+type authService interface {
+	Register(ctx context.Context, regData *auth.RegistrationRequest) (*user.GetResponse, error)
+	Login(ctx context.Context, creds *auth.Credentials) (*auth.LoginResult, error)
 	GetUserByID(ctx context.Context, id int) (*user.GetResponse, error)
 	CreateTicket(ctx context.Context, userID int) (string, error)
 }
 
-type httpController struct {
-	service service
+type AuthController struct {
+	service authService
 }
 
-func NewHTTPController(svc service) *httpController {
-	return &httpController{
+func NewAuthController(svc authService) *AuthController {
+	return &AuthController{
 		service: svc,
 	}
 }
 
-func (c *httpController) Register(w http.ResponseWriter, r *http.Request) {
+func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
 
-	var regData RegistrationRequest
+	var regData auth.RegistrationRequest
 	err := json.NewDecoder(r.Body).Decode(&regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -55,8 +56,8 @@ func (c *httpController) Register(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userDTO)
 }
 
-func (c *httpController) Login(w http.ResponseWriter, r *http.Request) {
-	var creds Credentials
+func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
+	var creds auth.Credentials
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -88,7 +89,7 @@ func (c *httpController) Login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(loginResult.User)
 }
 
-func (c *httpController) Logout(w http.ResponseWriter, r *http.Request) {
+func (c *AuthController) Logout(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "accessToken",
 		Value:    "",
@@ -100,7 +101,7 @@ func (c *httpController) Logout(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func (c *httpController) Me(w http.ResponseWriter, r *http.Request) {
+func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
@@ -124,7 +125,7 @@ func (c *httpController) Me(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(userDTO)
 }
 
-func (c *httpController) CreateTicket(w http.ResponseWriter, r *http.Request) {
+func (c *AuthController) CreateTicket(w http.ResponseWriter, r *http.Request) {
 	headers := w.Header()
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")

@@ -1,4 +1,4 @@
-package auth
+package http
 
 import (
 	"context"
@@ -7,6 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kodeyeen/chatsy/internal/api"
+	"github.com/kodeyeen/chatsy/internal/auth"
 )
 
 func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFunc {
@@ -21,7 +22,7 @@ func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFun
 				return
 			}
 
-			token, err := jwt.ParseWithClaims(cookie.Value, &TokenClaims{}, func(token *jwt.Token) (any, error) {
+			token, err := jwt.ParseWithClaims(cookie.Value, &auth.TokenClaims{}, func(token *jwt.Token) (any, error) {
 				return []byte(secret), nil
 			})
 			if err != nil {
@@ -32,7 +33,7 @@ func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFun
 				return
 			}
 
-			claims, ok := token.Claims.(*TokenClaims)
+			claims, ok := token.Claims.(*auth.TokenClaims)
 			if !ok {
 				w.WriteHeader(http.StatusUnauthorized)
 				json.NewEncoder(w).Encode(api.ErrorResponse{
@@ -57,7 +58,7 @@ func NewCheckTicketMiddleware(secret string) func(http.HandlerFunc) http.Handler
 				return
 			}
 
-			token, err := jwt.ParseWithClaims(ticket, &TicketClaims{}, func(token *jwt.Token) (any, error) {
+			token, err := jwt.ParseWithClaims(ticket, &auth.TicketClaims{}, func(token *jwt.Token) (any, error) {
 				return []byte(secret), nil
 			})
 			if err != nil {
@@ -68,7 +69,7 @@ func NewCheckTicketMiddleware(secret string) func(http.HandlerFunc) http.Handler
 				return
 			}
 
-			claims, ok := token.Claims.(*TicketClaims)
+			claims, ok := token.Claims.(*auth.TicketClaims)
 			if !ok {
 				w.WriteHeader(http.StatusUnauthorized)
 				json.NewEncoder(w).Encode(api.ErrorResponse{

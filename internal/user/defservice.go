@@ -8,17 +8,17 @@ type repository interface {
 	FindByEmail(ctx context.Context, email string) (*User, error)
 }
 
-type service struct {
+type DefaultService struct {
 	repo repository
 }
 
-func NewDefaultService(repo repository) *service {
-	return &service{
+func NewDefaultService(repo repository) *DefaultService {
+	return &DefaultService{
 		repo: repo,
 	}
 }
 
-func (s *service) GetByID(ctx context.Context, id int) (*GetResponse, error) {
+func (s *DefaultService) GetByID(ctx context.Context, id int) (*GetResponse, error) {
 	u, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return &GetResponse{}, err

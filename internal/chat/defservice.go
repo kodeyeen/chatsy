@@ -15,21 +15,21 @@ type repository interface {
 	CountForUser(ctx context.Context, userID int) (int, error)
 }
 
-type service struct {
+type DefaultService struct {
 	repo repository
 }
 
-func NewDefaultService(repo repository) *service {
-	return &service{
+func NewDefaultService(repo repository) *DefaultService {
+	return &DefaultService{
 		repo: repo,
 	}
 }
 
-func (s *service) Create(ctx context.Context) error {
+func (s *DefaultService) Create(ctx context.Context) error {
 	return nil
 }
 
-func (s *service) GetByID(ctx context.Context, id int) (*GetResponse, error) {
+func (s *DefaultService) GetByID(ctx context.Context, id int) (*GetResponse, error) {
 	c, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return &GetResponse{}, err
@@ -64,7 +64,7 @@ func (s *service) GetByID(ctx context.Context, id int) (*GetResponse, error) {
 	return getDTO, nil
 }
 
-func (s *service) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse, error) {
+func (s *DefaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse, error) {
 	cs, err := s.repo.FindAllForUser(ctx, userID)
 	if err != nil {
 		return []*GetResponse{}, err
@@ -93,7 +93,7 @@ func (s *service) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse
 	return dtos, nil
 }
 
-func (s *service) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.Page[GetResponse], error) {
+func (s *DefaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.Page[GetResponse], error) {
 	cs, err := s.repo.FindForUser(ctx, userID, limit, offset)
 	if err != nil {
 		return &api.Page[GetResponse]{}, err

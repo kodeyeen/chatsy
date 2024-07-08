@@ -18,19 +18,19 @@ type userRepository interface {
 	FindByID(ctx context.Context, ID int) (*user.User, error)
 }
 
-type service struct {
+type DefaultService struct {
 	repo    repository
 	usrRepo userRepository
 }
 
-func NewDefaultService(repo repository, usrRepo userRepository) *service {
-	return &service{
+func NewDefaultService(repo repository, usrRepo userRepository) *DefaultService {
+	return &DefaultService{
 		repo:    repo,
 		usrRepo: usrRepo,
 	}
 }
 
-func (s *service) Create(ctx context.Context, createDTO *CreateDTO, senderID int) (*GetResponse, error) {
+func (s *DefaultService) Create(ctx context.Context, createDTO *CreateDTO, senderID int) (*GetResponse, error) {
 	sender, err := s.usrRepo.FindByID(ctx, senderID)
 	if err != nil {
 		return &GetResponse{}, err
@@ -68,7 +68,7 @@ func (s *service) Create(ctx context.Context, createDTO *CreateDTO, senderID int
 	return msgDTO, nil
 }
 
-func (s *service) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.Page[GetResponse], error) {
+func (s *DefaultService) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.Page[GetResponse], error) {
 	msgs, err := s.repo.FindForChat(ctx, chatID, limit, offset)
 	if err != nil {
 		log.Println("HERE 1", err)

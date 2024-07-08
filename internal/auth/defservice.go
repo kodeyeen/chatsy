@@ -19,7 +19,7 @@ type userRepository interface {
 	FindByEmail(ctx context.Context, email string) (*user.User, error)
 }
 
-type defaultService struct {
+type DefaultService struct {
 	userRepo  userRepository
 	secret    string
 	tokenTTL  time.Duration
@@ -31,8 +31,8 @@ func NewDefaultService(
 	tokenTTL time.Duration,
 	ticketTTL time.Duration,
 	userRepo userRepository,
-) *defaultService {
-	return &defaultService{
+) *DefaultService {
+	return &DefaultService{
 		secret:    secret,
 		tokenTTL:  tokenTTL,
 		ticketTTL: ticketTTL,
@@ -40,7 +40,7 @@ func NewDefaultService(
 	}
 }
 
-func (s *defaultService) Register(ctx context.Context, regData *RegistrationRequest) (*user.GetResponse, error) {
+func (s *DefaultService) Register(ctx context.Context, regData *RegistrationRequest) (*user.GetResponse, error) {
 	passwordHash, err := regData.Password.Hash()
 	if err != nil {
 		return &user.GetResponse{}, err
@@ -71,7 +71,7 @@ func (s *defaultService) Register(ctx context.Context, regData *RegistrationRequ
 	return userDTO, nil
 }
 
-func (s *defaultService) Login(ctx context.Context, creds *Credentials) (*LoginResult, error) {
+func (s *DefaultService) Login(ctx context.Context, creds *Credentials) (*LoginResult, error) {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 
@@ -113,7 +113,7 @@ func (s *defaultService) Login(ctx context.Context, creds *Credentials) (*LoginR
 	}, nil
 }
 
-func (s *defaultService) GetUserByID(ctx context.Context, id int) (*user.GetResponse, error) {
+func (s *DefaultService) GetUserByID(ctx context.Context, id int) (*user.GetResponse, error) {
 	usr, err := s.userRepo.FindByID(ctx, id)
 	if err != nil {
 		return &user.GetResponse{}, err
@@ -131,7 +131,7 @@ func (s *defaultService) GetUserByID(ctx context.Context, id int) (*user.GetResp
 	return &userDTO, nil
 }
 
-func (s *defaultService) CreateTicket(ctx context.Context, userID int) (string, error) {
+func (s *DefaultService) CreateTicket(ctx context.Context, userID int) (string, error) {
 	exp := time.Now().Add(s.ticketTTL)
 	claims := TicketClaims{
 		UserID: userID,
