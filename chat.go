@@ -1,17 +1,15 @@
-package chat
+package chatsy
 
-import "github.com/kodeyeen/chatsy/internal/message"
-
-type Type string
+type ChatType string
 
 const (
-	TypeDialog Type = "dialog"
-	TypeGroup  Type = "group"
+	ChatTypeDialog ChatType = "dialog"
+	ChatTypeGroup  ChatType = "group"
 )
 
 type Chat struct {
 	ID                      *int
-	Type                    *Type
+	Type                    *ChatType
 	Title                   *string
 	Description             *string
 	InviteHash              *string
@@ -21,5 +19,5 @@ type Chat struct {
 	IsJoined                *bool
 	ParticipantCount        *int
 	AreNotificationsEnabled *bool
-	LastMessage             *message.Message
+	LastMessage             *Message
 }

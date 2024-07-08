@@ -1,10 +1,13 @@
 package chat
 
-import "github.com/kodeyeen/chatsy/internal/message"
+import (
+	"github.com/kodeyeen/chatsy"
+	"github.com/kodeyeen/chatsy/internal/message"
+)
 
 type GetResponse struct {
 	ID                      *int                 `json:"id"`
-	Type                    *Type                `json:"type"`
+	Type                    *chatsy.ChatType     `json:"type"`
 	Title                   *string              `json:"title"`
 	Description             *string              `json:"description"`
 	InviteHash              *string              `json:"inviteHash"`

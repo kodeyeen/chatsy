@@ -4,18 +4,18 @@ import (
 	"context"
 	"log"
 
+	"github.com/kodeyeen/chatsy"
 	"github.com/kodeyeen/chatsy/internal/api"
-	"github.com/kodeyeen/chatsy/internal/user"
 )
 
 type repository interface {
-	Add(context.Context, *Message) error
-	FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*Message, error)
+	Add(context.Context, *chatsy.Message) error
+	FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*chatsy.Message, error)
 	CountForChat(ctx context.Context, chatID int) (int, error)
 }
 
 type userRepository interface {
-	FindByID(ctx context.Context, ID int) (*user.User, error)
+	FindByID(ctx context.Context, ID int) (*chatsy.User, error)
 }
 
 type DefaultService struct {
@@ -36,7 +36,7 @@ func (s *DefaultService) Create(ctx context.Context, createDTO *CreateDTO, sende
 		return &GetResponse{}, err
 	}
 
-	msg := &Message{
+	msg := &chatsy.Message{
 		ChatID:     createDTO.ChatID,
 		SenderID:   sender.ID,
 		SenderName: sender.Name,

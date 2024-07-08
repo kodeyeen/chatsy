@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 
+	"github.com/kodeyeen/chatsy"
 	"github.com/kodeyeen/chatsy/internal/user"
 
 	"github.com/jackc/pgerrcode"
@@ -28,7 +29,7 @@ func NewUserRepository(dbpool *pgxpool.Pool) *userRepository {
 	}
 }
 
-func (r *userRepository) Add(ctx context.Context, usr *user.User) error {
+func (r *userRepository) Add(ctx context.Context, usr *chatsy.User) error {
 	query := `
 		INSERT INTO users (first_name, last_name, username, email, password_hash)
 		VALUES (@first_name, @last_name, @username, @email, @password_hash)
@@ -61,7 +62,7 @@ func (r *userRepository) Add(ctx context.Context, usr *user.User) error {
 	return nil
 }
 
-func (r *userRepository) FindByID(ctx context.Context, ID int) (*user.User, error) {
+func (r *userRepository) FindByID(ctx context.Context, ID int) (*chatsy.User, error) {
 	query := `
 		SELECT
 			id,
@@ -79,7 +80,7 @@ func (r *userRepository) FindByID(ctx context.Context, ID int) (*user.User, erro
 		"id": ID,
 	}
 
-	var usr user.User
+	var usr chatsy.User
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&usr.ID,
 		&usr.FirstName,
@@ -91,13 +92,13 @@ func (r *userRepository) FindByID(ctx context.Context, ID int) (*user.User, erro
 		&usr.JoinedAt,
 	)
 	if err != nil {
-		return &user.User{}, err
+		return &chatsy.User{}, err
 	}
 
 	return &usr, nil
 }
 
-func (r *userRepository) FindByEmail(ctx context.Context, email string) (*user.User, error) {
+func (r *userRepository) FindByEmail(ctx context.Context, email string) (*chatsy.User, error) {
 	query := `
 		SELECT id, first_name, last_name, username, email, password_hash, joined_at
 		FROM users
@@ -108,12 +109,12 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*user.U
 	}
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
-	userDTO, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[user.GetResponse])
+	userDTO, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[user.Response])
 	if err != nil {
-		return &user.User{}, err
+		return &chatsy.User{}, err
 	}
 
-	usr := &user.User{
+	usr := &chatsy.User{
 		ID:           userDTO.ID,
 		FirstName:    userDTO.FirstName,
 		LastName:     userDTO.LastName,

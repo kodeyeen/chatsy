@@ -5,8 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kodeyeen/chatsy/internal/chat"
-	"github.com/kodeyeen/chatsy/internal/message"
+	"github.com/kodeyeen/chatsy"
 )
 
 type chatRepository struct {
@@ -19,7 +18,7 @@ func NewChatRepository(dbpool *pgxpool.Pool) *chatRepository {
 	}
 }
 
-func (r *chatRepository) Add(ctx context.Context, c *chat.Chat) error {
+func (r *chatRepository) Add(ctx context.Context, c *chatsy.Chat) error {
 	query := `
 		INSERT INTO
 			chats (type, title, invite_hash)
@@ -41,7 +40,7 @@ func (r *chatRepository) Add(ctx context.Context, c *chat.Chat) error {
 	return nil
 }
 
-func (r *chatRepository) FindByID(ctx context.Context, id int) (*chat.Chat, error) {
+func (r *chatRepository) FindByID(ctx context.Context, id int) (*chatsy.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -97,8 +96,8 @@ func (r *chatRepository) FindByID(ctx context.Context, id int) (*chat.Chat, erro
 		"id": id,
 	}
 
-	var cht chat.Chat
-	var lastMsg message.Message
+	var cht chatsy.Chat
+	var lastMsg chatsy.Message
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&cht.ID,
 		&cht.Type,
@@ -121,7 +120,7 @@ func (r *chatRepository) FindByID(ctx context.Context, id int) (*chat.Chat, erro
 		&lastMsg.IsViewed,
 	)
 	if err != nil {
-		return &chat.Chat{}, err
+		return &chatsy.Chat{}, err
 	}
 
 	if lastMsg.ID != nil {
@@ -131,7 +130,7 @@ func (r *chatRepository) FindByID(ctx context.Context, id int) (*chat.Chat, erro
 	return &cht, nil
 }
 
-func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*chat.Chat, error) {
+func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*chatsy.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -155,10 +154,10 @@ func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*cha
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var chats []*chat.Chat
+	var chats []*chatsy.Chat
 
 	for rows.Next() {
-		var cht chat.Chat
+		var cht chatsy.Chat
 
 		err := rows.Scan(
 			&cht.ID,
@@ -171,7 +170,7 @@ func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*cha
 			&cht.JoinByRequest,
 		)
 		if err != nil {
-			return []*chat.Chat{}, err
+			return []*chatsy.Chat{}, err
 		}
 
 		chats = append(chats, &cht)
@@ -180,7 +179,7 @@ func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*cha
 	return chats, nil
 }
 
-func (r *chatRepository) FindForUser(ctx context.Context, userID int, limit, offset int) ([]*chat.Chat, error) {
+func (r *chatRepository) FindForUser(ctx context.Context, userID int, limit, offset int) ([]*chatsy.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -253,11 +252,11 @@ func (r *chatRepository) FindForUser(ctx context.Context, userID int, limit, off
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var chats []*chat.Chat
+	var chats []*chatsy.Chat
 
 	for rows.Next() {
-		var cht chat.Chat
-		var lastMsg message.Message
+		var cht chatsy.Chat
+		var lastMsg chatsy.Message
 
 		err := rows.Scan(
 			&cht.ID,
@@ -284,7 +283,7 @@ func (r *chatRepository) FindForUser(ctx context.Context, userID int, limit, off
 			&lastMsg.IsViewed,
 		)
 		if err != nil {
-			return []*chat.Chat{}, err
+			return []*chatsy.Chat{}, err
 		}
 
 		if lastMsg.ID != nil {

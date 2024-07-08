@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/kodeyeen/chatsy"
 	"github.com/kodeyeen/chatsy/internal/user"
 )
 
@@ -14,9 +15,9 @@ var (
 )
 
 type userRepository interface {
-	Add(ctx context.Context, usr *user.User) error
-	FindByID(ctx context.Context, id int) (*user.User, error)
-	FindByEmail(ctx context.Context, email string) (*user.User, error)
+	Add(ctx context.Context, usr *chatsy.User) error
+	FindByID(ctx context.Context, id int) (*chatsy.User, error)
+	FindByEmail(ctx context.Context, email string) (*chatsy.User, error)
 }
 
 type DefaultService struct {
@@ -40,13 +41,13 @@ func NewDefaultService(
 	}
 }
 
-func (s *DefaultService) Register(ctx context.Context, regData *RegistrationRequest) (*user.GetResponse, error) {
+func (s *DefaultService) Register(ctx context.Context, regData *RegistrationRequest) (*user.Response, error) {
 	passwordHash, err := regData.Password.Hash()
 	if err != nil {
-		return &user.GetResponse{}, err
+		return &user.Response{}, err
 	}
 
-	usr := &user.User{
+	usr := &chatsy.User{
 		FirstName:    regData.FirstName,
 		LastName:     regData.LastName,
 		Username:     regData.Username,
@@ -56,10 +57,10 @@ func (s *DefaultService) Register(ctx context.Context, regData *RegistrationRequ
 
 	err = s.userRepo.Add(ctx, usr)
 	if err != nil {
-		return &user.GetResponse{}, err
+		return &user.Response{}, err
 	}
 
-	userDTO := &user.GetResponse{
+	userDTO := &user.Response{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -97,7 +98,7 @@ func (s *DefaultService) Login(ctx context.Context, creds *Credentials) (*LoginR
 		return &LoginResult{}, err
 	}
 
-	userDTO := user.GetResponse{
+	userDTO := user.Response{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -113,13 +114,13 @@ func (s *DefaultService) Login(ctx context.Context, creds *Credentials) (*LoginR
 	}, nil
 }
 
-func (s *DefaultService) GetUserByID(ctx context.Context, id int) (*user.GetResponse, error) {
+func (s *DefaultService) GetUserByID(ctx context.Context, id int) (*user.Response, error) {
 	usr, err := s.userRepo.FindByID(ctx, id)
 	if err != nil {
-		return &user.GetResponse{}, err
+		return &user.Response{}, err
 	}
 
-	userDTO := user.GetResponse{
+	userDTO := user.Response{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,

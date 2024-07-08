@@ -5,7 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kodeyeen/chatsy/internal/message"
+	"github.com/kodeyeen/chatsy"
 )
 
 type messageRepository struct {
@@ -18,7 +18,7 @@ func NewMessageRepository(dbpool *pgxpool.Pool) *messageRepository {
 	}
 }
 
-func (r *messageRepository) Add(ctx context.Context, msg *message.Message) error {
+func (r *messageRepository) Add(ctx context.Context, msg *chatsy.Message) error {
 	query := `
 		INSERT INTO
 			messages (chat_id, sender_id, original_id, parent_id, text)
@@ -42,7 +42,7 @@ func (r *messageRepository) Add(ctx context.Context, msg *message.Message) error
 	return nil
 }
 
-func (r *messageRepository) FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*message.Message, error) {
+func (r *messageRepository) FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*chatsy.Message, error) {
 	query := `
 		SELECT
 			m.id,
@@ -93,10 +93,10 @@ func (r *messageRepository) FindForChat(ctx context.Context, chatID int, limit, 
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var msgs []*message.Message
+	var msgs []*chatsy.Message
 
 	for rows.Next() {
-		var msg message.Message
+		var msg chatsy.Message
 
 		err := rows.Scan(
 			&msg.ID,
@@ -113,7 +113,7 @@ func (r *messageRepository) FindForChat(ctx context.Context, chatID int, limit, 
 			&msg.IsViewed,
 		)
 		if err != nil {
-			return []*message.Message{}, err
+			return []*chatsy.Message{}, err
 		}
 
 		msgs = append(msgs, &msg)

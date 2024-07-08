@@ -1,11 +1,15 @@
 package user
 
-import "context"
+import (
+	"context"
+
+	"github.com/kodeyeen/chatsy"
+)
 
 type repository interface {
-	Add(ctx context.Context, u *User) error
-	FindByID(ctx context.Context, id int) (*User, error)
-	FindByEmail(ctx context.Context, email string) (*User, error)
+	Add(ctx context.Context, u *chatsy.User) error
+	FindByID(ctx context.Context, id int) (*chatsy.User, error)
+	FindByEmail(ctx context.Context, email string) (*chatsy.User, error)
 }
 
 type DefaultService struct {
@@ -18,13 +22,13 @@ func NewDefaultService(repo repository) *DefaultService {
 	}
 }
 
-func (s *DefaultService) GetByID(ctx context.Context, id int) (*GetResponse, error) {
+func (s *DefaultService) GetByID(ctx context.Context, id int) (*Response, error) {
 	u, err := s.repo.FindByID(ctx, id)
 	if err != nil {
-		return &GetResponse{}, err
+		return &Response{}, err
 	}
 
-	userDTO := GetResponse{
+	userDTO := Response{
 		ID:        u.ID,
 		Username:  u.Username,
 		FirstName: u.FirstName,

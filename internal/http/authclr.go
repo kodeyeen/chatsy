@@ -12,9 +12,9 @@ import (
 )
 
 type authService interface {
-	Register(ctx context.Context, regData *auth.RegistrationRequest) (*user.GetResponse, error)
+	Register(ctx context.Context, regData *auth.RegistrationRequest) (*user.Response, error)
 	Login(ctx context.Context, creds *auth.Credentials) (*auth.LoginResult, error)
-	GetUserByID(ctx context.Context, id int) (*user.GetResponse, error)
+	GetUserByID(ctx context.Context, id int) (*user.Response, error)
 	CreateTicket(ctx context.Context, userID int) (string, error)
 }
 
