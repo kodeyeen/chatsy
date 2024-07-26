@@ -9,10 +9,10 @@ import (
 	"github.com/kodeyeen/chatsy/internal/chat"
 	"github.com/kodeyeen/chatsy/internal/config"
 	"github.com/kodeyeen/chatsy/internal/database"
-	"github.com/kodeyeen/chatsy/internal/http"
+	"github.com/kodeyeen/chatsy/internal/database/postgres"
 	"github.com/kodeyeen/chatsy/internal/message"
-	"github.com/kodeyeen/chatsy/internal/postgres"
-	"github.com/kodeyeen/chatsy/internal/websocket"
+	"github.com/kodeyeen/chatsy/internal/transport/http"
+	"github.com/kodeyeen/chatsy/internal/transport/websocket"
 	"github.com/rs/cors"
 )
 

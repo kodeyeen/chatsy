@@ -8,17 +8,17 @@ import (
 	"github.com/kodeyeen/chatsy"
 )
 
-type chatRepository struct {
+type ChatRepository struct {
 	dbpool *pgxpool.Pool
 }
 
-func NewChatRepository(dbpool *pgxpool.Pool) *chatRepository {
-	return &chatRepository{
+func NewChatRepository(dbpool *pgxpool.Pool) *ChatRepository {
+	return &ChatRepository{
 		dbpool: dbpool,
 	}
 }
 
-func (r *chatRepository) Add(ctx context.Context, c *chatsy.Chat) error {
+func (r *ChatRepository) Add(ctx context.Context, c *chatsy.Chat) error {
 	query := `
 		INSERT INTO
 			chats (type, title, invite_hash)
@@ -40,7 +40,7 @@ func (r *chatRepository) Add(ctx context.Context, c *chatsy.Chat) error {
 	return nil
 }
 
-func (r *chatRepository) FindByID(ctx context.Context, id int) (*chatsy.Chat, error) {
+func (r *ChatRepository) FindByID(ctx context.Context, id int) (*chatsy.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -130,7 +130,7 @@ func (r *chatRepository) FindByID(ctx context.Context, id int) (*chatsy.Chat, er
 	return &cht, nil
 }
 
-func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*chatsy.Chat, error) {
+func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*chatsy.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -179,7 +179,7 @@ func (r *chatRepository) FindAllForUser(ctx context.Context, userID int) ([]*cha
 	return chats, nil
 }
 
-func (r *chatRepository) FindForUser(ctx context.Context, userID int, limit, offset int) ([]*chatsy.Chat, error) {
+func (r *ChatRepository) FindForUser(ctx context.Context, userID int, limit, offset int) ([]*chatsy.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -296,7 +296,7 @@ func (r *chatRepository) FindForUser(ctx context.Context, userID int, limit, off
 	return chats, nil
 }
 
-func (r *chatRepository) CountForUser(ctx context.Context, userID int) (int, error) {
+func (r *ChatRepository) CountForUser(ctx context.Context, userID int) (int, error) {
 	query := `
 		SELECT
 			COUNT(*)

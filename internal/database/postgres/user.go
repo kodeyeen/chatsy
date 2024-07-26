@@ -19,17 +19,17 @@ var (
 	ErrNotFound              = errors.New("user not found")
 )
 
-type userRepository struct {
+type UserRepository struct {
 	dbpool *pgxpool.Pool
 }
 
-func NewUserRepository(dbpool *pgxpool.Pool) *userRepository {
-	return &userRepository{
+func NewUserRepository(dbpool *pgxpool.Pool) *UserRepository {
+	return &UserRepository{
 		dbpool: dbpool,
 	}
 }
 
-func (r *userRepository) Add(ctx context.Context, usr *chatsy.User) error {
+func (r *UserRepository) Add(ctx context.Context, usr *chatsy.User) error {
 	query := `
 		INSERT INTO users (first_name, last_name, username, email, password_hash)
 		VALUES (@first_name, @last_name, @username, @email, @password_hash)
@@ -62,7 +62,7 @@ func (r *userRepository) Add(ctx context.Context, usr *chatsy.User) error {
 	return nil
 }
 
-func (r *userRepository) FindByID(ctx context.Context, ID int) (*chatsy.User, error) {
+func (r *UserRepository) FindByID(ctx context.Context, ID int) (*chatsy.User, error) {
 	query := `
 		SELECT
 			id,
@@ -98,7 +98,7 @@ func (r *userRepository) FindByID(ctx context.Context, ID int) (*chatsy.User, er
 	return &usr, nil
 }
 
-func (r *userRepository) FindByEmail(ctx context.Context, email string) (*chatsy.User, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*chatsy.User, error) {
 	query := `
 		SELECT id, first_name, last_name, username, email, password_hash, joined_at
 		FROM users

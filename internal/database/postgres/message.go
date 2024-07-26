@@ -8,17 +8,17 @@ import (
 	"github.com/kodeyeen/chatsy"
 )
 
-type messageRepository struct {
+type MessageRepository struct {
 	dbpool *pgxpool.Pool
 }
 
-func NewMessageRepository(dbpool *pgxpool.Pool) *messageRepository {
-	return &messageRepository{
+func NewMessageRepository(dbpool *pgxpool.Pool) *MessageRepository {
+	return &MessageRepository{
 		dbpool: dbpool,
 	}
 }
 
-func (r *messageRepository) Add(ctx context.Context, msg *chatsy.Message) error {
+func (r *MessageRepository) Add(ctx context.Context, msg *chatsy.Message) error {
 	query := `
 		INSERT INTO
 			messages (chat_id, sender_id, original_id, parent_id, text)
@@ -42,7 +42,7 @@ func (r *messageRepository) Add(ctx context.Context, msg *chatsy.Message) error 
 	return nil
 }
 
-func (r *messageRepository) FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*chatsy.Message, error) {
+func (r *MessageRepository) FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*chatsy.Message, error) {
 	query := `
 		SELECT
 			m.id,
@@ -122,7 +122,7 @@ func (r *messageRepository) FindForChat(ctx context.Context, chatID int, limit, 
 	return msgs, nil
 }
 
-func (r *messageRepository) CountForChat(ctx context.Context, chatID int) (int, error) {
+func (r *MessageRepository) CountForChat(ctx context.Context, chatID int) (int, error) {
 	query := `
 		SELECT
 			COUNT(*)
