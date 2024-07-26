@@ -8,7 +8,7 @@ import (
 	"github.com/kodeyeen/chatsy/message"
 )
 
-type repository interface {
+type Repository interface {
 	Add(context.Context, *chatsy.Chat) error
 	FindByID(context.Context, int) (*chatsy.Chat, error)
 	FindForUser(ctx context.Context, userID int, limit, offset int) ([]*chatsy.Chat, error)
@@ -17,12 +17,12 @@ type repository interface {
 }
 
 type Service struct {
-	chats repository
+	chats Repository
 }
 
-func NewService(repo repository) *Service {
+func NewService(chats Repository) *Service {
 	return &Service{
-		chats: repo,
+		chats: chats,
 	}
 }
 

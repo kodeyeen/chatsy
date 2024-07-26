@@ -7,22 +7,22 @@ import (
 	"github.com/kodeyeen/chatsy/api"
 )
 
-type repository interface {
+type Repository interface {
 	Add(context.Context, *chatsy.Message) error
 	FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*chatsy.Message, error)
 	CountForChat(ctx context.Context, chatID int) (int, error)
 }
 
-type userRepository interface {
+type UserRepository interface {
 	FindByID(ctx context.Context, ID int) (*chatsy.User, error)
 }
 
 type Service struct {
-	messages repository
-	users    userRepository
+	messages Repository
+	users    UserRepository
 }
 
-func NewService(messages repository, users userRepository) *Service {
+func NewService(messages Repository, users UserRepository) *Service {
 	return &Service{
 		messages: messages,
 		users:    users,

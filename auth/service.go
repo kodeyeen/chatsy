@@ -14,14 +14,14 @@ var (
 	ErrWrongCreds = errors.New("wrong credentials")
 )
 
-type userRepository interface {
+type UserRepository interface {
 	Add(ctx context.Context, usr *chatsy.User) error
 	FindByID(ctx context.Context, id int) (*chatsy.User, error)
 	FindByEmail(ctx context.Context, email string) (*chatsy.User, error)
 }
 
 type Service struct {
-	users     userRepository
+	users     UserRepository
 	secret    string
 	tokenTTL  time.Duration
 	ticketTTL time.Duration
@@ -31,7 +31,7 @@ func NewService(
 	secret string,
 	tokenTTL time.Duration,
 	ticketTTL time.Duration,
-	users userRepository,
+	users UserRepository,
 ) *Service {
 	return &Service{
 		secret:    secret,

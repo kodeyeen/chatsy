@@ -6,17 +6,17 @@ import (
 	"github.com/kodeyeen/chatsy"
 )
 
-type repository interface {
+type Repository interface {
 	Add(ctx context.Context, u *chatsy.User) error
 	FindByID(ctx context.Context, id int) (*chatsy.User, error)
 	FindByEmail(ctx context.Context, email string) (*chatsy.User, error)
 }
 
 type Service struct {
-	users repository
+	users Repository
 }
 
-func NewService(users repository) *Service {
+func NewService(users Repository) *Service {
 	return &Service{
 		users: users,
 	}
