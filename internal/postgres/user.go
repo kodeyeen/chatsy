@@ -109,7 +109,7 @@ func (r *userRepository) FindByEmail(ctx context.Context, email string) (*chatsy
 	}
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
-	userDTO, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[user.Response])
+	userDTO, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[user.GetResponse])
 	if err != nil {
 		return &chatsy.User{}, err
 	}

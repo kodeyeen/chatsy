@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/internal/api"
-	"github.com/kodeyeen/chatsy/internal/message"
+	"github.com/kodeyeen/chatsy/api"
+	"github.com/kodeyeen/chatsy/message"
 )
 
 type repository interface {
@@ -16,24 +16,24 @@ type repository interface {
 	CountForUser(ctx context.Context, userID int) (int, error)
 }
 
-type DefaultService struct {
-	repo repository
+type Service struct {
+	chats repository
 }
 
-func NewDefaultService(repo repository) *DefaultService {
-	return &DefaultService{
-		repo: repo,
+func NewService(repo repository) *Service {
+	return &Service{
+		chats: repo,
 	}
 }
 
-func (s *DefaultService) Create(ctx context.Context) error {
+func (s *Service) Create(ctx context.Context) error {
 	return nil
 }
 
-func (s *DefaultService) GetByID(ctx context.Context, id int) (*GetResponse, error) {
-	c, err := s.repo.FindByID(ctx, id)
+func (s *Service) GetByID(ctx context.Context, id int) (*GetResponse, error) {
+	c, err := s.chats.FindByID(ctx, id)
 	if err != nil {
-		return &GetResponse{}, err
+		return nil, err
 	}
 
 	getDTO := &GetResponse{
@@ -65,16 +65,16 @@ func (s *DefaultService) GetByID(ctx context.Context, id int) (*GetResponse, err
 	return getDTO, nil
 }
 
-func (s *DefaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse, error) {
-	cs, err := s.repo.FindAllForUser(ctx, userID)
+func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*GetResponse, error) {
+	cs, err := s.chats.FindAllForUser(ctx, userID)
 	if err != nil {
-		return []*GetResponse{}, err
+		return nil, err
 	}
 
-	dtos := make([]*GetResponse, 0, len(cs))
+	resp := make([]*GetResponse, 0, len(cs))
 
 	for _, c := range cs {
-		getDTO := &GetResponse{
+		resp = append(resp, &GetResponse{
 			ID:                      c.ID,
 			Type:                    c.Type,
 			Title:                   c.Title,
@@ -86,29 +86,27 @@ func (s *DefaultService) GetAllForUser(ctx context.Context, userID int) ([]*GetR
 			ParticipantCount:        c.ParticipantCount,
 			AreNotificationsEnabled: c.AreNotificationsEnabled,
 			JoinByRequest:           c.JoinByRequest,
-		}
-
-		dtos = append(dtos, getDTO)
+		})
 	}
 
-	return dtos, nil
+	return resp, nil
 }
 
-func (s *DefaultService) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.Page[GetResponse], error) {
-	cs, err := s.repo.FindForUser(ctx, userID, limit, offset)
+func (s *Service) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*GetResponse], error) {
+	cs, err := s.chats.FindForUser(ctx, userID, limit, offset)
 	if err != nil {
-		return &api.Page[GetResponse]{}, err
+		return nil, err
 	}
 
-	cnt, err := s.repo.CountForUser(ctx, userID)
+	cnt, err := s.chats.CountForUser(ctx, userID)
 	if err != nil {
-		return &api.Page[GetResponse]{}, err
+		return nil, err
 	}
 
-	dtos := make([]*GetResponse, 0, len(cs))
+	items := make([]*GetResponse, 0, len(cs))
 
 	for _, c := range cs {
-		getDTO := &GetResponse{
+		item := &GetResponse{
 			ID:                      c.ID,
 			Type:                    c.Type,
 			Title:                   c.Title,
@@ -123,7 +121,7 @@ func (s *DefaultService) GetForUser(ctx context.Context, userID int, limit, offs
 		}
 
 		if c.LastMessage != nil {
-			getDTO.LastMessage = &message.GetResponse{
+			item.LastMessage = &message.GetResponse{
 				ID:         c.LastMessage.ID,
 				ChatID:     c.LastMessage.ChatID,
 				SenderID:   c.LastMessage.SenderID,
@@ -137,15 +135,15 @@ func (s *DefaultService) GetForUser(ctx context.Context, userID int, limit, offs
 			}
 		}
 
-		dtos = append(dtos, getDTO)
+		items = append(items, item)
 	}
 
-	page := &api.Page[GetResponse]{
-		Items:  dtos,
+	resp := &api.PageResponse[*GetResponse]{
+		Items:  items,
 		Count:  cnt,
 		Limit:  limit,
 		Offset: offset,
 	}
 
-	return page, nil
+	return resp, nil
 }

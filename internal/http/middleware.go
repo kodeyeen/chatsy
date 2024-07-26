@@ -6,8 +6,8 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/internal/api"
-	"github.com/kodeyeen/chatsy/internal/auth"
+	"github.com/kodeyeen/chatsy/api"
+	"github.com/kodeyeen/chatsy/auth"
 )
 
 func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFunc {

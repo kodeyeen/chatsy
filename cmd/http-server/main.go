@@ -5,14 +5,15 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kodeyeen/chatsy/internal/auth"
-	"github.com/kodeyeen/chatsy/internal/chat"
+	"github.com/kodeyeen/chatsy/auth"
+	"github.com/kodeyeen/chatsy/chat"
 	"github.com/kodeyeen/chatsy/internal/config"
 	"github.com/kodeyeen/chatsy/internal/database"
 	"github.com/kodeyeen/chatsy/internal/http"
-	"github.com/kodeyeen/chatsy/internal/message"
 	"github.com/kodeyeen/chatsy/internal/postgres"
 	"github.com/kodeyeen/chatsy/internal/websocket"
+	"github.com/kodeyeen/chatsy/message"
+	"github.com/rs/cors"
 )
 
 func main() {
@@ -40,35 +41,35 @@ func main() {
 
 	userRepo := postgres.NewUserRepository(dbpool)
 
-	authSvc := auth.NewDefaultService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
-	_ = http.NewAuthController(authSvc)
+	authSvc := auth.NewService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
+	authClr := http.NewAuthController(authSvc)
 
 	chatRepo := postgres.NewChatRepository(dbpool)
-	chatSvc := chat.NewDefaultService(chatRepo)
+	chatSvc := chat.NewService(chatRepo)
 
 	msgRepo := postgres.NewMessageRepository(dbpool)
-	msgSvc := message.NewDefaultService(msgRepo, userRepo)
+	msgSvc := message.NewService(msgRepo, userRepo)
 
 	eventHandler := websocket.NewEventHandler(chatSvc, msgSvc)
-	_ = websocket.NewManager(eventHandler)
+	wsMgr := websocket.NewManager(eventHandler)
 
-	_ = http.NewCheckJWTMiddleware(cfg.Secret)
-	_ = http.NewCheckTicketMiddleware(cfg.Secret)
+	checkJWT := http.NewCheckJWTMiddleware(cfg.Secret)
+	checkTicket := http.NewCheckTicketMiddleware(cfg.Secret)
 
-	// serveMux := http.NewServeMux()
-	// serveMux.HandleFunc("/auth/register", authClr.Register)
-	// serveMux.HandleFunc("/auth/login", authClr.Login)
-	// serveMux.HandleFunc("/auth/logout", authClr.Logout)
-	// serveMux.HandleFunc("/auth/me", checkJWT(authClr.Me))
-	// serveMux.HandleFunc("/auth/ticket", checkJWT(authClr.CreateTicket))
-	// serveMux.HandleFunc("/ws", checkTicket(wsMng.ServeHTTP))
+	serveMux := http.NewServeMux()
+	serveMux.HandleFunc("/auth/register", authClr.Register)
+	serveMux.HandleFunc("/auth/login", authClr.Login)
+	serveMux.HandleFunc("/auth/logout", authClr.Logout)
+	serveMux.HandleFunc("/auth/me", checkJWT(authClr.Me))
+	serveMux.HandleFunc("/auth/ticket", checkJWT(authClr.CreateTicket))
+	serveMux.HandleFunc("/ws", checkTicket(wsMgr.ServeHTTP))
 
-	// c := cors.New(cors.Options{
-	// 	AllowedOrigins:   cfg.Cors.AllowedOrigins,
-	// 	AllowCredentials: true,
-	// 	Debug:            cfg.Cors.Debug,
-	// })
-	// handler := c.Handler(serveMux)
+	c := cors.New(cors.Options{
+		AllowedOrigins:   cfg.Cors.AllowedOrigins,
+		AllowCredentials: true,
+		Debug:            cfg.Cors.Debug,
+	})
+	_ = c.Handler(serveMux)
 
 	// server := &http.Server{
 	// 	Addr:         cfg.HTTPServer.Address,

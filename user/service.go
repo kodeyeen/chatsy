@@ -12,23 +12,23 @@ type repository interface {
 	FindByEmail(ctx context.Context, email string) (*chatsy.User, error)
 }
 
-type DefaultService struct {
-	repo repository
+type Service struct {
+	users repository
 }
 
-func NewDefaultService(repo repository) *DefaultService {
-	return &DefaultService{
-		repo: repo,
+func NewService(users repository) *Service {
+	return &Service{
+		users: users,
 	}
 }
 
-func (s *DefaultService) GetByID(ctx context.Context, id int) (*Response, error) {
-	u, err := s.repo.FindByID(ctx, id)
+func (s *Service) GetByID(ctx context.Context, id int) (*GetResponse, error) {
+	u, err := s.users.FindByID(ctx, id)
 	if err != nil {
-		return &Response{}, err
+		return nil, err
 	}
 
-	userDTO := Response{
+	resp := GetResponse{
 		ID:        u.ID,
 		Username:  u.Username,
 		FirstName: u.FirstName,
@@ -37,5 +37,5 @@ func (s *DefaultService) GetByID(ctx context.Context, id int) (*Response, error)
 		JoinedAt:  u.JoinedAt,
 	}
 
-	return &userDTO, nil
+	return &resp, nil
 }

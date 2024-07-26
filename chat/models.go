@@ -2,7 +2,7 @@ package chat
 
 import (
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/internal/message"
+	"github.com/kodeyeen/chatsy/message"
 )
 
 type GetResponse struct {

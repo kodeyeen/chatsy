@@ -2,10 +2,9 @@ package message
 
 import (
 	"context"
-	"log"
 
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/internal/api"
+	"github.com/kodeyeen/chatsy/api"
 )
 
 type repository interface {
@@ -18,22 +17,22 @@ type userRepository interface {
 	FindByID(ctx context.Context, ID int) (*chatsy.User, error)
 }
 
-type DefaultService struct {
-	repo    repository
-	usrRepo userRepository
+type Service struct {
+	messages repository
+	users    userRepository
 }
 
-func NewDefaultService(repo repository, usrRepo userRepository) *DefaultService {
-	return &DefaultService{
-		repo:    repo,
-		usrRepo: usrRepo,
+func NewService(messages repository, users userRepository) *Service {
+	return &Service{
+		messages: messages,
+		users:    users,
 	}
 }
 
-func (s *DefaultService) Create(ctx context.Context, createDTO *CreateDTO, senderID int) (*GetResponse, error) {
-	sender, err := s.usrRepo.FindByID(ctx, senderID)
+func (s *Service) Create(ctx context.Context, createDTO *CreateDTO, senderID int) (*GetResponse, error) {
+	sender, err := s.users.FindByID(ctx, senderID)
 	if err != nil {
-		return &GetResponse{}, err
+		return nil, err
 	}
 
 	msg := &chatsy.Message{
@@ -47,12 +46,12 @@ func (s *DefaultService) Create(ctx context.Context, createDTO *CreateDTO, sende
 		IsViewed:   new(bool),
 	}
 
-	err = s.repo.Add(ctx, msg)
+	err = s.messages.Add(ctx, msg)
 	if err != nil {
-		return &GetResponse{}, err
+		return nil, err
 	}
 
-	msgDTO := &GetResponse{
+	resp := &GetResponse{
 		ID:         msg.ID,
 		ChatID:     msg.ChatID,
 		SenderID:   msg.SenderID,
@@ -65,26 +64,24 @@ func (s *DefaultService) Create(ctx context.Context, createDTO *CreateDTO, sende
 		IsViewed:   msg.IsViewed,
 	}
 
-	return msgDTO, nil
+	return resp, nil
 }
 
-func (s *DefaultService) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.Page[GetResponse], error) {
-	msgs, err := s.repo.FindForChat(ctx, chatID, limit, offset)
+func (s *Service) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*GetResponse], error) {
+	msgs, err := s.messages.FindForChat(ctx, chatID, limit, offset)
 	if err != nil {
-		log.Println("HERE 1", err)
-		return &api.Page[GetResponse]{}, err
+		return nil, err
 	}
 
-	cnt, err := s.repo.CountForChat(ctx, chatID)
+	cnt, err := s.messages.CountForChat(ctx, chatID)
 	if err != nil {
-		log.Println("HERE 2", ctx)
-		return &api.Page[GetResponse]{}, err
+		return nil, err
 	}
 
-	dtos := make([]*GetResponse, 0, len(msgs))
+	items := make([]*GetResponse, 0, len(msgs))
 
 	for _, msg := range msgs {
-		getDTO := &GetResponse{
+		items = append(items, &GetResponse{
 			ID:               msg.ID,
 			ChatID:           msg.ChatID,
 			SenderID:         msg.SenderID,
@@ -97,17 +94,15 @@ func (s *DefaultService) GetForChat(ctx context.Context, chatID int, limit, offs
 			Text:             msg.Text,
 			SentAt:           msg.SentAt,
 			IsViewed:         msg.IsViewed,
-		}
-
-		dtos = append(dtos, getDTO)
+		})
 	}
 
-	page := &api.Page[GetResponse]{
-		Items:  dtos,
+	resp := &api.PageResponse[*GetResponse]{
+		Items:  items,
 		Count:  cnt,
 		Limit:  limit,
 		Offset: offset,
 	}
 
-	return page, nil
+	return resp, nil
 }

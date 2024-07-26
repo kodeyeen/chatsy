@@ -6,15 +6,15 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kodeyeen/chatsy/internal/api"
-	"github.com/kodeyeen/chatsy/internal/auth"
-	"github.com/kodeyeen/chatsy/internal/user"
+	"github.com/kodeyeen/chatsy/api"
+	"github.com/kodeyeen/chatsy/auth"
+	"github.com/kodeyeen/chatsy/user"
 )
 
 type authService interface {
-	Register(ctx context.Context, regData *auth.RegistrationRequest) (*user.Response, error)
-	Login(ctx context.Context, creds *auth.Credentials) (*auth.LoginResult, error)
-	GetUserByID(ctx context.Context, id int) (*user.Response, error)
+	Register(ctx context.Context, regData *auth.RegisterRequest) (*user.GetResponse, error)
+	Login(ctx context.Context, creds *auth.LoginRequest) (*auth.LoginResponse, error)
+	GetUserByID(ctx context.Context, id int) (*user.GetResponse, error)
 	CreateTicket(ctx context.Context, userID int) (string, error)
 }
 
@@ -33,7 +33,7 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
 
-	var regData auth.RegistrationRequest
+	var regData auth.RegisterRequest
 	err := json.NewDecoder(r.Body).Decode(&regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
@@ -57,7 +57,7 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
-	var creds auth.Credentials
+	var creds auth.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)

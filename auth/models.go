@@ -4,11 +4,11 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/internal/security"
-	"github.com/kodeyeen/chatsy/internal/user"
+	"github.com/kodeyeen/chatsy/security"
+	"github.com/kodeyeen/chatsy/user"
 )
 
-type RegistrationRequest struct {
+type RegisterRequest struct {
 	Username  *string            `json:"username"`
 	FirstName *string            `json:"firstName"`
 	LastName  *string            `json:"lastName"`
@@ -16,15 +16,15 @@ type RegistrationRequest struct {
 	Password  *security.Password `json:"password"`
 }
 
-type Credentials struct {
+type LoginRequest struct {
 	Email    *string            `json:"email"`
 	Password *security.Password `json:"password"`
 }
 
-type LoginResult struct {
+type LoginResponse struct {
 	AccessToken *string `json:"accessToken"`
 	Exp         *time.Time
-	User        *user.Response
+	User        *user.GetResponse
 }
 
 type TokenClaims struct {
