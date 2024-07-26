@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kodeyeen/chatsy/api"
-	"github.com/kodeyeen/chatsy/auth"
-	"github.com/kodeyeen/chatsy/user"
+	"github.com/kodeyeen/chatsy/internal/api"
+	"github.com/kodeyeen/chatsy/internal/auth"
+	"github.com/kodeyeen/chatsy/internal/user"
 )
 
 type authService interface {

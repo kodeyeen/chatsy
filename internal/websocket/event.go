@@ -4,9 +4,9 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/kodeyeen/chatsy/api"
-	"github.com/kodeyeen/chatsy/chat"
-	"github.com/kodeyeen/chatsy/message"
+	"github.com/kodeyeen/chatsy/internal/api"
+	"github.com/kodeyeen/chatsy/internal/chat"
+	"github.com/kodeyeen/chatsy/internal/message"
 )
 
 type EventType string

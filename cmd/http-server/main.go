@@ -5,14 +5,14 @@ import (
 	"log"
 
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kodeyeen/chatsy/auth"
-	"github.com/kodeyeen/chatsy/chat"
+	"github.com/kodeyeen/chatsy/internal/auth"
+	"github.com/kodeyeen/chatsy/internal/chat"
 	"github.com/kodeyeen/chatsy/internal/config"
 	"github.com/kodeyeen/chatsy/internal/database"
 	"github.com/kodeyeen/chatsy/internal/http"
+	"github.com/kodeyeen/chatsy/internal/message"
 	"github.com/kodeyeen/chatsy/internal/postgres"
 	"github.com/kodeyeen/chatsy/internal/websocket"
-	"github.com/kodeyeen/chatsy/message"
 	"github.com/rs/cors"
 )
 

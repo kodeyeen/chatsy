@@ -4,8 +4,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/security"
-	"github.com/kodeyeen/chatsy/user"
+	"github.com/kodeyeen/chatsy/internal/security"
+	"github.com/kodeyeen/chatsy/internal/user"
 )
 
 type RegisterRequest struct {

@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/user"
+	"github.com/kodeyeen/chatsy/internal/user"
 )
 
 var (

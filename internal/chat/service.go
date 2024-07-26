@@ -5,7 +5,7 @@ import (
 
 	"github.com/kodeyeen/chatsy"
 	"github.com/kodeyeen/chatsy/api"
-	"github.com/kodeyeen/chatsy/message"
+	"github.com/kodeyeen/chatsy/internal/message"
 )
 
 type Repository interface {
