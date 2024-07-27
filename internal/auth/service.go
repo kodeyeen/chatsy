@@ -42,7 +42,7 @@ func NewService(
 }
 
 func (s *Service) Register(ctx context.Context, regData *RegisterRequest) (*user.GetResponse, error) {
-	passwordHash, err := regData.Password.Hash()
+	passwordHash, err := Password(*regData.Password).Hash()
 	if err != nil {
 		return nil, err
 	}
@@ -81,7 +81,7 @@ func (s *Service) Login(ctx context.Context, creds *LoginRequest) (*LoginRespons
 		return nil, ErrWrongCreds
 	}
 
-	err = creds.Password.Matches(*usr.PasswordHash)
+	err = Password(*creds.Password).Matches(*usr.PasswordHash)
 	if err != nil {
 		return nil, ErrWrongCreds
 	}

@@ -8,16 +8,16 @@ import (
 )
 
 type RegisterRequest struct {
-	Username  *string   `json:"username"`
-	FirstName *string   `json:"firstName"`
-	LastName  *string   `json:"lastName"`
-	Email     *string   `json:"email"`
-	Password  *Password `json:"password"`
+	Username  *string `json:"username"`
+	FirstName *string `json:"firstName"`
+	LastName  *string `json:"lastName"`
+	Email     *string `json:"email"`
+	Password  *string `json:"password"`
 }
 
 type LoginRequest struct {
-	Email    *string   `json:"email"`
-	Password *Password `json:"password"`
+	Email    *string `json:"email"`
+	Password *string `json:"password"`
 }
 
 type LoginResponse struct {
