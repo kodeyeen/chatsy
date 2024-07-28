@@ -29,20 +29,20 @@ func NewService(messages Repository, users UserRepository) *Service {
 	}
 }
 
-func (s *Service) Create(ctx context.Context, createDTO *restapi.CreateMessageRequest, senderID int) (*restapi.GetMessageResponse, error) {
+func (s *Service) Create(ctx context.Context, req *restapi.CreateMessageRequest, senderID int) (*restapi.GetMessageResponse, error) {
 	sender, err := s.users.FindByID(ctx, senderID)
 	if err != nil {
 		return nil, err
 	}
 
 	msg := &chatsy.Message{
-		ChatID:     createDTO.ChatID,
+		ChatID:     req.ChatID,
 		SenderID:   sender.ID,
 		SenderName: sender.Name,
-		AuthorName: createDTO.AuthorName,
-		OriginalID: createDTO.OriginalID,
-		ParentID:   createDTO.ParentID,
-		Text:       createDTO.Text,
+		AuthorName: req.AuthorName,
+		OriginalID: req.OriginalID,
+		ParentID:   req.ParentID,
+		Text:       req.Text,
 		IsViewed:   new(bool),
 	}
 

@@ -41,7 +41,7 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDTO, err := c.service.Register(r.Context(), &regData)
+	userResp, err := c.service.Register(r.Context(), &regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(restapi.ErrorResponse{
@@ -51,7 +51,7 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(userDTO)
+	json.NewEncoder(w).Encode(userResp)
 }
 
 func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
@@ -111,7 +111,7 @@ func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userDTO, err := c.service.GetUserByID(ctx, userID)
+	userResp, err := c.service.GetUserByID(ctx, userID)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
 		// json.NewEncoder(w).Encode(restapi.ErrorResponse{
@@ -120,7 +120,7 @@ func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(userDTO)
+	json.NewEncoder(w).Encode(userResp)
 }
 
 func (c *AuthController) CreateTicket(w http.ResponseWriter, r *http.Request) {

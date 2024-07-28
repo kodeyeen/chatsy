@@ -35,7 +35,7 @@ func (s *Service) GetByID(ctx context.Context, id int) (*restapi.GetChatResponse
 		return nil, err
 	}
 
-	getDTO := &restapi.GetChatResponse{
+	resp := &restapi.GetChatResponse{
 		ID:              c.ID,
 		Type:            c.Type,
 		Title:           c.Title,
@@ -47,7 +47,7 @@ func (s *Service) GetByID(ctx context.Context, id int) (*restapi.GetChatResponse
 	}
 
 	if c.LastMessage != nil {
-		getDTO.LastMessage = &restapi.GetMessageResponse{
+		resp.LastMessage = &restapi.GetMessageResponse{
 			ID:         c.LastMessage.ID,
 			ChatID:     c.LastMessage.ChatID,
 			SenderID:   c.LastMessage.SenderID,
@@ -61,7 +61,7 @@ func (s *Service) GetByID(ctx context.Context, id int) (*restapi.GetChatResponse
 		}
 	}
 
-	return getDTO, nil
+	return resp, nil
 }
 
 func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*restapi.GetChatResponse, error) {
