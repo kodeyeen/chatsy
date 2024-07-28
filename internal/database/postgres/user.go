@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/kodeyeen/chatsy"
 	"github.com/kodeyeen/chatsy/internal/database"
+	"github.com/kodeyeen/chatsy/internal/domain"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -23,7 +23,7 @@ func NewUserRepository(dbpool *pgxpool.Pool) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Add(ctx context.Context, usr *chatsy.User) error {
+func (r *UserRepository) Add(ctx context.Context, usr *domain.User) error {
 	query := `
 		INSERT INTO users (first_name, last_name, username, email, password_hash)
 		VALUES (@first_name, @last_name, @username, @email, @password_hash)
@@ -56,7 +56,7 @@ func (r *UserRepository) Add(ctx context.Context, usr *chatsy.User) error {
 	return nil
 }
 
-func (r *UserRepository) FindByID(ctx context.Context, ID int) (*chatsy.User, error) {
+func (r *UserRepository) FindByID(ctx context.Context, ID int) (*domain.User, error) {
 	query := `
 		SELECT
 			id,
@@ -74,7 +74,7 @@ func (r *UserRepository) FindByID(ctx context.Context, ID int) (*chatsy.User, er
 		"id": ID,
 	}
 
-	var usr chatsy.User
+	var usr domain.User
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&usr.ID,
 		&usr.FirstName,
@@ -86,13 +86,13 @@ func (r *UserRepository) FindByID(ctx context.Context, ID int) (*chatsy.User, er
 		&usr.JoinedAt,
 	)
 	if err != nil {
-		return &chatsy.User{}, err
+		return &domain.User{}, err
 	}
 
 	return &usr, nil
 }
 
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*chatsy.User, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
 	query := `
 		SELECT id, first_name, last_name, username, email, password_hash, joined_at
 		FROM users
@@ -102,7 +102,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*chatsy
 		"email": email,
 	}
 
-	var usr chatsy.User
+	var usr domain.User
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&usr.ID,
 		&usr.FirstName,
@@ -114,7 +114,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*chatsy
 		&usr.JoinedAt,
 	)
 	if err != nil {
-		return &chatsy.User{}, err
+		return &domain.User{}, err
 	}
 
 	return &usr, nil

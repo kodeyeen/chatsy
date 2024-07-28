@@ -3,14 +3,14 @@ package user
 import (
 	"context"
 
-	"github.com/kodeyeen/chatsy"
+	"github.com/kodeyeen/chatsy/internal/domain"
 	"github.com/kodeyeen/chatsy/restapi/v1"
 )
 
 type Repository interface {
-	Add(ctx context.Context, u *chatsy.User) error
-	FindByID(ctx context.Context, id int) (*chatsy.User, error)
-	FindByEmail(ctx context.Context, email string) (*chatsy.User, error)
+	Add(ctx context.Context, u *domain.User) error
+	FindByID(ctx context.Context, id int) (*domain.User, error)
+	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 }
 
 type Service struct {

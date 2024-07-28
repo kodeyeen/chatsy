@@ -1,4 +1,4 @@
-package chatsy
+package domain
 
 type ChatType string
 

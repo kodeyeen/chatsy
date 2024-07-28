@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy"
+	"github.com/kodeyeen/chatsy/internal/domain"
 	"github.com/kodeyeen/chatsy/restapi/v1"
 )
 
@@ -15,9 +15,9 @@ var (
 )
 
 type UserRepository interface {
-	Add(ctx context.Context, usr *chatsy.User) error
-	FindByID(ctx context.Context, id int) (*chatsy.User, error)
-	FindByEmail(ctx context.Context, email string) (*chatsy.User, error)
+	Add(ctx context.Context, usr *domain.User) error
+	FindByID(ctx context.Context, id int) (*domain.User, error)
+	FindByEmail(ctx context.Context, email string) (*domain.User, error)
 }
 
 type Service struct {
@@ -47,7 +47,7 @@ func (s *Service) Register(ctx context.Context, regData *restapi.RegisterRequest
 		return nil, err
 	}
 
-	usr := &chatsy.User{
+	usr := &domain.User{
 		FirstName:    regData.FirstName,
 		LastName:     regData.LastName,
 		Username:     regData.Username,

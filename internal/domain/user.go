@@ -1,4 +1,4 @@
-package chatsy
+package domain
 
 import (
 	"time"
