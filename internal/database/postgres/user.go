@@ -5,17 +5,12 @@ import (
 	"errors"
 
 	"github.com/kodeyeen/chatsy"
+	"github.com/kodeyeen/chatsy/internal/database"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
-)
-
-var (
-	ErrUsernameAlreadyExists = errors.New("username already exists")
-	ErrEmailAlreadyExists    = errors.New("email already exists")
-	ErrNotFound              = errors.New("user not found")
 )
 
 type UserRepository struct {
@@ -48,9 +43,9 @@ func (r *UserRepository) Add(ctx context.Context, usr *chatsy.User) error {
 		if errors.As(err, &pgErr) {
 			if pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
 				if pgErr.ConstraintName == "users_username_key" {
-					return ErrUsernameAlreadyExists
+					return database.ErrUsernameAlreadyExists
 				} else if pgErr.ConstraintName == "users_email_key" {
-					return ErrEmailAlreadyExists
+					return database.ErrEmailAlreadyExists
 				}
 			}
 		}
