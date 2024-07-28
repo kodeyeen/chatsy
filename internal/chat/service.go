@@ -107,7 +107,7 @@ func (s *Service) GetForUser(ctx context.Context, userID int, limit, offset int)
 	for _, c := range cs {
 		item := &restapi.GetChatResponse{
 			ID:                      c.ID,
-			Type:                    c.Type,
+			Type:                    (*string)(c.Type),
 			Title:                   c.Title,
 			Description:             c.Description,
 			InviteHash:              c.InviteHash,
