@@ -1,12 +1,8 @@
 package restapi
 
-import (
-	"github.com/kodeyeen/chatsy"
-)
-
 type GetChatResponse struct {
 	ID                      *int                `json:"id"`
-	Type                    *chatsy.ChatType    `json:"type"`
+	Type                    *string             `json:"type"`
 	Title                   *string             `json:"title"`
 	Description             *string             `json:"description"`
 	InviteHash              *string             `json:"inviteHash"`
