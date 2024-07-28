@@ -37,7 +37,7 @@ func (s *Service) GetByID(ctx context.Context, id int) (*restapi.GetChatResponse
 
 	resp := &restapi.GetChatResponse{
 		ID:              c.ID,
-		Type:            c.Type,
+		Type:            (*string)(c.Type),
 		Title:           c.Title,
 		Description:     c.Description,
 		InviteHash:      c.InviteHash,
@@ -75,7 +75,7 @@ func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*restapi.Get
 	for _, c := range cs {
 		resp = append(resp, &restapi.GetChatResponse{
 			ID:                      c.ID,
-			Type:                    c.Type,
+			Type:                    (*string)(c.Type),
 			Title:                   c.Title,
 			Description:             c.Description,
 			InviteHash:              c.InviteHash,
