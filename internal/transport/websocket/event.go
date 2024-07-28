@@ -4,9 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/kodeyeen/chatsy/internal/api"
-	"github.com/kodeyeen/chatsy/internal/chat"
-	"github.com/kodeyeen/chatsy/internal/message"
+	"github.com/kodeyeen/chatsy/restapi"
 )
 
 type EventType string
@@ -34,7 +32,7 @@ type Event struct {
 type HandlerFunc func(event Event, cl *client, mng *Manager)
 
 type ConnectedEvent struct {
-	Chats api.PageResponse[*chat.GetResponse] `json:"chats"`
+	Chats restapi.PageResponse[*restapi.GetChatResponse] `json:"chats"`
 }
 
 type OpenChatEvent struct {
@@ -42,17 +40,17 @@ type OpenChatEvent struct {
 }
 
 type ChatOpenedEvent struct {
-	Messages api.PageResponse[*message.GetResponse] `json:"messages"`
+	Messages restapi.PageResponse[*restapi.GetMessageResponse] `json:"messages"`
 }
 
 type SendMessagesEvent struct {
-	ChatID   int                  `json:"chatId"`
-	Messages []*message.CreateDTO `json:"messages"`
+	ChatID   int                             `json:"chatId"`
+	Messages []*restapi.CreateMessageRequest `json:"messages"`
 }
 
 type NewMessagesEvent struct {
-	ChatID   int                    `json:"chatId"`
-	Messages []*message.GetResponse `json:"messages"`
+	ChatID   int                           `json:"chatId"`
+	Messages []*restapi.GetMessageResponse `json:"messages"`
 }
 
 type FetchMessagesEvent struct {
@@ -62,8 +60,8 @@ type FetchMessagesEvent struct {
 }
 
 type LoadMessagesEvent struct {
-	ChatID   int                                    `json:"chatId"`
-	Messages api.PageResponse[*message.GetResponse] `json:"messages"`
+	ChatID   int                                               `json:"chatId"`
+	Messages restapi.PageResponse[*restapi.GetMessageResponse] `json:"messages"`
 }
 
 //

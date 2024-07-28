@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/internal/api"
+	"github.com/kodeyeen/chatsy/restapi"
 )
 
 type Repository interface {
@@ -29,7 +29,7 @@ func NewService(messages Repository, users UserRepository) *Service {
 	}
 }
 
-func (s *Service) Create(ctx context.Context, createDTO *CreateDTO, senderID int) (*GetResponse, error) {
+func (s *Service) Create(ctx context.Context, createDTO *restapi.CreateMessageRequest, senderID int) (*restapi.GetMessageResponse, error) {
 	sender, err := s.users.FindByID(ctx, senderID)
 	if err != nil {
 		return nil, err
@@ -51,7 +51,7 @@ func (s *Service) Create(ctx context.Context, createDTO *CreateDTO, senderID int
 		return nil, err
 	}
 
-	resp := &GetResponse{
+	resp := &restapi.GetMessageResponse{
 		ID:         msg.ID,
 		ChatID:     msg.ChatID,
 		SenderID:   msg.SenderID,
@@ -67,7 +67,7 @@ func (s *Service) Create(ctx context.Context, createDTO *CreateDTO, senderID int
 	return resp, nil
 }
 
-func (s *Service) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*GetResponse], error) {
+func (s *Service) GetForChat(ctx context.Context, chatID int, limit, offset int) (*restapi.PageResponse[*restapi.GetMessageResponse], error) {
 	msgs, err := s.messages.FindForChat(ctx, chatID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -78,10 +78,10 @@ func (s *Service) GetForChat(ctx context.Context, chatID int, limit, offset int)
 		return nil, err
 	}
 
-	items := make([]*GetResponse, 0, len(msgs))
+	items := make([]*restapi.GetMessageResponse, 0, len(msgs))
 
 	for _, msg := range msgs {
-		items = append(items, &GetResponse{
+		items = append(items, &restapi.GetMessageResponse{
 			ID:               msg.ID,
 			ChatID:           msg.ChatID,
 			SenderID:         msg.SenderID,
@@ -97,7 +97,7 @@ func (s *Service) GetForChat(ctx context.Context, chatID int, limit, offset int)
 		})
 	}
 
-	resp := &api.PageResponse[*GetResponse]{
+	resp := &restapi.PageResponse[*restapi.GetMessageResponse]{
 		Items:  items,
 		Count:  cnt,
 		Limit:  limit,

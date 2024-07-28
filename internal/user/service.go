@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/kodeyeen/chatsy"
+	"github.com/kodeyeen/chatsy/restapi"
 )
 
 type Repository interface {
@@ -22,13 +23,13 @@ func NewService(users Repository) *Service {
 	}
 }
 
-func (s *Service) GetByID(ctx context.Context, id int) (*GetResponse, error) {
+func (s *Service) GetByID(ctx context.Context, id int) (*restapi.GetUserResponse, error) {
 	u, err := s.users.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := GetResponse{
+	resp := restapi.GetUserResponse{
 		ID:        u.ID,
 		Username:  u.Username,
 		FirstName: u.FirstName,

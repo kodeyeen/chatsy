@@ -7,7 +7,7 @@ import (
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/internal/user"
+	"github.com/kodeyeen/chatsy/restapi"
 )
 
 var (
@@ -41,7 +41,7 @@ func NewService(
 	}
 }
 
-func (s *Service) Register(ctx context.Context, regData *RegisterRequest) (*user.GetResponse, error) {
+func (s *Service) Register(ctx context.Context, regData *restapi.RegisterRequest) (*restapi.GetUserResponse, error) {
 	passwordHash, err := Password(*regData.Password).Hash()
 	if err != nil {
 		return nil, err
@@ -60,7 +60,7 @@ func (s *Service) Register(ctx context.Context, regData *RegisterRequest) (*user
 		return nil, err
 	}
 
-	resp := &user.GetResponse{
+	resp := &restapi.GetUserResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -72,7 +72,7 @@ func (s *Service) Register(ctx context.Context, regData *RegisterRequest) (*user
 	return resp, nil
 }
 
-func (s *Service) Login(ctx context.Context, creds *LoginRequest) (*LoginResponse, error) {
+func (s *Service) Login(ctx context.Context, creds *restapi.LoginRequest) (*restapi.LoginResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 
@@ -87,7 +87,7 @@ func (s *Service) Login(ctx context.Context, creds *LoginRequest) (*LoginRespons
 	}
 
 	exp := time.Now().Add(s.tokenTTL)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, TokenClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, restapi.TokenClaims{
 		UserID:    *usr.ID,
 		UserEmail: *usr.Email,
 		Exp:       exp.Unix(),
@@ -98,7 +98,7 @@ func (s *Service) Login(ctx context.Context, creds *LoginRequest) (*LoginRespons
 		return nil, err
 	}
 
-	usrResp := user.GetResponse{
+	usrResp := restapi.GetUserResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -107,20 +107,20 @@ func (s *Service) Login(ctx context.Context, creds *LoginRequest) (*LoginRespons
 		JoinedAt:  usr.JoinedAt,
 	}
 
-	return &LoginResponse{
+	return &restapi.LoginResponse{
 		AccessToken: &tokenString,
 		Exp:         &exp,
 		User:        &usrResp,
 	}, nil
 }
 
-func (s *Service) GetUserByID(ctx context.Context, id int) (*user.GetResponse, error) {
+func (s *Service) GetUserByID(ctx context.Context, id int) (*restapi.GetUserResponse, error) {
 	usr, err := s.users.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := user.GetResponse{
+	resp := restapi.GetUserResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -134,7 +134,7 @@ func (s *Service) GetUserByID(ctx context.Context, id int) (*user.GetResponse, e
 
 func (s *Service) CreateTicket(ctx context.Context, userID int) (string, error) {
 	exp := time.Now().Add(s.ticketTTL)
-	claims := TicketClaims{
+	claims := restapi.TicketClaims{
 		UserID: userID,
 		Exp:    exp.Unix(),
 	}

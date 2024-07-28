@@ -1,10 +1,9 @@
-package auth
+package restapi
 
 import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/internal/user"
 )
 
 type RegisterRequest struct {
@@ -23,7 +22,7 @@ type LoginRequest struct {
 type LoginResponse struct {
 	AccessToken *string `json:"accessToken"`
 	Exp         *time.Time
-	User        *user.GetResponse
+	User        *GetUserResponse
 }
 
 type TokenClaims struct {

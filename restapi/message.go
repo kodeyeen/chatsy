@@ -1,10 +1,8 @@
-package message
+package restapi
 
-import (
-	"time"
-)
+import "time"
 
-type GetResponse struct {
+type GetMessageResponse struct {
 	ID               *int       `json:"id"`
 	ChatID           *int       `json:"chatId"`
 	SenderID         *int       `json:"senderId"`
@@ -19,7 +17,7 @@ type GetResponse struct {
 	IsViewed         *bool      `json:"isViewed"`
 }
 
-type CreateDTO struct {
+type CreateMessageRequest struct {
 	ChatID     *int    `json:"chatId"`
 	ParentID   *int    `json:"parentId"`
 	OriginalID *int    `json:"originalId"`

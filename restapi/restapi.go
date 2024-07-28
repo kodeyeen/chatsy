@@ -1,4 +1,4 @@
-package api
+package restapi
 
 type ErrorResponse struct {
 	Message string `json:"message"`
