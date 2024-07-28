@@ -5,7 +5,6 @@ import (
 	"errors"
 
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/internal/user"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -108,21 +107,20 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*chatsy
 		"email": email,
 	}
 
-	rows, _ := r.dbpool.Query(ctx, query, args)
-	userDTO, err := pgx.CollectOneRow(rows, pgx.RowToAddrOfStructByName[user.GetResponse])
+	var usr chatsy.User
+	err := r.dbpool.QueryRow(ctx, query, args).Scan(
+		&usr.ID,
+		&usr.FirstName,
+		&usr.LastName,
+		&usr.Name,
+		&usr.Username,
+		&usr.Email,
+		&usr.PasswordHash,
+		&usr.JoinedAt,
+	)
 	if err != nil {
 		return &chatsy.User{}, err
 	}
 
-	usr := &chatsy.User{
-		ID:           userDTO.ID,
-		FirstName:    userDTO.FirstName,
-		LastName:     userDTO.LastName,
-		Username:     userDTO.Username,
-		Email:        userDTO.Email,
-		PasswordHash: userDTO.PasswordHash,
-		JoinedAt:     userDTO.JoinedAt,
-	}
-
-	return usr, nil
+	return &usr, nil
 }
