@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"github.com/kodeyeen/chatsy"
-	"github.com/kodeyeen/chatsy/restapi"
+	"github.com/kodeyeen/chatsy/restapi/v1"
 )
 
 type Repository interface {

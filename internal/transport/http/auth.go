@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kodeyeen/chatsy/restapi"
+	"github.com/kodeyeen/chatsy/restapi/v1"
 )
 
 type authService interface {

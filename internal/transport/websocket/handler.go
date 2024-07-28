@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kodeyeen/chatsy/restapi"
+	"github.com/kodeyeen/chatsy/restapi/v1"
 )
 
 type chatService interface {

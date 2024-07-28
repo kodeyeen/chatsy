@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/kodeyeen/chatsy/restapi"
+	"github.com/kodeyeen/chatsy/restapi/v1"
 )
 
 type EventType string
