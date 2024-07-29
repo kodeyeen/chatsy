@@ -6,13 +6,13 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/kodeyeen/chatsy/restapi/v1"
+	"github.com/kodeyeen/chatsy/api/v1"
 )
 
 type authService interface {
-	Register(ctx context.Context, regData *restapi.RegisterRequest) (*restapi.GetUserResponse, error)
-	Login(ctx context.Context, creds *restapi.LoginRequest) (*restapi.LoginResponse, error)
-	GetUserByID(ctx context.Context, id int) (*restapi.GetUserResponse, error)
+	Register(ctx context.Context, regData *api.RegisterRequest) (*api.GetUserResponse, error)
+	Login(ctx context.Context, creds *api.LoginRequest) (*api.LoginResponse, error)
+	GetUserByID(ctx context.Context, id int) (*api.GetUserResponse, error)
 	CreateTicket(ctx context.Context, userID int) (string, error)
 }
 
@@ -31,11 +31,11 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	headers.Set("Content-Type", "application/json; charset=utf-8")
 	headers.Set("X-Content-Type-Options", "nosniff")
 
-	var regData restapi.RegisterRequest
+	var regData api.RegisterRequest
 	err := json.NewDecoder(r.Body).Decode(&regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(restapi.ErrorResponse{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: "invalid input data",
 		})
 		return
@@ -44,7 +44,7 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 	userResp, err := c.service.Register(r.Context(), &regData)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(restapi.ErrorResponse{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: err.Error(),
 		})
 		return
@@ -55,11 +55,11 @@ func (c *AuthController) Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
-	var creds restapi.LoginRequest
+	var creds api.LoginRequest
 	err := json.NewDecoder(r.Body).Decode(&creds)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(restapi.ErrorResponse{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: "invalid input data",
 		})
 		return
@@ -68,7 +68,7 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 	loginResult, err := c.service.Login(r.Context(), &creds)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		json.NewEncoder(w).Encode(restapi.ErrorResponse{
+		json.NewEncoder(w).Encode(api.ErrorResponse{
 			Message: "wrong credentials",
 		})
 		return
@@ -114,7 +114,7 @@ func (c *AuthController) Me(w http.ResponseWriter, r *http.Request) {
 	userResp, err := c.service.GetUserByID(ctx, userID)
 	if err != nil {
 		w.WriteHeader(http.StatusUnauthorized)
-		// json.NewEncoder(w).Encode(restapi.ErrorResponse{
+		// json.NewEncoder(w).Encode(api.ErrorResponse{
 		// 	Message: "invalid accessToken was provided",
 		// })
 		return

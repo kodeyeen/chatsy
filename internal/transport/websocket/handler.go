@@ -6,18 +6,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kodeyeen/chatsy/restapi/v1"
+	"github.com/kodeyeen/chatsy/api/v1"
 )
 
 type chatService interface {
-	GetByID(ctx context.Context, id int) (*restapi.GetChatResponse, error)
-	GetAllForUser(ctx context.Context, userID int) ([]*restapi.GetChatResponse, error)
-	GetForUser(ctx context.Context, userID int, limit, offset int) (*restapi.PageResponse[*restapi.GetChatResponse], error)
+	GetByID(ctx context.Context, id int) (*api.GetChatResponse, error)
+	GetAllForUser(ctx context.Context, userID int) ([]*api.GetChatResponse, error)
+	GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error)
 }
 
 type messageService interface {
-	Create(ctx context.Context, req *restapi.CreateMessageRequest, senderID int) (*restapi.GetMessageResponse, error)
-	GetForChat(ctx context.Context, chatID int, limit, offset int) (*restapi.PageResponse[*restapi.GetMessageResponse], error)
+	Create(ctx context.Context, req *api.CreateMessageRequest, senderID int) (*api.GetMessageResponse, error)
+	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*api.GetMessageResponse], error)
 }
 
 func userGroupName(userID int) string {
@@ -122,7 +122,7 @@ func (h *EventHandler) onSendMessages(evt Event, cl *client, mng *Manager) {
 		return
 	}
 
-	var msgs []*restapi.GetMessageResponse
+	var msgs []*api.GetMessageResponse
 
 	// TODO: bulk create
 	for _, dto := range sendMsgsEvt.Messages {

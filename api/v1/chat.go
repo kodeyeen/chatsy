@@ -1,4 +1,4 @@
-package restapi
+package api
 
 type GetChatResponse struct {
 	ID                      *int                `json:"id"`

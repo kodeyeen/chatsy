@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/restapi/v1"
+	"github.com/kodeyeen/chatsy/api/v1"
 )
 
 func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFunc {
@@ -15,27 +15,27 @@ func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFun
 			cookie, err := r.Cookie("accessToken")
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(restapi.ErrorResponse{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "accessToken was not provided",
 				})
 				return
 			}
 
-			token, err := jwt.ParseWithClaims(cookie.Value, &restapi.TokenClaims{}, func(token *jwt.Token) (any, error) {
+			token, err := jwt.ParseWithClaims(cookie.Value, &api.TokenClaims{}, func(token *jwt.Token) (any, error) {
 				return []byte(secret), nil
 			})
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(restapi.ErrorResponse{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "malformed accessToken",
 				})
 				return
 			}
 
-			claims, ok := token.Claims.(*restapi.TokenClaims)
+			claims, ok := token.Claims.(*api.TokenClaims)
 			if !ok {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(restapi.ErrorResponse{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "unknown claims type, cannot proceed",
 				})
 				return
@@ -57,21 +57,21 @@ func NewCheckTicketMiddleware(secret string) func(http.HandlerFunc) http.Handler
 				return
 			}
 
-			token, err := jwt.ParseWithClaims(ticket, &restapi.TicketClaims{}, func(token *jwt.Token) (any, error) {
+			token, err := jwt.ParseWithClaims(ticket, &api.TicketClaims{}, func(token *jwt.Token) (any, error) {
 				return []byte(secret), nil
 			})
 			if err != nil {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(restapi.ErrorResponse{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "malformed accessToken",
 				})
 				return
 			}
 
-			claims, ok := token.Claims.(*restapi.TicketClaims)
+			claims, ok := token.Claims.(*api.TicketClaims)
 			if !ok {
 				w.WriteHeader(http.StatusUnauthorized)
-				json.NewEncoder(w).Encode(restapi.ErrorResponse{
+				json.NewEncoder(w).Encode(api.ErrorResponse{
 					Message: "unknown claims type, cannot proceed",
 				})
 				return

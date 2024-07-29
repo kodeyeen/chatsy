@@ -3,8 +3,8 @@ package user
 import (
 	"context"
 
+	"github.com/kodeyeen/chatsy/api/v1"
 	"github.com/kodeyeen/chatsy/internal/domain"
-	"github.com/kodeyeen/chatsy/restapi/v1"
 )
 
 type Repository interface {
@@ -23,13 +23,13 @@ func NewService(users Repository) *Service {
 	}
 }
 
-func (s *Service) GetByID(ctx context.Context, id int) (*restapi.GetUserResponse, error) {
+func (s *Service) GetByID(ctx context.Context, id int) (*api.GetUserResponse, error) {
 	u, err := s.users.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := restapi.GetUserResponse{
+	resp := api.GetUserResponse{
 		ID:        u.ID,
 		Username:  u.Username,
 		FirstName: u.FirstName,
