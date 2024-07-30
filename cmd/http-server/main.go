@@ -4,6 +4,8 @@ import (
 	"context"
 	"log"
 
+	"net/http"
+
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/kodeyeen/chatsy/internal/auth"
 	"github.com/kodeyeen/chatsy/internal/chat"
@@ -11,7 +13,7 @@ import (
 	"github.com/kodeyeen/chatsy/internal/database"
 	"github.com/kodeyeen/chatsy/internal/database/postgres"
 	"github.com/kodeyeen/chatsy/internal/message"
-	"github.com/kodeyeen/chatsy/internal/transport/http"
+	"github.com/kodeyeen/chatsy/internal/transport/rest"
 	"github.com/kodeyeen/chatsy/internal/transport/websocket"
 	"github.com/rs/cors"
 )
@@ -42,7 +44,7 @@ func main() {
 	userRepo := postgres.NewUserRepository(dbpool)
 
 	authSvc := auth.NewService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
-	authClr := http.NewAuthController(authSvc)
+	authClr := rest.NewAuthController(authSvc)
 
 	chatRepo := postgres.NewChatRepository(dbpool)
 	chatSvc := chat.NewService(chatRepo)
@@ -53,8 +55,8 @@ func main() {
 	eventHandler := websocket.NewEventHandler(chatSvc, msgSvc)
 	wsMgr := websocket.NewManager(eventHandler)
 
-	checkJWT := http.NewCheckJWTMiddleware(cfg.Secret)
-	checkTicket := http.NewCheckTicketMiddleware(cfg.Secret)
+	checkJWT := rest.NewCheckJWTMiddleware(cfg.Secret)
+	checkTicket := rest.NewCheckTicketMiddleware(cfg.Secret)
 
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("/auth/register", authClr.Register)
@@ -69,14 +71,14 @@ func main() {
 		AllowCredentials: true,
 		Debug:            cfg.Cors.Debug,
 	})
-	_ = c.Handler(serveMux)
+	handler := c.Handler(serveMux)
 
-	// server := &http.Server{
-	// 	Addr:         cfg.HTTPServer.Address,
-	// 	Handler:      handler,
-	// 	ReadTimeout:  cfg.HTTPServer.Timeout,
-	// 	WriteTimeout: cfg.HTTPServer.Timeout,
-	// 	IdleTimeout:  cfg.HTTPServer.IdleTimeout,
-	// }
-	// log.Fatal(server.ListenAndServe())
+	server := &http.Server{
+		Addr:         cfg.HTTPServer.Address,
+		Handler:      handler,
+		ReadTimeout:  cfg.HTTPServer.Timeout,
+		WriteTimeout: cfg.HTTPServer.Timeout,
+		IdleTimeout:  cfg.HTTPServer.IdleTimeout,
+	}
+	log.Fatal(server.ListenAndServe())
 }
