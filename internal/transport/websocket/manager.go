@@ -1,7 +1,7 @@
 package websocket
 
 import (
-	"context"
+	"errors"
 	"log"
 	"net/http"
 	"sync"
@@ -9,30 +9,25 @@ import (
 	"github.com/gorilla/websocket"
 )
 
+var (
+	upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+		CheckOrigin:     checkOrigin,
+	}
+)
+
 type Manager struct {
 	sync.RWMutex
 
-	upgrader *websocket.Upgrader
 	groups   map[string]map[*client]struct{}
 	handlers map[EventType]HandlerFunc
-
-	handler *EventHandler
-	ctx     context.Context
 }
 
 func NewManager(handler *EventHandler) *Manager {
 	m := &Manager{
 		groups:   make(map[string]map[*client]struct{}),
 		handlers: make(map[EventType]HandlerFunc),
-
-		handler: handler,
-		ctx:     context.Background(),
-	}
-
-	m.upgrader = &websocket.Upgrader{
-		ReadBufferSize:  1024,
-		WriteBufferSize: 1024,
-		CheckOrigin:     m.checkOrigin,
 	}
 
 	m.setupEventHandlers()
@@ -41,12 +36,12 @@ func NewManager(handler *EventHandler) *Manager {
 }
 
 func (m *Manager) setupEventHandlers() {
-	m.handlers[EventOpenChat] = m.handler.onOpenChat
-	m.handlers[EventSendMessages] = m.handler.onSendMessages
-	m.handlers[EventFetchMessages] = m.handler.onFetchMessages
+	// m.handlers[EventOpenChat] = m.handler.onOpenChat
+	// m.handlers[EventSendMessages] = m.handler.onSendMessages
+	// m.handlers[EventFetchMessages] = m.handler.onFetchMessages
 
-	m.handlers[EventSendMessage] = SendMessage
-	m.handlers[EventChangeRoom] = ChatRoomHandler
+	// m.handlers[EventSendMessage] = SendMessage
+	// m.handlers[EventChangeRoom] = ChatRoomHandler
 }
 
 func (m *Manager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -57,7 +52,7 @@ func (m *Manager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// upgrade regular http connection into websocket
-	conn, err := m.upgrader.Upgrade(w, r, nil)
+	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
 		log.Println(err)
 		return
@@ -65,29 +60,12 @@ func (m *Manager) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("new connection")
 
-	cl := newClient(conn, userID)
+	cl := newClient(conn, m, userID)
+	m.addClient(cl, userGroupName(userID))
 
 	// start client processes
-	go cl.readMessages(m)
-	go cl.writeMessages(m)
-
-	m.connect(cl)
-}
-
-func (m *Manager) connect(cl *client) {
-	connectedEvent := Event{
-		Type: EventConnected,
-	}
-
-	m.handler.onConnect(connectedEvent, cl, m)
-}
-
-func (m *Manager) disconnect(cl *client) {
-	disconnectedEvent := Event{
-		Type: EventDisconnected,
-	}
-
-	m.handler.onDisconnect(disconnectedEvent, cl, m)
+	go cl.readMessages()
+	go cl.writeMessages()
 }
 
 func (m *Manager) addClient(cl *client, groupName string) {
@@ -121,26 +99,18 @@ func (m *Manager) removeClient(cl *client, groupName string) {
 	}
 }
 
-func (m *Manager) routeEvent(evt Event, cl *client) {
+func (m *Manager) routeEvent(evt Event, cl *client) error {
 	handler, ok := m.handlers[evt.Type]
 	if !ok {
 		// not found handler
 		log.Println("not found")
-		return
+		return errors.New("there is no such event type")
 	}
 
-	handler(evt, cl, m)
+	return handler(evt, cl)
 }
 
-func (m *Manager) sendEvent(evt Event, groupName string) {
-	group := m.groups[groupName]
-
-	for cl := range group {
-		cl.sendEvent(evt)
-	}
-}
-
-func (m *Manager) checkOrigin(r *http.Request) bool {
+func checkOrigin(r *http.Request) bool {
 	origin := r.Header.Get("Origin")
 
 	switch origin {

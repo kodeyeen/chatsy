@@ -43,134 +43,150 @@ func NewEventHandler(
 	}
 }
 
-func (h *EventHandler) onConnect(evt Event, cl *client, mng *Manager) {
-	userChats, err := h.chatSvc.GetAllForUser(mng.ctx, cl.usrID)
+func (h *EventHandler) onConnect(evt Event, cl *client) {
+	ctx := context.Background()
+
+	userChats, err := h.chatSvc.GetAllForUser(ctx, cl.usrID)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	mng.addClient(cl, userGroupName(cl.usrID))
+	cl.mgr.addClient(cl, userGroupName(cl.usrID))
 
 	for _, userChat := range userChats {
-		mng.addClient(cl, chatGroupName(*userChat.ID))
+		cl.mgr.addClient(cl, chatGroupName(*userChat.ID))
 	}
 
-	page, err := h.chatSvc.GetForUser(mng.ctx, cl.usrID, 10, 0)
+	page, err := h.chatSvc.GetForUser(ctx, cl.usrID, 10, 0)
 	if err != nil {
 		log.Println("GetForUser err", err)
 		return
 	}
 
-	data, err := json.Marshal(ConnectedEvent{
+	_, err = json.Marshal(ConnectedEvent{
 		Chats: *page,
 	})
 	if err != nil {
 		return
 	}
 
-	cl.sendEvent(Event{
-		Type:    EventConnected,
-		Payload: data,
-	})
+	// cl.sendEvent(Event{
+	// 	Type:    EventConnected,
+	// 	Payload: data,
+	// })
 }
 
-func (h *EventHandler) onDisconnect(evt Event, cl *client, mng *Manager) {
-	userChats, err := h.chatSvc.GetAllForUser(mng.ctx, cl.usrID)
+func (h *EventHandler) onDisconnect(evt Event, cl *client) {
+	ctx := context.Background()
+
+	userChats, err := h.chatSvc.GetAllForUser(ctx, cl.usrID)
 	if err != nil {
 		log.Println(err)
 		return
 	}
 
-	mng.removeClient(cl, userGroupName(cl.usrID))
+	cl.mgr.removeClient(cl, userGroupName(cl.usrID))
 
 	for _, userChat := range userChats {
-		mng.removeClient(cl, chatGroupName(*userChat.ID))
+		cl.mgr.removeClient(cl, chatGroupName(*userChat.ID))
 	}
 }
 
-func (h *EventHandler) onOpenChat(evt Event, cl *client, mng *Manager) {
+func (h *EventHandler) onOpenChat(evt Event, cl *client) error {
 	var openChatEvt OpenChatEvent
 	err := json.Unmarshal(evt.Payload, &openChatEvt)
 	if err != nil {
-		return
+		return err
 	}
 
-	page, err := h.msgSvc.GetForChat(mng.ctx, openChatEvt.ChatID, 7, 0)
+	ctx := context.Background()
+
+	page, err := h.msgSvc.GetForChat(ctx, openChatEvt.ChatID, 7, 0)
 	if err != nil {
 		log.Println("GetForChat err", err)
-		return
+		return err
 	}
 
-	data, err := json.Marshal(ChatOpenedEvent{
+	_, err = json.Marshal(ChatOpenedEvent{
 		Messages: *page,
 	})
 	if err != nil {
-		return
+		return err
 	}
 
-	cl.sendEvent(Event{
-		Type:    EventChatOpened,
-		Payload: data,
-	})
+	// cl.sendEvent(Event{
+	// 	Type:    EventChatOpened,
+	// 	Payload: data,
+	// })
+
+	return nil
 }
 
-func (h *EventHandler) onSendMessages(evt Event, cl *client, mng *Manager) {
+func (h *EventHandler) onSendMessages(evt Event, cl *client) error {
 	var sendMsgsEvt SendMessagesEvent
 	err := json.Unmarshal(evt.Payload, &sendMsgsEvt)
 	if err != nil {
-		return
+		return err
 	}
+
+	ctx := context.Background()
 
 	var msgs []*api.GetMessageResponse
 
 	// TODO: bulk create
 	for _, dto := range sendMsgsEvt.Messages {
-		msg, err := h.msgSvc.Create(mng.ctx, dto, cl.usrID)
+		msg, err := h.msgSvc.Create(ctx, dto, cl.usrID)
 		if err != nil {
 			log.Println("h.msgSvc.Create err", err)
-			return
+			return err
 		}
 
 		msgs = append(msgs, msg)
 	}
 
-	data, err := json.Marshal(NewMessagesEvent{
+	_, err = json.Marshal(NewMessagesEvent{
 		ChatID:   sendMsgsEvt.ChatID,
 		Messages: msgs,
 	})
 	if err != nil {
-		return
+		return err
 	}
 
-	mng.sendEvent(Event{
-		Type:    EventNewMessages,
-		Payload: data,
-	}, chatGroupName(sendMsgsEvt.ChatID))
+	// cl.mgr.sendEvent(Event{
+	// 	Type:    EventNewMessages,
+	// 	Payload: data,
+	// }, chatGroupName(sendMsgsEvt.ChatID))
+
+	return nil
 }
 
-func (h *EventHandler) onFetchMessages(evt Event, cl *client, mng *Manager) {
+func (h *EventHandler) onFetchMessages(evt Event, cl *client) error {
 	var fetchMsgsEvt FetchMessagesEvent
 	err := json.Unmarshal(evt.Payload, &fetchMsgsEvt)
 	if err != nil {
-		return
+		return err
 	}
 
-	page, err := h.msgSvc.GetForChat(mng.ctx, fetchMsgsEvt.ChatID, fetchMsgsEvt.Limit, fetchMsgsEvt.Offset)
+	ctx := context.Background()
+
+	page, err := h.msgSvc.GetForChat(ctx, fetchMsgsEvt.ChatID, fetchMsgsEvt.Limit, fetchMsgsEvt.Offset)
 	if err != nil {
-		return
+		return err
 	}
 
-	data, err := json.Marshal(LoadMessagesEvent{
+	_, err = json.Marshal(LoadMessagesEvent{
 		ChatID:   fetchMsgsEvt.ChatID,
 		Messages: *page,
 	})
 	if err != nil {
-		return
+		return err
 	}
 
-	mng.sendEvent(Event{
-		Type:    EventMessagesFetched,
-		Payload: data,
-	}, chatGroupName(fetchMsgsEvt.ChatID))
+	// cl.mgr.sendEvent(Event{
+	// 	Type:    EventMessagesFetched,
+	// 	Payload: data,
+	// }, chatGroupName(fetchMsgsEvt.ChatID))
+
+	return nil
 }

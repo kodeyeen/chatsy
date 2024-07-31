@@ -29,7 +29,7 @@ type Event struct {
 	Payload json.RawMessage `json:"payload"`
 }
 
-type HandlerFunc func(event Event, cl *client, mng *Manager)
+type HandlerFunc func(event Event, cl *client) error
 
 type ConnectedEvent struct {
 	Chats api.PageResponse[*api.GetChatResponse] `json:"chats"`
@@ -80,7 +80,7 @@ type ChangeRoomEvent struct {
 	Name string `json:"name"`
 }
 
-func SendMessage(event Event, cl *client, mng *Manager) {
+func SendMessage(event Event, cl *client) error {
 	// var chatevent SendMessageEvent
 	// err := json.Unmarshal(event.Payload, &chatevent)
 	// if err != nil {
@@ -107,14 +107,18 @@ func SendMessage(event Event, cl *client, mng *Manager) {
 	// 		client.Egress <- outgoinEvent
 	// 	}
 	// }
+
+	return nil
 }
 
-func ChatRoomHandler(event Event, cl *client, mng *Manager) {
+func ChatRoomHandler(event Event, cl *client) error {
 	var changeRoomEvent ChangeRoomEvent
 	err := json.Unmarshal(event.Payload, &changeRoomEvent)
 	if err != nil {
-		return
+		return err
 	}
 
 	cl.chatroom = changeRoomEvent.Name
+
+	return nil
 }

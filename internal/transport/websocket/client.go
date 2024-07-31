@@ -14,6 +14,7 @@ const (
 
 type client struct {
 	conn *websocket.Conn
+	mgr  *Manager
 
 	chatroom string
 	// egress is used to avoid concurrent writes on the websocket connection
@@ -21,17 +22,20 @@ type client struct {
 	usrID  int
 }
 
-func newClient(conn *websocket.Conn, usrID int) *client {
+func newClient(conn *websocket.Conn, mgr *Manager, usrID int) *client {
 	return &client{
 		conn:   conn,
+		mgr:    mgr,
 		egress: make(chan Event),
 		usrID:  usrID,
 	}
 }
 
-func (c *client) readMessages(mng *Manager) {
+func (c *client) readMessages() {
 	// cleanup connection
-	defer mng.disconnect(c)
+	defer func() {
+		c.mgr.removeClient(c, userGroupName(c.usrID))
+	}()
 
 	err := c.conn.SetReadDeadline(time.Now().Add(pongWait))
 	if err != nil {
@@ -44,18 +48,23 @@ func (c *client) readMessages(mng *Manager) {
 
 	for {
 		var request Event
+
 		err := c.conn.ReadJSON(&request)
 		if err != nil {
 			log.Printf("error reading message: %v", err)
 			break
 		}
 
-		mng.routeEvent(request, c)
+		if err := c.mgr.routeEvent(request, c); err != nil {
+			log.Println("error handling message: ", err)
+		}
 	}
 }
 
-func (c *client) writeMessages(mng *Manager) {
-	defer mng.disconnect(c)
+func (c *client) writeMessages() {
+	defer func() {
+		c.mgr.removeClient(c, userGroupName(c.usrID))
+	}()
 
 	ticker := time.NewTicker(pingInterval)
 
@@ -96,8 +105,4 @@ func (c *client) writeMessages(mng *Manager) {
 func (c *client) pongHandler(pongMsg string) error {
 	log.Println("pong", pongMsg)
 	return c.conn.SetReadDeadline(time.Now().Add(pongWait))
-}
-
-func (c *client) sendEvent(evt Event) {
-	c.egress <- evt
 }
