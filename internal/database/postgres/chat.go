@@ -144,7 +144,7 @@ func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*dom
 		FROM
 			chats c
 		INNER JOIN
-			participations p ON c.id = p.chat_id
+			memberships p ON c.id = p.chat_id
 		WHERE
 			p.user_id = @user_id
 	`
@@ -193,19 +193,19 @@ func (r *ChatRepository) FindForUser(ctx context.Context, userID int, limit, off
 			TRUE as is_joined,
 			(
 				SELECT COUNT(*)
-				FROM participations p
+				FROM memberships p
 				WHERE p.chat_id = c.id
 			) as participant_count,
 			(
 				SELECT p.are_notifications_enabled
-				FROM participations p
+				FROM memberships p
 				WHERE p.chat_id = c.id AND p.user_id = @user_id
 			) as are_notifications_enabled,
 			m.*
 		FROM
 			chats c
 		INNER JOIN
-			participations p ON c.id = p.chat_id
+			memberships p ON c.id = p.chat_id
 		LEFT JOIN LATERAL (
 			SELECT
 				m.id,
@@ -301,9 +301,9 @@ func (r *ChatRepository) CountForUser(ctx context.Context, userID int) (int, err
 		SELECT
 			COUNT(*)
 		FROM
-			participations p
+			memberships m
 		WHERE
-			p.user_id = @user_id
+			m.user_id = @user_id
 	`
 	args := pgx.NamedArgs{
 		"user_id": userID,
