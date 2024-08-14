@@ -1,4 +1,4 @@
-import { EventListener } from "./listener"
+import { EventListener } from './listener'
 
 export class EventDispatcher {
     listeners: Record<string, EventListener[]> = {}
@@ -45,7 +45,7 @@ export class EventDispatcher {
         const index: number = listeners.indexOf(handler)
 
         if (index != -1) {
-            listeners.splice(index, 1);
+            listeners.splice(index, 1)
         }
 
         if (listeners.length == 0) {

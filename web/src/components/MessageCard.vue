@@ -2,9 +2,11 @@
 import { computed } from 'vue'
 
 import Avatar from '@/components/Avatar.vue'
+import GhostButton from '@/components/GhostButton.vue'
+import Checkbox from '@/components/Checkbox.vue'
 import CheckIcon from '@/components/icons/Check.vue'
 import CornerIcon from '@/components/icons/Corner.vue'
-import MessageParent from '@/components/Message/Parent.vue'
+import MessageParent from '@/components/MessageParent.vue'
 import ReadIcon from '@/components/icons/Read.vue'
 
 const props = withDefaults(
@@ -45,11 +47,13 @@ const isSelected = computed(() => {
 
 const formattedText = computed(() => {
     const pattern = /\B@[A-Za-z0-9_-]+/g
+    const cls =
+        'inline bg-transparent border-0 transition-colors cursor-pointer text-primary-atlantic-140 hover:text-primary-brand-onPrimary'
 
     return props.message.text.replaceAll(pattern, (mention: any) => {
         const username = mention.slice(1)
 
-        return `<a class="button-ghost link inline" href="/users/${username}/" target="_blank">${mention}</a>`
+        return `<a class="${cls}" href="/users/${username}/" target="_blank">${mention}</a>`
     })
 })
 
@@ -88,12 +92,13 @@ const onParentClick = () => {
                 'pl-[53px]': own && showUserInfo,
             }"
         >
-            <input
-                class="l absolute top-1/2 right-[calc(100%+20px)] -translate-y-1/2 opacity-0 border-primary-seattle-100 hover:border-primary-brand-primary checked:border-primary-brand-primary transition-opacity duration-300"
+            <Checkbox
+                class="!absolute top-1/2 right-[calc(100%+20px)] -translate-y-1/2 opacity-0"
                 :class="{
                     'opacity-100': selectable,
                 }"
-                type="checkbox"
+                boxClass="border-primary-seattle-100 hover:border-primary-brand-primary peer-checked:border-primary-brand-primary transition-opacity duration-300"
+                size="l"
                 :checked="isSelected"
             />
 
@@ -106,7 +111,7 @@ const onParentClick = () => {
                 <RouterLink
                     v-if="!own && lastInGroup && showUserInfo"
                     class="absolute bottom-0 left-0"
-                    to="$userLink(message.author)"
+                    to="/chats"
                 >
                     <Avatar class="w-[44px] h-[44px] rounded-full" />
                 </RouterLink>
@@ -117,8 +122,8 @@ const onParentClick = () => {
                         :class="{
                             invisible: !lastInGroup,
                         }"
-                        width="9"
-                        height="16"
+                        :width="9"
+                        :height="16"
                     />
 
                     <div
@@ -139,18 +144,28 @@ const onParentClick = () => {
                                     Переслано от:
                                 </span>
 
-                                <RouterLink class="button-ghost m-medium link !font-bold" to="$userLink(author)">
+                                <GhostButton
+                                    class="!font-bold"
+                                    type="link"
+                                    size="m-medium"
+                                    variant="link"
+                                    to="/chats"
+                                >
                                     <span>
                                         {{ message.authorName }}
                                     </span>
-                                </RouterLink>
+                                </GhostButton>
                             </span>
                             <span v-else class="flex items-center gap-x-[4px]">
-                                <RouterLink class="button-ghost m-medium link !font-bold" to="$userLink(author)">
-                                    <span>
-                                        {{ message.senderName }}
-                                    </span>
-                                </RouterLink>
+                                <GhostButton
+                                    class="!font-bold"
+                                    type="link"
+                                    size="m-medium"
+                                    variant="link"
+                                    to="/chats"
+                                >
+                                    {{ message.senderName }}
+                                </GhostButton>
                             </span>
                         </div>
 
@@ -191,14 +206,14 @@ const onParentClick = () => {
                             <ReadIcon
                                 v-if="message.isViewed"
                                 class="hidden [.own_&]:block text-utilitarian-geneva-100"
-                                width="17"
-                                height="17"
+                                :width="17"
+                                :height="17"
                             />
                             <CheckIcon
                                 v-else
                                 class="hidden [.own_&]:block text-utilitarian-geneva-100"
-                                width="17"
-                                height="17"
+                                :width="17"
+                                :height="17"
                             />
                         </span>
                     </div>

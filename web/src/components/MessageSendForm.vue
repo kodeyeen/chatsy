@@ -5,8 +5,9 @@ import { Tippy } from 'vue-tippy'
 import { adjustTextarea } from '@/services/form'
 import { useChatsStore } from '@/stores/chats'
 
+import Button from '@/components/Button.vue'
 import EmojiPicker from '@/components/EmojiPicker.vue'
-import MessageParent from '@/components/Message/Parent.vue'
+import MessageParent from '@/components/MessageParent.vue'
 import MentionMenu from '@/components/MentionMenu.vue'
 import AttachIcon from '@/components/icons/Attach.vue'
 import CameraIcon from '@/components/icons/Camera.vue'
@@ -92,7 +93,7 @@ const onPickerClickOutside = (event: any) => {
 }
 
 const onKeyUp = async (event: any) => {
-    if (props.chat.type === 'personal') {
+    if (props.chat.type === 'dialog') {
         return
     }
 
@@ -172,7 +173,7 @@ const submit = () => {
             },
         })
     } else if (store.messagesToForward.length !== 0) {
-        store.sendMessageForm(props.chat.id, null, store.messagesToForward)
+        // store.sendMessageSendForm(props.chat.id, null, store.messagesToForward)
     }
 
     reset()
@@ -229,15 +230,21 @@ defineExpose({
                 class="grow px-[12px] py-[8px] bg-primary-brand-white rounded-[12px] rounded-br-none"
             >
                 <div v-if="parent" class="flex items-end mb-[12px]">
-                    <MessageParent class="grow" :senderName="parent.senderName" :text="parent.text" />
+                    <MessageParent
+                        class="grow"
+                        :senderName="parent.senderName"
+                        :text="parent.text"
+                    />
 
-                    <button
-                        class="shrink-0 button m ghost only-icon !p-[5px]"
+                    <Button
+                        class="shrink-0 w-[36px] !p-[5px]"
                         type="button"
+                        size="m"
+                        variant="ghost"
                         @click="$emit('cancelReplying')"
                     >
-                        <DeleteDisabledSmallIcon width="24" height="24"/>
-                    </button>
+                        <DeleteDisabledSmallIcon :width="24" :height="24" />
+                    </Button>
                 </div>
                 <div v-else-if="store.messagesToForward.length !== 0">
                     <!-- {{ $tc('forwardedMessage', store.messagesToForward.length) }} -->
@@ -256,14 +263,16 @@ defineExpose({
                             interactive
                             inlinePositioning
                         >
-                            <button
+                            <Button
                                 id="emojiPickerTrigger"
-                                class="button l ghost !p-[5px]"
+                                class="!p-[5px]"
                                 type="button"
+                                size="l"
+                                variant="ghost"
                                 @click="onEmojiPickerToggle"
                             >
-                                <EmojiIcon width="24" height="24" />
-                            </button>
+                                <EmojiIcon :width="24" :height="24" />
+                            </Button>
 
                             <template #content>
                                 <EmojiPicker
@@ -293,23 +302,23 @@ defineExpose({
                     </div>
 
                     <div v-if="false" class="shrink-0">
-                        <label class="button l ghost relative p-[5px]">
-                            <input
-                                class="absolute opacity-0 pointer-events-none"
-                                type="file"
-                                multiple
-                                @change="onFileSelect"
-                            />
-
-                            <AttachIcon width="24" height="24" />
-                        </label>
+                        <Button
+                            class="relative p-[5px]"
+                            type="file"
+                            size="l"
+                            variant="ghost"
+                            multiple
+                            @change="onFileSelect"
+                        >
+                            <AttachIcon :width="24" :height="24" />
+                        </Button>
                     </div>
                 </div>
             </div>
             <CornerIcon
                 class="shrink-0 text-primary-brand-white -scale-x-100"
-                width="9"
-                height="16"
+                :width="9"
+                :height="16"
             />
         </div>
 
@@ -318,17 +327,25 @@ defineExpose({
                 <slot name="actions"></slot>
             </div>
 
-            <button
+            <Button
                 v-if="true"
                 xv-if="data.text"
-                class="button xl accent round only-icon relative"
+                class="relative w-[52px] px-[14px] rounded-full"
                 type="submit"
+                size="xl"
+                variant="accent"
             >
-                <SendIcon class="shrink-0" width="24" height="24" />
-            </button>
-            <button v-else class="button xl accent round only-icon relative" type="button">
-                <CameraIcon class="shrink-0" width="24" height="24" />
-            </button>
+                <SendIcon class="shrink-0" :width="24" :height="24" />
+            </Button>
+            <Button
+                v-else
+                class="relative w-[52px] px-[14px] rounded-full"
+                type="button"
+                size="xl"
+                variant="accent"
+            >
+                <CameraIcon class="shrink-0" :width="24" :height="24" />
+            </Button>
         </div>
 
         <!-- <Teleport to="#popupsContainer">
@@ -336,7 +353,7 @@ defineExpose({
           <form action="#" method="POST">
             <div class="flex items-center gap-x-[16px]">
               <div class="shrink-0">
-                <button class="text-primary-seattle-60" type="button" data-popup-closer>
+                <button class="text-primary-seattle-60" type="button" popupsStore.hide('filesPopup')>
                   <i class="icon dd-Delete-Disabled-big text-[24px]"></i>
                 </button>
               </div>
@@ -348,11 +365,11 @@ defineExpose({
               </div>
 
               <div class="shrink-0">
-                <button class="button m primary px-[28px]" type="button">
-                  <span>
-                    Отправить
-                  </span>
-                </button>
+                <Button class="px-[28px]" type="button" size="m" variant="primary">
+                    <span>
+                        Отправить
+                    </span>
+                </Button>
               </div>
             </div>
 

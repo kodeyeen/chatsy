@@ -2,18 +2,14 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 
 export const usePopupsStore = defineStore('popups', () => {
-    const popups = ref<{ [key: string]: any }>({})
+    const popups = ref<{ [key: string]: boolean }>({})
 
     const isActive = (popupId: string): boolean => {
         return popups.value.hasOwnProperty(popupId)
     }
 
-    const getData = (popupId: string): any | null => {
-        return popups.value[popupId] ?? {}
-    }
-
-    const show = (popupId: string, data: any = {}): void => {
-        popups.value[popupId] = data
+    const show = (popupId: string): void => {
+        popups.value[popupId] = true
     }
 
     const hide = (popupId: string): void => {
@@ -23,7 +19,6 @@ export const usePopupsStore = defineStore('popups', () => {
     return {
         isActive,
 
-        getData,
         show,
         hide,
     }

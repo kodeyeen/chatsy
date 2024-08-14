@@ -4,6 +4,7 @@ import { ofetch } from 'ofetch'
 import { useEventListener } from '@vueuse/core'
 
 import Avatar from '@/components/Avatar.vue'
+import OptionButton from '@/components/OptionButton.vue'
 
 const props = withDefaults(
     defineProps<{
@@ -100,33 +101,35 @@ defineExpose({
     >
         <ul>
             <li v-for="(user, index) in users" :key="user.id">
-                <button
-                    class="option-button gap-x-[8px] px-[10px] py-[8px]"
+                <OptionButton
+                    class="gap-x-[8px] px-[10px] py-[8px]"
                     :class="{
                         active: index === activeUserIndex,
                     }"
                     type="button"
                     @click="select(user)"
                 >
-                    <span class="shrink-0">
+                    <template #start>
                         <Avatar
                             class="w-[36px] h-[36px] rounded-full"
                             src="user.photo ? $media(user.photo.url) : undefined"
                         />
-                    </span>
+                    </template>
 
-                    <span class="grow flex flex-col items-start">
-                        <span class="text-m-14 font-medium text-primary-brand-primary">
-                            <!-- {{ user.display_name }} -->
-                            Full Name
-                        </span>
+                    <template #default>
+                        <span class="grow flex flex-col items-start">
+                            <span class="text-m-14 font-medium text-primary-brand-primary">
+                                <!-- {{ user.display_name }} -->
+                                Full Name
+                            </span>
 
-                        <span class="text-s-12 text-primary-seattle-120">
-                            <!-- @{{ user.username }} -->
-                            @username
+                            <span class="text-s-12 text-primary-seattle-120">
+                                <!-- @{{ user.username }} -->
+                                @username
+                            </span>
                         </span>
-                    </span>
-                </button>
+                    </template>
+                </OptionButton>
             </li>
         </ul>
     </div>

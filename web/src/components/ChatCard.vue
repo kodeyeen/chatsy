@@ -3,9 +3,13 @@ import { useAuthStore } from '@/stores/auth'
 
 import Avatar from '@/components/Avatar.vue'
 import Counter from '@/components/Counter.vue'
+import CheckIcon from '@/components/icons/Check.vue'
+import MuteIcon from '@/components/icons/Mute.vue'
+import ReadIcon from '@/components/icons/Read.vue'
 
 const props = defineProps<{
     chat: any
+    active?: boolean
 }>()
 
 const auth = useAuthStore()
@@ -13,9 +17,10 @@ const auth = useAuthStore()
 
 <template>
     <div
-        class="chat-card flex gap-x-[9px] py-[8px] pl-[9px] pr-[12px] rounded-[10px] hover:bg-primary-brand-wildSand [&.active]:bg-primary-brand-accent cursor-pointer transition-colors"
+        class="chat-card flex gap-x-[9px] py-[8px] pl-[9px] pr-[12px] rounded-[10px] hover:bg-primary-brand-wildSand cursor-pointer transition-colors"
         :class="{
             'items-center': chat.lastMessage,
+            '!bg-primary-brand-accent': active,
         }"
     >
         <div class="shrink-0">
@@ -26,35 +31,44 @@ const auth = useAuthStore()
             <div class="flex justify-between items-center gap-x-[8px]">
                 <span class="grow flex items-center gap-x-[4px]">
                     <span
-                        class="text-l-long-16 font-bold text-primary-brand-onPrimary [.chat-card.active_&]:text-primary-brand-white line-clamp-1"
+                        class="text-l-long-16 font-bold text-primary-brand-onPrimary line-clamp-1"
+                        :class="{ '!text-primary-brand-white': active }"
                     >
                         {{ chat.title }}
                     </span>
 
-                    <svg
+                    <MuteIcon
                         v-if="!chat.areNotificationsEnabled"
-                        class="text-primary-seattle-100 [.chat-card.active_&]:text-primary-brand-white"
-                        width="24"
-                        height="24"
-                    >
-                        <use xlink:href="#muteIcon"></use>
-                    </svg>
+                        class="text-primary-seattle-100"
+                        :class="{ '!text-primary-brand-white': active }"
+                        :width="24"
+                        :height="24"
+                    />
                 </span>
 
                 <span v-if="chat.lastMessage" class="shrink-0 flex items-center gap-x-[3px]">
-                    <svg
-                        v-if="chat.lastMessage.senderId === auth.currentUser?.id"
-                        class="text-utilitarian-geneva-100 [.chat-card.active_&]:text-primary-brand-white"
-                        width="24"
-                        height="24"
-                    >
-                        <use v-if="chat.lastMessage.isViewed" xlink:href="#readIcon"></use>
-                        <use v-else xlink:href="#checkIcon"></use>
-                    </svg>
+                    <ReadIcon
+                        v-if="
+                            chat.lastMessage.senderId === auth.currentUser?.id &&
+                            chat.lastMessage.isViewed
+                        "
+                        class="text-utilitarian-geneva-100"
+                        :class="{ '!text-primary-brand-white': active }"
+                        :width="24"
+                        :height="24"
+                    />
+                    <CheckIcon
+                        v-else-if="chat.lastMessage.senderId === auth.currentUser?.id"
+                        class="text-utilitarian-geneva-100"
+                        :class="{ '!text-primary-brand-white': active }"
+                        :width="24"
+                        :height="24"
+                    />
 
                     <time
                         v-if="chat.lastMessage"
-                        class="text-s-12 text-primary-seattle-100 [.chat-card.active_&]:text-primary-brand-white"
+                        class="text-s-12 text-primary-seattle-100"
+                        :class="{ '!text-primary-brand-white': active }"
                         :datetime="chat.lastMessage.sentAt"
                     >
                         {{
@@ -74,7 +88,8 @@ const auth = useAuthStore()
                             chat.type === 'group' &&
                             chat.lastMessage.senderId !== auth.currentUser?.id
                         "
-                        class="text-primary-brand-onPrimary [.chat-card.active_&]:text-primary-brand-white whitespace-nowrap"
+                        class="text-primary-brand-onPrimary whitespace-nowrap"
+                        :class="{ '!text-primary-brand-white': active }"
                     >
                         {{ chat.lastMessage.senderName }}:
                     </span>
@@ -91,7 +106,8 @@ const auth = useAuthStore()
                     </span>
 
                     <span
-                        class="text-primary-seattle-100 [.chat-card.active_&]:text-primary-brand-white line-clamp-1"
+                        class="text-primary-seattle-100 line-clamp-1"
+                        :class="{ '!text-primary-brand-white': active }"
                     >
                         {{ chat.lastMessage.text }}
                     </span>
@@ -99,12 +115,16 @@ const auth = useAuthStore()
 
                 <div v-if="chat.unread_message_count > 0" class="shrink-0">
                     <Counter
-                        class="accent [.chat-card.active_&]:hidden"
+                        v-if="active"
                         :value="chat.unread_message_count"
+                        size="default"
+                        variant="neutral"
                     />
                     <Counter
-                        class="neutral hidden [.chat-card.active_&]:block"
+                        v-else
                         :value="chat.unread_message_count"
+                        size="default"
+                        variant="accent"
                     />
                 </div>
             </div>

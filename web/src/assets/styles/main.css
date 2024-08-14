@@ -1,15 +1,61 @@
-@import './base.css';
-@import './button.css';
-@import './button-ghost.css';
 @import './fonts.css';
-@import './input.css';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-#app {
-    height: 100%;
+@layer base {
+    body {
+        /* color: var(--color-text); */
+        /* font-family: 'Golos Text', sans-serif; */
+        /* line-height: 1.6; */
+        /* font-size: 15px; */
+        text-rendering: optimizeLegibility;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    .scrollbar::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    .scrollbar::-webkit-scrollbar-thumb {
+        background: linear-gradient(0deg, rgba(26, 32, 36, 0.3), rgba(26, 32, 36, 0.3)),
+            rgba(255, 255, 255, 0.3);
+        border: 2px solid transparent;
+        background-clip: padding-box;
+        border-radius: 9999px;
+    }
+
+    /* Remove border-radius on Safari */
+    .input[type='search'] {
+        -webkit-appearance: none;
+        appearance: none;
+        -webkit-border-radius: 8px;
+        border-radius: 8px;
+    }
+
+    /* Remove bullshit from input type search */
+    input[type='search']::-webkit-search-decoration,
+    input[type='search']::-webkit-search-cancel-button,
+    input[type='search']::-webkit-search-results-button,
+    input[type='search']::-webkit-search-results-decoration {
+        -webkit-appearance: none;
+        appearance: none;
+    }
+
+    /* Remove arrow from input type number */
+    .input[type='number']::-webkit-outer-spin-button,
+    .input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+
+    .input[type='number'] {
+        -moz-appearance: textfield;
+        appearance: textfield;
+    }
 }
 
 @layer utilities {
@@ -27,70 +73,4 @@
     .wrap-anywhere {
         word-wrap: anywhere;
     }
-}
-
-.drop-list {
-    position: relative;
-}
-
-.drop-list__header {
-    height: 100%;
-}
-
-.drop-list__body {
-    display: none;
-}
-
-.drop-list.active .drop-list__body {
-    display: block;
-}
-
-.options-menu {
-    /* max-h-[206px]
-    pt-[4px]
-    px-[4px] */
-    @apply p-[4px]
-    overflow-y-auto
-    bg-primary-brand-white
-    rounded-[6px]
-    shadow-elevation-3;
-}
-
-/* .options-menu ul{
-     @apply
-     pb-[4px]
-     ;
-  } */
-
-.group-heading {
-    @apply px-[10px]
-    pt-[8px]
-    pb-[6px]
-  
-    text-primary-seattle-100
-  
-    text-caption-12
-    font-medium
-    uppercase;
-}
-
-.option-button {
-    @apply flex
-    items-center
-    w-full
-    px-[10px]
-    py-[8px]
-    rounded-[4px]
-    bg-primary-brand-white
-    hover:bg-primary-seattle-10
-    transition-colors
-  
-    text-m-14
-    font-medium
-    text-left
-    text-primary-brand-primary;
-}
-
-.option-button.active {
-    @apply bg-primary-seattle-10;
 }

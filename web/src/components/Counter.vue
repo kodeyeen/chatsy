@@ -1,15 +1,9 @@
-<template>
-    <div class="counter">
-        <span class="counter__value" :class="{ overflowed: isOverflowed }">
-            {{ formattedValue }}
-        </span>
-    </div>
-</template>
-
 <script lang="ts" setup>
 import { computed } from 'vue'
 const props = defineProps<{
     value: number
+    size: string
+    variant: string
 }>()
 
 const isOverflowed = computed(() => {
@@ -29,65 +23,28 @@ const formattedValue = computed(() => {
 
     return `${thousands}K`
 })
+
+const style: any = {
+    base: 'inline-flex justify-center items-center max-w-[30px] rounded-2xl pointer-events-none',
+    size: {
+        default: 'min-w-[20px] h-[20px] px-[6px] py-[2px] text-[12px] leading-[16px]',
+        small: 'min-w-[16px] h-[16px] py-[1px] px-[4.5px] text-[11px] leading-[14px]',
+    },
+    variant: {
+        critical: 'bg-utilitarian-moscow-100 text-primary-brand-white',
+        warning: 'bg-utilitarian-osaka-100 text-primary-brand-white',
+        success: 'bg-utilitarian-geneva-100 text-primary-brand-white',
+        accent: 'bg-primary-brand-accent text-primary-brand-white',
+        neutral: 'bg-primary-brand-primary text-primary-brand-white',
+        inactive: 'bg-primary-seattle-30 text-primary-brand-primary',
+    },
+}
 </script>
 
-<style>
-.counter {
-    @apply inline-flex
-      justify-center
-      items-center
-      max-w-[30px]
-      px-[6px]
-      py-[2px]
-      rounded-2xl
-      pointer-events-none
-  
-      min-w-[20px]
-      h-[20px]
-      text-[12px]
-      leading-[16px];
-}
-
-.counter.small {
-    @apply min-w-[16px]
-      h-[16px]
-      py-[1px]
-      px-[4.5px]
-      text-[11px]
-      leading-[14px];
-}
-
-.counter.critical {
-    @apply bg-utilitarian-moscow-100
-      text-primary-brand-white;
-}
-
-.counter.warning {
-    @apply bg-utilitarian-osaka-100
-      text-primary-brand-white;
-}
-
-.counter.success {
-    @apply bg-utilitarian-geneva-100
-      text-primary-brand-white;
-}
-
-.counter.accent {
-    @apply bg-primary-brand-accent
-      text-primary-brand-white;
-}
-
-.counter.neutral {
-    @apply bg-primary-brand-primary
-      text-primary-brand-white;
-}
-
-.counter.inactive {
-    @apply bg-primary-seattle-30
-      text-primary-brand-primary;
-}
-
-.counter__value.overflowed {
-    margin-top: -50%;
-}
-</style>
+<template>
+    <div :class="[style.base, style.size[size], style.variant[variant]]">
+        <span :class="{ 'mt-[-50%]': isOverflowed }">
+            {{ formattedValue }}
+        </span>
+    </div>
+</template>
