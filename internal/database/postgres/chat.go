@@ -120,7 +120,7 @@ func (r *ChatRepository) FindByID(ctx context.Context, id int) (*domain.Chat, er
 		&lastMsg.IsViewed,
 	)
 	if err != nil {
-		return &domain.Chat{}, err
+		return nil, err
 	}
 
 	if lastMsg.ID != nil {
@@ -170,7 +170,7 @@ func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*dom
 			&cht.JoinByRequest,
 		)
 		if err != nil {
-			return []*domain.Chat{}, err
+			return nil, err
 		}
 
 		chats = append(chats, &cht)
@@ -283,7 +283,7 @@ func (r *ChatRepository) FindForUser(ctx context.Context, userID int, limit, off
 			&lastMsg.IsViewed,
 		)
 		if err != nil {
-			return []*domain.Chat{}, err
+			return nil, err
 		}
 
 		if lastMsg.ID != nil {
