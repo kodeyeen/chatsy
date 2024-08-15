@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { ref } from 'vue'
 
 import TheHeader from '@/components/TheHeader.vue'
