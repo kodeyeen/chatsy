@@ -552,7 +552,6 @@ const onContextMenu = (event: any, message: any) => {
                                         <MessageCard
                                             v-for="(message, index) in messages"
                                             :key="message.id"
-                                            ref="messageCards"
                                             :class="{
                                                 own: message.senderId === auth.currentUser?.id,
                                                 selected: contextMenuMessage?.id === message.id,
