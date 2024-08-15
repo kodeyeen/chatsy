@@ -35,10 +35,12 @@ func (s *Service) Create(ctx context.Context, req *api.CreateMessageRequest, sen
 		return nil, err
 	}
 
+	tmp := "tmp"
+
 	msg := &domain.Message{
 		ChatID:     req.ChatID,
 		SenderID:   sender.ID,
-		SenderName: sender.Name,
+		SenderName: &tmp,
 		AuthorName: req.AuthorName,
 		OriginalID: req.OriginalID,
 		ParentID:   req.ParentID,
