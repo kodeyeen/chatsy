@@ -38,6 +38,7 @@ import MessageSendForm from '@/components/MessageSendForm.vue'
 import MessageDeleteForm from '@/components/MessageDeleteForm.vue'
 import Popup from '@/components/Popup.vue'
 import PopupConfirm from '@/components/PopupConfirm.vue'
+import PopupShare from '@/components/PopupShare.vue'
 
 const props = defineProps({
     chat: {
