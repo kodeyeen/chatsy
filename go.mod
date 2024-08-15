@@ -1,14 +1,11 @@
 module github.com/kodeyeen/chatsy
 
-go 1.22.1
-
-toolchain go1.22.3
+go 1.23
 
 require github.com/gorilla/websocket v1.5.0
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.0
-	github.com/google/uuid v1.6.0
 	github.com/ilyakaznacheev/cleanenv v1.5.0
 	github.com/jackc/pgerrcode v0.0.0-20220416144525-469b46aa5efa
 	github.com/jackc/pgx/v5 v5.5.1
@@ -22,7 +19,6 @@ require (
 	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
 	github.com/jackc/puddle/v2 v2.2.1 // indirect
 	github.com/joho/godotenv v1.5.1 // indirect
-	github.com/kodeyeen/event v1.0.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
 	github.com/rogpeppe/go-internal v1.12.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect

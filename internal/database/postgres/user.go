@@ -62,7 +62,6 @@ func (r *UserRepository) FindByID(ctx context.Context, ID int) (*domain.User, er
 			id,
 			first_name,
 			last_name,
-			CONCAT(first_name, ' ', last_name) AS name,
 			username,
 			email,
 			password_hash,
@@ -79,14 +78,13 @@ func (r *UserRepository) FindByID(ctx context.Context, ID int) (*domain.User, er
 		&usr.ID,
 		&usr.FirstName,
 		&usr.LastName,
-		&usr.Name,
 		&usr.Username,
 		&usr.Email,
 		&usr.PasswordHash,
 		&usr.JoinedAt,
 	)
 	if err != nil {
-		return &domain.User{}, err
+		return nil, err
 	}
 
 	return &usr, nil
@@ -107,14 +105,13 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*domain
 		&usr.ID,
 		&usr.FirstName,
 		&usr.LastName,
-		&usr.Name,
 		&usr.Username,
 		&usr.Email,
 		&usr.PasswordHash,
 		&usr.JoinedAt,
 	)
 	if err != nil {
-		return &domain.User{}, err
+		return nil, err
 	}
 
 	return &usr, nil
