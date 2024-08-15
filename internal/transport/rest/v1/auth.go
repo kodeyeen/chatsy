@@ -74,6 +74,7 @@ func (c *AuthController) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// TODO: inmemory accessToken and refreshToken in cookie
 	http.SetCookie(w, &http.Cookie{
 		Name:     "accessToken",
 		Value:    *loginResult.AccessToken,
