@@ -33,7 +33,7 @@ import LoginEnterArrowIcon from '@/components/icons/LoginEnterArrow.vue'
 import PenEditWriteIcon from '@/components/icons/PenEditWrite.vue'
 import InfoInformationCircleIcon from '@/components/icons/InfoInformationCircle.vue'
 import VolumeDisabledIcon from '@/components/icons/VolumeDisabled.vue'
-import MessageCard from '@/components/MessageCard.vue'
+import MessageBubble from '@/components/MessageBubble.vue'
 import MessageSendForm from '@/components/MessageSendForm.vue'
 import MessageDeleteForm from '@/components/MessageDeleteForm.vue'
 import Popup from '@/components/Popup.vue'
@@ -145,7 +145,7 @@ const formatDate = (date: Date) => {
 }
 
 const selectedMessages = ref<any[]>([])
-const messageCards = ref([])
+const MessageBubbles = ref([])
 const scrollableContainer = ref<HTMLElement | null>(null)
 const messageForm = ref<HTMLFormElement | null>(null)
 const topSpinner = ref(null)
@@ -549,7 +549,7 @@ const onContextMenu = (event: any, message: any) => {
                                     </div>
 
                                     <div class="flex flex-col-reverse">
-                                        <MessageCard
+                                        <MessageBubble
                                             v-for="(message, index) in messages"
                                             :key="message.id"
                                             :class="{
