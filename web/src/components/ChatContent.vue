@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
-import { useClipboard } from '@vueuse/core'
 import { Tippy } from 'vue-tippy'
+
+import type { Chat } from '@/models/chat'
 
 import { useAuthStore } from '@/stores/auth'
 import { useChatsStore } from '@/stores/chats'
@@ -40,12 +41,9 @@ import Popup from '@/components/Popup.vue'
 import PopupConfirm from '@/components/PopupConfirm.vue'
 import PopupShare from '@/components/PopupShare.vue'
 
-const props = defineProps({
-    chat: {
-        type: Object,
-        required: true,
-    },
-})
+const props = defineProps<{
+    chat: Chat,
+}>()
 
 const emit = defineEmits(['forwardMessages'])
 
@@ -83,6 +81,78 @@ const messages = ref<any | null>([
         senderName: 'kek123',
         senderId: 3,
         text: 'September',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 4,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'September',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 5,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'September',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 6,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'September',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 7,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'September',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 8,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'loremfsda lf jdsaof jsdauig hdafigu jdsoif jdsaui gfmadspof jasdi fundsaijfkdslajf lkasdj f',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 9,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'September',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 10,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'loremfsda lf jdsaof jsdauig hdafigu jdsoif jdsaui gfmadspof jasdi fundsaijfkdslajf lkasdj f',
+        sentAt: new Date(2024, 7, 12).toString(),
+        isViewed: false,
+    },
+    {
+        id: 11,
+        authorName: 'September',
+        senderName: 'kek123',
+        senderId: 3,
+        text: 'loremfsda lf jdsaof jsdauig hdafigu jdsoif jdsaui gfmadspof jasdi fundsaijfkdslajf lkasdj f',
         sentAt: new Date(2024, 7, 12).toString(),
         isViewed: false,
     },
@@ -187,514 +257,510 @@ const onContextMenu = (event: any, message: any) => {
 
 <template>
     <div class="relative flex h-full">
-        <div class="relative bg-[#EEEAE3] grow">
+        <div v-if="chat" class="relative grow flex flex-col h-full">
             <div
-                class="absolute top-0 left-0 w-full h-full bg-[url('@/assets/images/bg.png')] bg-[length:670px] bg-[0_0] opacity-[.25] pointer-events-none"
+                id="messageSearchBar"
+                class="2md:hidden"
+                :class="{ hidden: !isSearching }"
             ></div>
+            <div class="shrink-0" :class="{ 'hidden 2md:block': isSearching }">
+                <ChatTopBar
+                    class="flex items-center gap-x-[16px] px-[12px] 2md:px-[20px] pt-[6px] pb-[5px]"
+                >
+                    <div class="shrink-0">
+                        <RouterLink v-if="chat.type === 'dialog'" class="block" to="/chats">
+                            <Avatar class="w-[44px] h-[44px] rounded-full" />
+                        </RouterLink>
+                        <button
+                            v-else-if="chat.type === 'group'"
+                            class="block"
+                            type="button"
+                            @click="store.currentState = store.State.CHAT_DETAIL"
+                        >
+                            <Avatar class="w-[44px] h-[44px] rounded-full" />
+                        </button>
+                    </div>
 
-            <div class="relative flex flex-col h-full">
-                <div
-                    id="messageSearchBar"
-                    class="2md:hidden"
-                    :class="{ hidden: !isSearching }"
-                ></div>
-                <div class="shrink-0" :class="{ 'hidden 2md:block': isSearching }">
-                    <ChatTopBar
-                        class="flex items-center gap-x-[16px] px-[12px] 2md:px-[20px] py-[6px]"
-                    >
-                        <div class="shrink-0">
-                            <RouterLink v-if="chat.type === 'dialog'" to="/chats">
-                                <Avatar class="w-[44px] h-[44px] rounded-full" />
+                    <div class="grow flex flex-col items-start">
+                        <div class="flex items-center gap-x-[4px]">
+                            <RouterLink
+                                v-if="chat.type === 'dialog'"
+                                class="whitespace-nowrap"
+                                to="/chats"
+                            >
+                                <span>
+                                    {{ chat.title }}
+                                </span>
                             </RouterLink>
                             <button
-                                v-else-if="chat.type === 'group'"
+                                v-else
+                                class="whitespace-nowrap"
                                 type="button"
                                 @click="store.currentState = store.State.CHAT_DETAIL"
                             >
-                                <Avatar class="w-[44px] h-[44px] rounded-full" />
+                                <span>
+                                    {{ chat.title }}
+                                </span>
                             </button>
+
+                            <MuteIcon
+                                v-if="!chat.areNotificationsEnabled"
+                                class="text-primary-seattle-100"
+                                :width="24"
+                                :height="24"
+                            />
                         </div>
 
-                        <div class="grow flex flex-col items-start">
-                            <div class="flex items-center gap-x-[4px]">
-                                <RouterLink
-                                    v-if="chat.type === 'dialog'"
-                                    class="whitespace-nowrap"
-                                    to="/chats"
-                                >
-                                    <span>
-                                        {{ chat.title }}
-                                    </span>
-                                </RouterLink>
-                                <button
-                                    v-else
-                                    class="whitespace-nowrap"
-                                    type="button"
-                                    @click="store.currentState = store.State.CHAT_DETAIL"
-                                >
-                                    <span>
-                                        {{ chat.title }}
-                                    </span>
-                                </button>
+                        <button
+                            v-if="chat.type === 'group'"
+                            class="text-primary-seattle-100 text-[14px] leading-[18px]"
+                            type="button"
+                            @click="store.currentState = store.State.CHAT_DETAIL"
+                        >
+                            <!-- {{ chat.memberCount }} participants -->
+                            12 members
+                        </button>
+                    </div>
 
-                                <MuteIcon
-                                    v-if="!chat.areNotificationsEnabled"
-                                    class="text-primary-seattle-100"
-                                    :width="24"
-                                    :height="24"
+                    <div class="shrink-0 flex items-center gap-x-[8px]">
+                        <Button
+                            class="hidden 2md:flex w-[44px] h-[44px] !p-0"
+                            type="button"
+                            size="l"
+                            variant="ghost"
+                            @click="isSearching = true"
+                        >
+                            <SearchIcon :width="24" :height="24" />
+                        </Button>
+
+                        <Tippy
+                            v-if="chat.isJoined"
+                            theme="none"
+                            placement="bottom-end"
+                            trigger="click"
+                            :arrow="false"
+                            :duration="[0, 0]"
+                            :offset="[0, 4]"
+                            :zIndex="35"
+                            interactive
+                        >
+                            <Button
+                                class="2md:hidden w-[36px] h-[36px] !p-0"
+                                type="button"
+                                size="m"
+                                variant="ghost"
+                                :disabled="isSelecting"
+                                @click="popupsStore.show('topBarMenuPopup')"
+                            >
+                                <DotsMenuIcon
+                                    class="rotate-90 w-[20px] h-[20px] 2md:w-[24px] 2md:h-[24px]"
                                 />
-                            </div>
-
-                            <button
-                                v-if="chat.type === 'group'"
-                                class="text-primary-seattle-100 text-[14px] leading-[18px]"
-                                type="button"
-                                @click="store.currentState = store.State.CHAT_DETAIL"
-                            >
-                                {{ chat.participantCount }} participants
-                            </button>
-                        </div>
-
-                        <div class="shrink-0 flex items-center gap-x-[8px]">
+                            </Button>
                             <Button
                                 class="hidden 2md:flex w-[44px] h-[44px] !p-0"
                                 type="button"
                                 size="l"
                                 variant="ghost"
-                                @click="isSearching = true"
+                                :disabled="isSelecting"
+                                @click="popupsStore.show('topBarMenuPopup')"
                             >
-                                <SearchIcon :width="24" :height="24" />
+                                <DotsMenuIcon
+                                    class="rotate-90 w-[20px] h-[20px] 2md:w-[24px] 2md:h-[24px]"
+                                />
                             </Button>
 
-                            <Tippy
-                                v-if="chat.isJoined"
-                                theme="none"
-                                placement="bottom-end"
-                                trigger="click"
-                                :arrow="false"
-                                :duration="[0, 0]"
-                                :offset="[0, 4]"
-                                :zIndex="35"
-                                interactive
-                            >
-                                <Button
-                                    class="2md:hidden w-[36px] h-[36px] !p-0"
-                                    type="button"
-                                    size="m"
-                                    variant="ghost"
-                                    :disabled="isSelecting"
-                                    @click="popupsStore.show('topBarMenuPopup')"
+                            <template #content="{ hide }">
+                                <OptionsMenu
+                                    v-if="chat.type === 'dialog'"
+                                    class="hidden md:block min-w-[260px] max-h-max"
                                 >
-                                    <DotsMenuIcon
-                                        class="rotate-90 w-[20px] h-[20px] 2md:w-[24px] 2md:h-[24px]"
-                                    />
-                                </Button>
-                                <Button
-                                    class="hidden 2md:flex w-[44px] h-[44px] !p-0"
-                                    type="button"
-                                    size="l"
-                                    variant="ghost"
-                                    :disabled="isSelecting"
-                                    @click="popupsStore.show('topBarMenuPopup')"
-                                >
-                                    <DotsMenuIcon
-                                        class="rotate-90 w-[20px] h-[20px] 2md:w-[24px] 2md:h-[24px]"
-                                    />
-                                </Button>
-
-                                <template #content="{ hide }">
-                                    <OptionsMenu
-                                        v-if="chat.type === 'dialog'"
-                                        class="hidden md:block min-w-[260px] max-h-max"
-                                    >
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                text="User profile"
-                                                type="link"
-                                                to="/chats"
-                                            >
-                                                <template #start>
-                                                    <SingleUserIcon :width="20" :height="20" />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
-
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                text="Select messages"
-                                                type="button"
-                                                @click="isSelecting = true"
-                                            >
-                                                <template #start>
-                                                    <CheckmarkBigCircleIcon
-                                                        :width="20"
-                                                        :height="20"
-                                                    />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
-
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                :text="
-                                                    chat.areNotificationsEnabled
-                                                        ? 'Mute notifications'
-                                                        : 'Unmute notifications'
-                                                "
-                                                type="button"
-                                                click="onNotificationsToggle"
-                                            >
-                                                <template #start>
-                                                    <VolumeDisabledIcon
-                                                        v-if="!chat.areNotificationsEnabled"
-                                                        :width="20"
-                                                        :height="20"
-                                                    />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
-
-                                        <OptionItem v-if="false" @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                text="Block user"
-                                                type="button"
-                                            >
-                                                <template #start>
-                                                    <LockIcon :width="20" :height="20" />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
-
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                text="Share profile"
-                                                type="button"
-                                                @click="popupsStore.show('userSharePopup')"
-                                            >
-                                                <template #start>
-                                                    <ShareArrowIcon :width="20" :height="20" />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
-
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px] text-utilitarian-moscow-100"
-                                                text="Delete chat"
-                                                type="button"
-                                                @click="
-                                                    popupsStore.show('confirmChatDeletionPopup')
-                                                "
-                                            >
-                                                <template #start>
-                                                    <TrashDeleteBinIcon :width="20" :height="20" />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
-                                    </OptionsMenu>
-                                    <OptionsMenu
-                                        v-else-if="chat.type === 'group'"
-                                        class="hidden md:block min-w-[260px] max-h-max"
-                                    >
-                                        <OptionItem
-                                            v-if="chat.owner_id === auth.currentUser?.id"
-                                            @click="hide()"
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            text="User profile"
+                                            type="link"
+                                            to="/chats"
                                         >
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                text="Edit"
-                                                type="button"
-                                                @click="
-                                                    store.currentState = store.State.CHAT_EDIT_FORM
-                                                "
-                                            >
-                                                <template #start>
-                                                    <PenEditWriteIcon :width="20" :height="20" />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
+                                            <template #start>
+                                                <SingleUserIcon :width="20" :height="20" />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
 
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                text="Details"
-                                                type="button"
-                                                @click="
-                                                    store.currentState = store.State.CHAT_DETAIL
-                                                "
-                                            >
-                                                <template #start>
-                                                    <InfoInformationCircleIcon
-                                                        :width="20"
-                                                        :height="20"
-                                                    />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            text="Select messages"
+                                            type="button"
+                                            @click="isSelecting = true"
+                                        >
+                                            <template #start>
+                                                <CheckmarkBigCircleIcon
+                                                    :width="20"
+                                                    :height="20"
+                                                />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
 
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                class="gap-x-[6px]"
-                                                :text="
-                                                    chat.areNotificationsEnabled
-                                                        ? 'Mute notifications'
-                                                        : 'Unmute notifications'
-                                                "
-                                                type="button"
-                                                click="onNotificationsToggle"
-                                            >
-                                                <template #start>
-                                                    <VolumeDisabledIcon
-                                                        v-if="!chat.areNotificationsEnabled"
-                                                        :width="20"
-                                                        :height="20"
-                                                    />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            :text="
+                                                chat.areNotificationsEnabled
+                                                    ? 'Mute notifications'
+                                                    : 'Unmute notifications'
+                                            "
+                                            type="button"
+                                            click="onNotificationsToggle"
+                                        >
+                                            <template #start>
+                                                <VolumeDisabledIcon
+                                                    v-if="!chat.areNotificationsEnabled"
+                                                    :width="20"
+                                                    :height="20"
+                                                />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
 
-                                        <OptionItem @click="hide()">
-                                            <OptionButton
-                                                v-if="auth.currentUser?.id === chat.owner_id"
-                                                class="gap-x-[6px] text-utilitarian-moscow-100"
-                                                text="Delete and leave"
-                                                type="button"
-                                                click="onChatDelete"
-                                            >
-                                                <template #start>
-                                                    <TrashDeleteBinIcon :width="20" :height="20" />
-                                                </template>
-                                            </OptionButton>
-                                            <OptionButton
-                                                v-else
-                                                class="gap-x-[6px] text-utilitarian-moscow-100"
-                                                text="Leave group"
-                                                type="button"
-                                                click="onGroupLeave"
-                                            >
-                                                <template #start>
-                                                    <LoginEnterArrowIcon :width="20" :height="20" />
-                                                </template>
-                                            </OptionButton>
-                                        </OptionItem>
-                                    </OptionsMenu>
-                                </template>
-                            </Tippy>
-                        </div>
-                    </ChatTopBar>
+                                    <OptionItem v-if="false" @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            text="Block user"
+                                            type="button"
+                                        >
+                                            <template #start>
+                                                <LockIcon :width="20" :height="20" />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
 
-                    <ChatTopBar
-                        v-if="chat.type === 'group' && chat.join_request_count > 0"
-                        class="px-[20px] py-[6px]"
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            text="Share profile"
+                                            type="button"
+                                            @click="popupsStore.show('userSharePopup')"
+                                        >
+                                            <template #start>
+                                                <ShareArrowIcon :width="20" :height="20" />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
+
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px] text-utilitarian-moscow-100"
+                                            text="Delete chat"
+                                            type="button"
+                                            @click="
+                                                popupsStore.show('confirmChatDeletionPopup')
+                                            "
+                                        >
+                                            <template #start>
+                                                <TrashDeleteBinIcon :width="20" :height="20" />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
+                                </OptionsMenu>
+                                <OptionsMenu
+                                    v-else-if="chat.type === 'group'"
+                                    class="hidden md:block min-w-[260px] max-h-max"
+                                >
+                                    <OptionItem
+                                        xv-if="chat.owner_id === auth.currentUser?.id"
+                                        @click="hide()"
+                                    >
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            text="Edit"
+                                            type="button"
+                                            @click="
+                                                store.currentState = store.State.CHAT_EDIT_FORM
+                                            "
+                                        >
+                                            <template #start>
+                                                <PenEditWriteIcon :width="20" :height="20" />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
+
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            text="Details"
+                                            type="button"
+                                            @click="
+                                                store.currentState = store.State.CHAT_DETAIL
+                                            "
+                                        >
+                                            <template #start>
+                                                <InfoInformationCircleIcon
+                                                    :width="20"
+                                                    :height="20"
+                                                />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
+
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            class="gap-x-[6px]"
+                                            :text="
+                                                chat.areNotificationsEnabled
+                                                    ? 'Mute notifications'
+                                                    : 'Unmute notifications'
+                                            "
+                                            type="button"
+                                            click="onNotificationsToggle"
+                                        >
+                                            <template #start>
+                                                <VolumeDisabledIcon
+                                                    v-if="!chat.areNotificationsEnabled"
+                                                    :width="20"
+                                                    :height="20"
+                                                />
+                                            </template>
+                                        </OptionButton>
+                                    </OptionItem>
+
+                                    <OptionItem @click="hide()">
+                                        <OptionButton
+                                            xv-if="auth.currentUser?.id === chat.owner_id"
+                                            class="gap-x-[6px] text-utilitarian-moscow-100"
+                                            text="Delete and leave"
+                                            type="button"
+                                            click="onChatDelete"
+                                        >
+                                            <template #start>
+                                                <TrashDeleteBinIcon :width="20" :height="20" />
+                                            </template>
+                                        </OptionButton>
+                                        <!-- <OptionButton
+                                            v-else
+                                            class="gap-x-[6px] text-utilitarian-moscow-100"
+                                            text="Leave group"
+                                            type="button"
+                                            click="onGroupLeave"
+                                        >
+                                            <template #start>
+                                                <LoginEnterArrowIcon :width="20" :height="20" />
+                                            </template>
+                                        </OptionButton> -->
+                                    </OptionItem>
+                                </OptionsMenu>
+                            </template>
+                        </Tippy>
+                    </div>
+                </ChatTopBar>
+
+                <ChatTopBar
+                    xv-if="chat.type === 'group' && chat.join_request_count > 0"
+                    class="px-[20px] pt-[6px] pb-[5px]"
+                >
+                    <GhostButton
+                        class="w-full gap-x-[12px] justify-center"
+                        type="button"
+                        size="l-medium"
+                        variant="link"
+                        @click="store.currentState = store.State.CHAT_JOIN_REQUESTS"
                     >
-                        <GhostButton
-                            class="w-full gap-x-[12px] justify-center"
-                            type="button"
-                            size="l-medium"
-                            variant="link"
-                            @click="store.currentState = store.State.CHAT_JOIN_REQUESTS"
-                        >
-                            <Avatar class="w-[28px] h-[28px] rounded-full" />
+                        <Avatar class="w-[28px] h-[28px] rounded-full" />
 
-                            <span> 12 join requests </span>
-                        </GhostButton>
-                    </ChatTopBar>
-                </div>
+                        <span> 12 join requests </span>
+                    </GhostButton>
+                </ChatTopBar>
+            </div>
 
-                <div class="relative grow">
+            <div class="relative grow">
+                <div
+                    ref="scrollableContainer"
+                    class="absolute top-0 left-0 w-full h-full flex flex-col-reverse overflow-x-hidden overflow-y-auto scrollbar pb-[10px]"
+                    @scroll="scrollTop = ($event.currentTarget as HTMLDivElement).scrollTop"
+                >
                     <div
-                        ref="scrollableContainer"
-                        class="absolute top-0 left-0 w-full h-full flex flex-col-reverse overflow-x-hidden overflow-y-auto scrollbar pb-[10px]"
-                        @scroll="scrollTop = ($event.currentTarget as HTMLDivElement).scrollTop"
+                        v-if="isFetchingMessages"
+                        class="flex justify-center items-center h-full"
                     >
+                        <SpinnerIcon
+                            class="text-primary-brand-accent animate-spin"
+                            :width="32"
+                            :height="32"
+                        />
+                    </div>
+                    <div v-else>
                         <div
-                            v-if="isFetchingMessages"
-                            class="flex justify-center items-center h-full"
+                            v-if="count && offsetEnd + limit < count"
+                            class="flex justify-center items-center py-[16px]"
                         >
-                            <SpinnerIcon
-                                class="text-primary-brand-accent animate-spin"
-                                :width="32"
-                                :height="32"
-                            />
+                            <span ref="topSpinner">
+                                <SpinnerIcon
+                                    class="text-primary-brand-accent animate-spin"
+                                    :width="32"
+                                    :height="32"
+                                />
+                            </span>
                         </div>
-                        <div v-else>
-                            <div
-                                v-if="count && offsetEnd + limit < count"
-                                class="flex justify-center items-center py-[16px]"
-                            >
-                                <span ref="topSpinner">
-                                    <SpinnerIcon
-                                        class="text-primary-brand-accent animate-spin"
-                                        :width="32"
-                                        :height="32"
-                                    />
-                                </span>
-                            </div>
 
-                            <div class="flex flex-col-reverse">
-                                <div v-for="(messages, date) in groupedMessages" :key="date">
-                                    <div
-                                        class="sticky top-[10px] z-[11] flex justify-center my-[10px] pointer-events-none"
+                        <div class="flex flex-col-reverse">
+                            <div v-for="(messages, date) in groupedMessages" :key="date">
+                                <div
+                                    class="sticky top-[10px] z-[11] flex justify-center my-[10px] pointer-events-none"
+                                >
+                                    <span
+                                        class="pointer-events-auto px-[8px] py-[2px] rounded-[6px] text-m-14 text-primary-seattle-120 bg-primary-brand-white shadow-[0px_1px_1px_0px_rgba(0,0,0,0.16)]"
                                     >
-                                        <span
-                                            class="pointer-events-auto px-[8px] py-[2px] rounded-[6px] text-m-14 text-primary-seattle-120 bg-primary-brand-white shadow-[0px_1px_1px_0px_rgba(0,0,0,0.16)]"
-                                        >
-                                            {{ date }}
-                                        </span>
-                                    </div>
+                                        {{ date }}
+                                    </span>
+                                </div>
 
-                                    <div class="flex flex-col-reverse">
-                                        <MessageBubble
-                                            v-for="(message, index) in messages"
-                                            :key="message.id"
-                                            :class="{
-                                                own: message.senderId === auth.currentUser?.id,
-                                                selected: contextMenuMessage?.id === message.id,
-                                            }"
-                                            :message="message"
-                                            :selectable="isSelecting"
-                                            :own="message.senderId === auth.currentUser?.id"
-                                            :showUserInfo="chat.type === 'group'"
-                                            :firstInGroup="
-                                                store.isFirstInGroup(messages, message, index)
-                                            "
-                                            :lastInGroup="
-                                                store.isLastInGroup(messages, message, index)
-                                            "
-                                            v-model="selectedMessages"
-                                            :data-message-id="message.id"
-                                            @contextmenu="onContextMenu($event, message)"
-                                            parentClick="onParentClick"
-                                        />
-                                    </div>
+                                <div class="flex flex-col-reverse">
+                                    <MessageBubble
+                                        v-for="(message, index) in messages"
+                                        :key="message.id"
+                                        :class="{
+                                            own: message.senderId === auth.currentUser?.id,
+                                            selected: contextMenuMessage?.id === message.id,
+                                        }"
+                                        :message="message"
+                                        :selectable="isSelecting"
+                                        :own="message.senderId === auth.currentUser?.id"
+                                        :showUserInfo="chat.type === 'group'"
+                                        :firstInGroup="
+                                            store.isFirstInGroup(messages, message, index)
+                                        "
+                                        :lastInGroup="
+                                            store.isLastInGroup(messages, message, index)
+                                        "
+                                        v-model="selectedMessages"
+                                        :data-message-id="message.id"
+                                        @contextmenu="onContextMenu($event, message)"
+                                        parentClick="onParentClick"
+                                    />
                                 </div>
                             </div>
+                        </div>
 
-                            <div
-                                v-if="offsetStart > 0"
-                                class="flex justify-center items-center py-[16px]"
-                            >
-                                <span ref="bottomSpinner">
-                                    <SpinnerIcon
-                                        class="text-primary-brand-accent animate-spin"
-                                        :width="32"
-                                        :height="32"
-                                    />
-                                </span>
-                            </div>
+                        <div
+                            v-if="offsetStart > 0"
+                            class="flex justify-center items-center py-[16px]"
+                        >
+                            <span ref="bottomSpinner">
+                                <SpinnerIcon
+                                    class="text-primary-brand-accent animate-spin"
+                                    :width="32"
+                                    :height="32"
+                                />
+                            </span>
                         </div>
                     </div>
                 </div>
+            </div>
 
+            <div
+                id="messageSearchNav"
+                class="2md:hidden"
+                :class="{ hidden: !isSearching }"
+            ></div>
+            <div
+                class="shrink-0 px-[6px] 2md:px-[22px] pb-[6px] 2md:pb-[22px]"
+                :class="{ 'hidden 2md:block': isSearching }"
+            >
+                <div v-if="!chat.isJoined" class="max-w-[720px] mx-auto">
+                    <Button
+                        class="w-full"
+                        type="button"
+                        size="xl"
+                        variant="primary"
+                        click="onGroupJoin"
+                    >
+                        <span> Join the group </span>
+                    </Button>
+                </div>
                 <div
-                    id="messageSearchNav"
-                    class="2md:hidden"
-                    :class="{ hidden: !isSearching }"
-                ></div>
-                <div
-                    class="shrink-0 px-[6px] 2md:px-[22px] pb-[6px] 2md:pb-[22px]"
-                    :class="{ 'hidden 2md:block': isSearching }"
+                    v-else-if="isSelecting"
+                    class="flex justify-between items-center gap-x-[24px] max-w-[570px] mx-auto px-[12px] py-[14px] rounded-[12px] bg-primary-brand-white"
                 >
-                    <div v-if="!chat.isJoined" class="max-w-[720px] mx-auto">
+                    <GhostButton
+                        type="button"
+                        size="l-medium"
+                        variant="ghost-70"
+                        @click="
+                            selectedMessages = [];
+                            isSelecting = false
+                        "
+                    >
+                        <DeleteDisabledBigIcon :width="24" :height="24" />
+                    </GhostButton>
+
+                    <span
+                        class="grow text-l-long-16 font-medium text-primary-brand-onPrimary overflow-hidden text-ellipsis whitespace-nowrap"
+                    >
+                        <!-- {{ $tc('message', selectedMessages.length) }} -->
+                        15 messages
+                    </span>
+
+                    <GhostButton
+                        v-if="selectedMessages.length > 0"
+                        type="button"
+                        size="l-medium"
+                        variant="ghost-70"
+                        @click="popupsStore.show('forwardPopup')"
+                    >
+                        <ShareArrowIcon :width="24" :height="24" />
+
+                        <span> Forward </span>
+                    </GhostButton>
+
+                    <GhostButton
+                        v-if="selectedMessages.length > 0"
+                        type="button"
+                        size="l-medium"
+                        variant="primary"
+                        @click="popupsStore.show('deletionConfirmationPopup')"
+                    >
+                        <TrashDeleteBinIcon :width="24" :height="24" />
+
+                        <span> Delete </span>
+                    </GhostButton>
+                </div>
+                <MessageSendForm
+                    v-else
+                    ref="messageForm"
+                    class="mx-auto"
+                    :chat="chat"
+                    :parent="messageToReply"
+                    @cancelReplying="messageToReply = null"
+                    @toggleEmojiPicker="isPanelActive = !isPanelActive"
+                    @closeEmojiPicker="isPanelActive = false"
+                >
+                    <template #actions>
                         <Button
-                            class="w-full"
+                            class="translate-y-[calc(100%+12px)] pointer-events-auto w-[52px] px-[14px] rounded-full"
+                            :class="{
+                                'translate-y-0':
+                                    Math.abs(scrollTop) > 500 ||
+                                    (offsetEnd > 0 && Math.abs(scrollTop) > 500),
+                            }"
                             type="button"
                             size="xl"
-                            variant="primary"
-                            click="onGroupJoin"
+                            variant="white"
+                            click="onGoDown"
                         >
-                            <span> Join the group </span>
+                            <ArrowDownIcon :width="24" :height="24" />
                         </Button>
-                    </div>
-                    <div
-                        v-else-if="isSelecting"
-                        class="flex justify-between items-center gap-x-[24px] max-w-[570px] mx-auto px-[12px] py-[14px] rounded-[12px] bg-primary-brand-white"
-                    >
-                        <GhostButton
-                            type="button"
-                            size="l-medium"
-                            variant="ghost-70"
-                            @click="
-                                selectedMessages = [];
-                                isSelecting = false
-                            "
-                        >
-                            <DeleteDisabledBigIcon :width="24" :height="24" />
-                        </GhostButton>
-
-                        <span
-                            class="grow text-l-long-16 font-medium text-primary-brand-onPrimary overflow-hidden text-ellipsis whitespace-nowrap"
-                        >
-                            <!-- {{ $tc('message', selectedMessages.length) }} -->
-                            15 messages
-                        </span>
-
-                        <GhostButton
-                            v-if="selectedMessages.length > 0"
-                            type="button"
-                            size="l-medium"
-                            variant="ghost-70"
-                            @click="popupsStore.show('forwardPopup')"
-                        >
-                            <ShareArrowIcon :width="24" :height="24" />
-
-                            <span> Forward </span>
-                        </GhostButton>
-
-                        <GhostButton
-                            v-if="selectedMessages.length > 0"
-                            type="button"
-                            size="l-medium"
-                            variant="primary"
-                            @click="popupsStore.show('deletionConfirmationPopup')"
-                        >
-                            <TrashDeleteBinIcon :width="24" :height="24" />
-
-                            <span> Delete </span>
-                        </GhostButton>
-                    </div>
-                    <MessageSendForm
-                        v-else
-                        ref="messageForm"
-                        class="mx-auto"
-                        :chat="chat"
-                        :parent="messageToReply"
-                        @cancelReplying="messageToReply = null"
-                        @toggleEmojiPicker="isPanelActive = !isPanelActive"
-                        @closeEmojiPicker="isPanelActive = false"
-                    >
-                        <template #actions>
-                            <Button
-                                class="translate-y-[calc(100%+12px)] pointer-events-auto w-[52px] px-[14px] rounded-full"
-                                :class="{
-                                    'translate-y-0':
-                                        Math.abs(scrollTop) > 500 ||
-                                        (offsetEnd > 0 && Math.abs(scrollTop) > 500),
-                                }"
-                                type="button"
-                                size="xl"
-                                variant="white"
-                                click="onGoDown"
-                            >
-                                <ArrowDownIcon :width="24" :height="24" />
-                            </Button>
-                        </template>
-                    </MessageSendForm>
-                </div>
-
-                <div
-                    id="emojiPanel"
-                    class="md:hidden h-0 overflow-hidden transition-[height]"
-                    :class="{
-                        'h-[275px]': isPanelActive,
-                    }"
-                ></div>
+                    </template>
+                </MessageSendForm>
             </div>
+
+            <div
+                id="emojiPanel"
+                class="md:hidden h-0 overflow-hidden transition-[height]"
+                :class="{
+                    'h-[275px]': isPanelActive,
+                }"
+            ></div>
         </div>
 
         <div
@@ -799,7 +865,7 @@ const onContextMenu = (event: any, message: any) => {
                 </template>
             </Tippy>
 
-            <Popup id="topBarMenuPopup" class="md:hidden" contentClass="pt-[10px] px-[6px]">
+            <Popup v-if="chat" id="topBarMenuPopup" class="md:hidden" contentClass="pt-[10px] px-[6px]">
                 <OptionsMenu v-if="chat.type === 'dialog'" class="max-h-max p-0 shadow-none">
                     <OptionItem>
                         <OptionButton
@@ -930,7 +996,7 @@ const onContextMenu = (event: any, message: any) => {
                         </OptionButton>
                     </OptionItem>
 
-                    <OptionItem v-if="chat.owner_id === auth.currentUser?.id">
+                    <OptionItem xv-if="chat.owner_id === auth.currentUser?.id">
                         <OptionButton
                             class="gap-x-[6px]"
                             text="Edit"
@@ -986,7 +1052,7 @@ const onContextMenu = (event: any, message: any) => {
 
                     <OptionItem>
                         <OptionButton
-                            v-if="auth.currentUser?.id === chat.owner_id"
+                            xv-if="auth.currentUser?.id === chat.owner_id"
                             class="gap-x-[6px] text-utilitarian-moscow-100"
                             text="Delete and leave"
                             type="button"
@@ -997,7 +1063,7 @@ const onContextMenu = (event: any, message: any) => {
                                 <TrashDeleteBinIcon :width="20" :height="20" />
                             </template>
                         </OptionButton>
-                        <OptionButton
+                        <!-- <OptionButton
                             v-else
                             class="gap-x-[6px] text-utilitarian-moscow-100"
                             text="Leave group"
@@ -1008,7 +1074,7 @@ const onContextMenu = (event: any, message: any) => {
                             <template #start>
                                 <LoginEnterArrowIcon :width="20" :height="20" />
                             </template>
-                        </OptionButton>
+                        </OptionButton> -->
                     </OptionItem>
                 </OptionsMenu>
 
@@ -1052,7 +1118,7 @@ const onContextMenu = (event: any, message: any) => {
             />
 
             <PopupShare
-                v-if="chat.type === 'dialog'"
+                v-if="chat && chat.type === 'dialog'"
                 id="userSharePopup"
                 url="/"
                 title="Full Name"

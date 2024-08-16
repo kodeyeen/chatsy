@@ -10,10 +10,10 @@ const props = defineProps<{
 }>()
 
 const style: any = {
-    base: 'block w-full h-full px-[11px] py-[9px] border focus:border-primary-seattle-140 hover:border-primary-seattle-140 rounded-[8px] text-primary-brand-primary bg-primary-brand-white text-[16px] focus-visible:outline-none focus:placeholder:text-transparent transition-colors outline-none disabled:border-primary-seattle-30 disabled:bg-primary-brand-wildSand disabled:cursor-not-allowed disabled:border-primary-seattle-30 disabled:bg-primary-brand-wildSand disabled:cursor-not-allowed hover:border-primary-seattle-140 focus:border-primary-seattle-140',
+    base: 'block w-full border focus:border-primary-seattle-140 hover:border-primary-seattle-140 rounded-[8px] text-primary-brand-primary bg-primary-brand-white focus-visible:outline-none focus:placeholder:text-transparent transition-colors outline-none disabled:border-primary-seattle-30 disabled:bg-primary-brand-wildSand disabled:cursor-not-allowed disabled:border-primary-seattle-30 disabled:bg-primary-brand-wildSand disabled:cursor-not-allowed hover:border-primary-seattle-140 focus:border-primary-seattle-140',
     size: {
         l: 'h-[44px] px-[11px] py-[9px] text-l-long-16',
-        m: 'px-[11px] py-[7px] text-m-14',
+        m: 'h-[36px] px-[11px] py-[7px] text-m-14',
         s: 'px-[11px] py-[5px] text-m-14',
     },
     variant: {

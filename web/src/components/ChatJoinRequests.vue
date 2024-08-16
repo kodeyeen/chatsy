@@ -12,7 +12,7 @@ const store = useChatsStore()
 </script>
 
 <template>
-    <div class="flex flex-col h-full bg-primary-brand-wildSand">
+    <div class="relative flex flex-col h-full bg-primary-brand-wildSand">
         <ChatTopBar class="shrink-0 flex justify-between px-[20px] py-[16px]">
             <div>
                 <GhostButton

@@ -57,7 +57,7 @@ watch(filter, (newFilter) => {
                     interactive
                 >
                     <Button
-                        class="w-[36px] px-[7px]"
+                        class="w-[36px] h-[36px] !p-0"
                         type="button"
                         size="m"
                         variant="ghost"
@@ -99,7 +99,7 @@ watch(filter, (newFilter) => {
             </div>
         </div>
 
-        <div class="px-[16px] py-[8px] border-b border-b-primary-london-110 bg-primary-brand-white">
+        <div class="px-[16px] pt-[8px] pb-[10px] border-b border-b-primary-london-110 bg-primary-brand-white">
             <Input type="search" size="m" variant="filled" placeholder="Search" xv-model="filter">
                 <template #start>
                     <SearchIcon

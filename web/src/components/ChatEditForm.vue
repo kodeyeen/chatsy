@@ -86,7 +86,7 @@ const onChatDelete = () => {
 
 <template>
     <form
-        class="flex flex-col h-full bg-primary-brand-wildSand"
+        class="relative flex flex-col h-full bg-primary-brand-wildSand"
         action="#"
         method="POST"
         @submit.prevent="submit()"
