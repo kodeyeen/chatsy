@@ -13,19 +13,14 @@ const props = withDefaults(
     defineProps<{
         message: any
         modelValue: any
-        selectable: boolean
-        own: boolean
-        firstInGroup: boolean
-        lastInGroup: boolean
-        showUserInfo: boolean
+        selectable?: boolean
+        own?: boolean
+        firstInGroup?: boolean
+        lastInGroup?: boolean
+        showUserInfo?: boolean
     }>(),
     {
         modelValue: [],
-        selectable: false,
-        own: false,
-        firstInGroup: false,
-        lastInGroup: false,
-        showUserInfo: false,
     },
 )
 
