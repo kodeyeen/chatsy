@@ -82,9 +82,10 @@ const onParentClick = () => {
         @click="onSelect"
     >
         <div
-            class="relative flex [.own_&]:justify-end max-w-[720px] mx-auto 2md:pr-[52px]"
+            class="relative flex max-w-[720px] mx-auto 2md:pr-[52px]"
             :class="{
                 'pl-[53px]': own && showUserInfo,
+                'justify-end': own,
             }"
         >
             <Checkbox
@@ -111,27 +112,35 @@ const onParentClick = () => {
                     <Avatar class="w-[44px] h-[44px] rounded-full" />
                 </RouterLink>
 
-                <div class="flex [.own_&]:flex-row-reverse items-end max-w-[426px]">
+                <div
+                    class="flex items-end max-w-[426px]"
+                    :class="{
+                        'flex-row-reverse': own,
+                    }"
+                >
                     <CornerIcon
-                        class="shrink-0 text-primary-brand-white [.own_&]:text-[rgba(241,254,225,1)] [.own_&]:-scale-x-100"
+                        class="shrink-0 text-primary-brand-white"
                         :class="{
-                            invisible: !lastInGroup,
+                            'invisible': !lastInGroup,
+                            '!text-[rgba(241,254,225,1)] -scale-x-100': own,
                         }"
                         :width="9"
                         :height="16"
                     />
 
                     <div
-                        class="relative grow flex flex-col items-start max-w-[417px] px-[12px] py-[6px] rounded-[12px] [.own_&]:rounded-bl-[12px] bg-primary-brand-white [.own_&]:bg-[rgba(241,254,225,1)]"
+                        class="relative grow flex flex-col items-start max-w-[417px] px-[12px] py-[6px] rounded-[12px] bg-primary-brand-white"
                         :class="{
-                            'rounded-bl-none [.own_&]:rounded-br-none': lastInGroup,
+                            'rounded-bl-none': !own && lastInGroup,
+                            'rounded-br-none': own && lastInGroup,
+                            '!bg-[rgba(241,254,225,1)]': own,
                         }"
                     >
                         <div
                             v-if="(firstInGroup && showUserInfo) || message.originalId"
                             class="flex items-center gap-x-[4px]"
                             :class="{
-                                '[.own_&]:hidden': !message.originalId,
+                                '!hidden': own && !message.originalId,
                             }"
                         >
                             <span v-if="message.originalId" class="flex items-center gap-x-[4px]">
@@ -177,7 +186,12 @@ const onParentClick = () => {
                                     class="inline font-[inherit] whitespace-pre-wrap"
                                     v-html="formattedText"
                                 ></pre>
-                                <span class="inline-block w-[44px] [.own_&]:w-[61px]"></span>
+                                <span
+                                    class="inline-block w-[44px]"
+                                    :class="{
+                                        '!w-[61px]': own,
+                                    }"
+                                ></span>
                             </div>
 
                             <!-- <div class="flex flex-col items-start mt-[8px]">
@@ -200,13 +214,19 @@ const onParentClick = () => {
 
                             <ReadIcon
                                 v-if="message.isViewed"
-                                class="hidden [.own_&]:block text-utilitarian-geneva-100"
+                                class="hidden text-utilitarian-geneva-100"
+                                :class="{
+                                    '!block': own,
+                                }"
                                 :width="17"
                                 :height="17"
                             />
                             <CheckIcon
                                 v-else
-                                class="hidden [.own_&]:block text-utilitarian-geneva-100"
+                                class="hidden text-utilitarian-geneva-100"
+                                :class="{
+                                    '!block': own,
+                                }"
                                 :width="17"
                                 :height="17"
                             />
