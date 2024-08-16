@@ -113,7 +113,7 @@ func (r *MessageRepository) FindForChat(ctx context.Context, chatID int, limit, 
 			&msg.IsViewed,
 		)
 		if err != nil {
-			return []*domain.Message{}, err
+			return nil, err
 		}
 
 		msgs = append(msgs, &msg)
