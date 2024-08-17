@@ -1,4 +1,4 @@
-<script setup>
+<script lang="ts" setup>
 import { computed } from 'vue'
 
 import Button from '@/components/Button.vue'
@@ -6,21 +6,16 @@ import DoneCheckIcon from '@/components/icons/DoneCheck.vue'
 import PlusIcon from '@/components/icons/Plus.vue'
 import UserItem from '@/components/UserItem.vue'
 
-const props = defineProps({
-    user: {
-        type: Object,
+const props = withDefaults(
+    defineProps<{
+        user: any,
+        modelValue: any[],
+        disabled?: boolean,
+    }>(),
+    {
+        modelValue: [],
     },
-
-    modelValue: {
-        type: Array,
-        default: [],
-    },
-
-    disabled: {
-        type: Boolean,
-        default: false,
-    },
-})
+)
 
 const emit = defineEmits(['update:modelValue'])
 
