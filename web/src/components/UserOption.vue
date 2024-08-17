@@ -6,16 +6,11 @@ import DoneCheckIcon from '@/components/icons/DoneCheck.vue'
 import PlusIcon from '@/components/icons/Plus.vue'
 import UserItem from '@/components/UserItem.vue'
 
-const props = withDefaults(
-    defineProps<{
-        user: any,
-        modelValue: any[],
-        disabled?: boolean,
-    }>(),
-    {
-        modelValue: [],
-    },
-)
+const props = defineProps<{
+    user: any,
+    modelValue: any,
+    disabled?: boolean,
+}>()
 
 const emit = defineEmits(['update:modelValue'])
 
@@ -30,12 +25,12 @@ const model = computed({
 })
 
 const isSelected = computed(() => {
-    return model.value.some((user) => user.id === props.user.id)
+    return model.value.some((user: any) => user.id === props.user.id)
 })
 
 const onSelect = () => {
     if (isSelected.value) {
-        model.value = model.value.filter((user) => user.id !== props.user.id)
+        model.value = model.value.filter((user: any) => user.id !== props.user.id)
     } else {
         model.value = [...model.value, props.user]
     }

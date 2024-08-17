@@ -106,6 +106,7 @@ defineExpose({
                     :class="{
                         active: index === activeUserIndex,
                     }"
+                    text=""
                     type="button"
                     @click="select(user)"
                 >
