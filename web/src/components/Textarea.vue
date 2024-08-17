@@ -41,20 +41,20 @@ const charNumber = ref(0)
 const counter = ref<any>(null)
 const field = ref(null)
 
-const autoresize = (fieldEl) => {
+const autoresize = (fieldEl: any) => {
     setTimeout(() => {
         fieldEl.style.height = 'auto'
         fieldEl.style.height = `${fieldEl.scrollHeight}px`
     }, 20)
 }
 
-const updateCharCounter = (fieldEl) => {
+const updateCharCounter = (fieldEl: any) => {
     charNumber.value = fieldEl.value.length
 
     counter.value?.classList.toggle('error', charNumber.value === props.maxlength)
 }
 
-const onInput = (event) => {
+const onInput = (event: any) => {
     const fieldEl = event.target
     autoresize(fieldEl)
 
