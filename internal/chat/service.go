@@ -10,7 +10,7 @@ import (
 type Repository interface {
 	Add(context.Context, *domain.Chat) error
 	FindByID(context.Context, int) (*domain.Chat, error)
-	FindForUser(ctx context.Context, userID int, limit, offset int) ([]*domain.Chat, error)
+	FindByUserID(ctx context.Context, userID int, limit, offset int) ([]*domain.Chat, error)
 	FindAllForUser(ctx context.Context, userID int) ([]*domain.Chat, error)
 	CountForUser(ctx context.Context, userID int) (int, error)
 }
@@ -82,7 +82,7 @@ func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*api.GetChat
 			JoinByLinkCount:         c.JoinByLinkCount,
 			IsPrivate:               c.IsPrivate,
 			IsJoined:                c.IsJoined,
-			ParticipantCount:        c.ParticipantCount,
+			MemberCount:             c.MemberCount,
 			AreNotificationsEnabled: c.AreNotificationsEnabled,
 			JoinByRequest:           c.JoinByRequest,
 		})
@@ -91,8 +91,8 @@ func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*api.GetChat
 	return resp, nil
 }
 
-func (s *Service) GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error) {
-	cs, err := s.chats.FindForUser(ctx, userID, limit, offset)
+func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error) {
+	cs, err := s.chats.FindByUserID(ctx, userID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func (s *Service) GetForUser(ctx context.Context, userID int, limit, offset int)
 			JoinByLinkCount:         c.JoinByLinkCount,
 			IsPrivate:               c.IsPrivate,
 			IsJoined:                c.IsJoined,
-			ParticipantCount:        c.ParticipantCount,
+			MemberCount:             c.MemberCount,
 			AreNotificationsEnabled: c.AreNotificationsEnabled,
 			JoinByRequest:           c.JoinByRequest,
 		}

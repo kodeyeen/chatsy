@@ -1,6 +1,6 @@
 @font-face {
     font-family: 'Golos Text';
-    src: url('GolosTextVF-Regular.woff2') format('woff2') url('GolosTextVF-Regular.woff')
+    src: url('@/assets/fonts/GolosTextVF-Regular.woff2') format('woff2') url('@/assets/fonts/GolosTextVF-Regular.woff')
         format('woff');
     font-weight: 1;
     font-style: normal;
@@ -8,21 +8,21 @@
 
 @font-face {
     font-family: 'Golos Text';
-    src: url('GolosText-Regular.woff2') format('woff2') url('GolosText-Regular.woff') format('woff');
+    src: url('@/assets/fonts/GolosText-Regular.woff2') format('woff2') url('@/assets/fonts/GolosText-Regular.woff') format('woff');
     font-weight: 400;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Golos Text';
-    src: url('GolosText-Medium.woff2') format('woff2') url('GolosText-Medium.woff') format('woff');
+    src: url('@/assets/fonts/GolosText-Medium.woff2') format('woff2') url('@/assets/fonts/GolosText-Medium.woff') format('woff');
     font-weight: 500;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Golos Text';
-    src: url('GolosText-DemiBold.woff2') format('woff2') url('GolosText-DemiBold.woff')
+    src: url('@/assets/fonts/GolosText-DemiBold.woff2') format('woff2') url('@/assets/fonts/GolosText-DemiBold.woff')
         format('woff');
     font-weight: 600;
     font-style: normal;
@@ -30,14 +30,14 @@
 
 @font-face {
     font-family: 'Golos Text';
-    src: url('GolosText-Bold.woff2') format('woff2') url('GolosText-Bold.woff') format('woff');
+    src: url('@/assets/fonts/GolosText-Bold.woff2') format('woff2') url('@/assets/fonts/GolosText-Bold.woff') format('woff');
     font-weight: 700;
     font-style: normal;
 }
 
 @font-face {
     font-family: 'Golos Text';
-    src: url('GolosText-Black.woff2') format('woff2') url('GolosText-Black.woff') format('woff');
+    src: url('@/assets/fonts/GolosText-Black.woff2') format('woff2') url('@/assets/fonts/GolosText-Black.woff') format('woff');
     font-weight: 900;
     font-style: normal;
 }

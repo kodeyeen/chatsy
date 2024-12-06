@@ -179,23 +179,35 @@ func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*dom
 	return chats, nil
 }
 
-func (r *ChatRepository) FindForUser(ctx context.Context, userID int, limit, offset int) ([]*domain.Chat, error) {
+func (r *ChatRepository) FindByUserID(ctx context.Context, userID int, limit, offset int) ([]*domain.Chat, error) {
 	query := `
 		SELECT
 			c.id,
 			c.type,
-			c.title,
+			CASE
+				WHEN c.type = 'group' THEN c.title
+				ELSE (
+					SELECT CONCAT(u.first_name, ' ', u.last_name)
+					FROM memberships p
+					INNER JOIN users u ON u.id = p.user_id
+					WHERE p.chat_id = c.id AND p.user_id != @user_id
+				)
+			END AS title,
 			c.description,
 			c.invite_hash,
 			c.join_by_link_count,
 			c.is_private,
 			c.join_by_request,
-			TRUE as is_joined,
+			EXISTS (
+				SELECT 1
+				FROM memberships p
+				WHERE p.chat_id = c.id AND p.user_id = @user_id
+			) as is_joined,
 			(
 				SELECT COUNT(*)
 				FROM memberships p
 				WHERE p.chat_id = c.id
-			) as participant_count,
+			) as member_count,
 			(
 				SELECT p.are_notifications_enabled
 				FROM memberships p
@@ -205,7 +217,7 @@ func (r *ChatRepository) FindForUser(ctx context.Context, userID int, limit, off
 		FROM
 			chats c
 		INNER JOIN
-			memberships p ON c.id = p.chat_id
+			memberships p ON c.id = p.chat_id AND p.user_id = @user_id
 		LEFT JOIN LATERAL (
 			SELECT
 				m.id,
@@ -240,8 +252,7 @@ func (r *ChatRepository) FindForUser(ctx context.Context, userID int, limit, off
 				m.sent_at DESC
 			LIMIT 1
 		) m ON true
-		WHERE
-			p.user_id = @user_id
+		ORDER BY m.sent_at DESC
 		LIMIT @limit OFFSET @offset
 	`
 	args := pgx.NamedArgs{
@@ -268,7 +279,7 @@ func (r *ChatRepository) FindForUser(ctx context.Context, userID int, limit, off
 			&cht.IsPrivate,
 			&cht.JoinByRequest,
 			&cht.IsJoined,
-			&cht.ParticipantCount,
+			&cht.MemberCount,
 			&cht.AreNotificationsEnabled,
 
 			&lastMsg.ID,

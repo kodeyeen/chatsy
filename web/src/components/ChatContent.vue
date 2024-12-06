@@ -3,11 +3,14 @@ import { ref, computed, watch, nextTick, onMounted } from 'vue'
 import { useIntersectionObserver } from '@vueuse/core'
 import { Tippy } from 'vue-tippy'
 
+import type { Page } from '@/models/api'
 import type { Chat } from '@/models/chat'
+import type { Message } from '@/models/message'
 
 import { useAuthStore } from '@/stores/auth'
 import { useChatsStore } from '@/stores/chats'
 import { usePopupsStore } from '@/stores/popups'
+import { useFetch } from '@/services/fetch'
 
 import Avatar from '@/components/Avatar.vue'
 import CopyText from '@/components/CopyText.vue'
@@ -53,7 +56,18 @@ const popupsStore = usePopupsStore()
 
 const now = new Date()
 
-const messages = ref<any | null>([
+const messagesURL = ref(`/chats/${props.chat.id}/messages?limit=10&offset=0`)
+watch(() => props.chat, (newChat: Chat) => {
+    console.log(newChat)
+    messagesURL.value = `/chats/${newChat.id}/messages?limit=10&offset=0`
+})
+const { data: test } = useFetch(messagesURL, {
+    refetch: true,
+})
+
+const messages = ref<any | null>({
+    items: [
+    [
     {
         id: 1,
         authorName: 'test',
@@ -156,7 +170,9 @@ const messages = ref<any | null>([
         sentAt: new Date(2024, 7, 12).toString(),
         isViewed: false,
     },
-])
+]
+    ],
+})
 const limit = ref(7)
 const offsetStart = ref(0)
 const offsetEnd = ref(0)
@@ -175,7 +191,7 @@ const groupedMessages = computed(() => {
 
     const groups: any = {}
 
-    for (const message of messages.value) {
+    for (const message of messages.value.items) {
         const sentAt = new Date(message.sentAt)
         const formattedSentAt = formatDate(sentAt)
 
@@ -616,7 +632,7 @@ const onContextMenu = (event: any, message: any) => {
                                 </div>
 
                                 <div class="flex flex-col-reverse">
-                                    <MessageBubble
+                                    <!-- <MessageBubble
                                         v-for="(message, index) in messages"
                                         :key="message.id"
                                         :class="{
@@ -637,7 +653,7 @@ const onContextMenu = (event: any, message: any) => {
                                         :data-message-id="message.id"
                                         @contextmenu="onContextMenu($event, message)"
                                         parentClick="onParentClick"
-                                    />
+                                    /> -->
                                 </div>
                             </div>
                         </div>

@@ -48,9 +48,11 @@ func main() {
 
 	chatRepo := postgres.NewChatRepository(dbpool)
 	chatSvc := chat.NewService(chatRepo)
+	chatClr := rest.NewChatController(chatSvc)
 
 	msgRepo := postgres.NewMessageRepository(dbpool)
 	msgSvc := message.NewService(msgRepo, userRepo)
+	msgClr := rest.NewMessageController(msgSvc)
 
 	eventHandler := websocket.NewEventHandler(chatSvc, msgSvc)
 	wsMgr := websocket.NewManager(eventHandler)
@@ -59,12 +61,16 @@ func main() {
 	checkTicket := rest.NewCheckTicketMiddleware(cfg.Secret)
 
 	serveMux := http.NewServeMux()
-	serveMux.HandleFunc("/auth/register", authClr.Register)
-	serveMux.HandleFunc("/auth/login", authClr.Login)
-	serveMux.HandleFunc("/auth/logout", authClr.Logout)
-	serveMux.HandleFunc("/auth/me", checkJWT(authClr.Me))
-	serveMux.HandleFunc("/auth/ticket", checkJWT(authClr.CreateTicket))
-	serveMux.HandleFunc("/ws", checkTicket(wsMgr.ServeHTTP))
+	serveMux.HandleFunc("POST /auth/register", authClr.Register)
+	serveMux.HandleFunc("POST /auth/login", authClr.Login)
+	serveMux.HandleFunc("POST /auth/logout", authClr.Logout)
+	serveMux.HandleFunc("GET /auth/me", checkJWT(authClr.Me))
+	serveMux.HandleFunc("POST /auth/ticket", checkJWT(authClr.CreateTicket))
+
+	serveMux.HandleFunc("GET /ws", checkTicket(wsMgr.ServeHTTP))
+
+	serveMux.HandleFunc("GET /chats/mine", checkJWT(chatClr.GetMine))
+	serveMux.HandleFunc("GET /chats/{chatId}/messages", checkJWT(msgClr.GetByChatID))
 
 	c := cors.New(cors.Options{
 		AllowedOrigins:   cfg.Cors.AllowedOrigins,

@@ -3,6 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -77,11 +78,13 @@ func (s *Service) Login(ctx context.Context, creds *api.LoginRequest) (*api.Logi
 	defer cancel()
 
 	usr, err := s.users.FindByEmail(ctx, *creds.Email)
+	fmt.Println("FOUND?", usr, err)
 	if err != nil {
 		return nil, ErrWrongCreds
 	}
 
 	err = Password(*creds.Password).Matches(*usr.PasswordHash)
+	fmt.Println("MATCHES?", err)
 	if err != nil {
 		return nil, ErrWrongCreds
 	}

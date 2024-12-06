@@ -9,7 +9,7 @@ import (
 
 type Repository interface {
 	Add(context.Context, *domain.Message) error
-	FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*domain.Message, error)
+	FindByChatID(ctx context.Context, chatID int, limit, offset int) ([]*domain.Message, error)
 	CountForChat(ctx context.Context, chatID int) (int, error)
 }
 
@@ -69,8 +69,8 @@ func (s *Service) Create(ctx context.Context, req *api.CreateMessageRequest, sen
 	return resp, nil
 }
 
-func (s *Service) GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*api.GetMessageResponse], error) {
-	msgs, err := s.messages.FindForChat(ctx, chatID, limit, offset)
+func (s *Service) GetByChatID(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*api.GetMessageResponse], error) {
+	msgs, err := s.messages.FindByChatID(ctx, chatID, limit, offset)
 	if err != nil {
 		return nil, err
 	}

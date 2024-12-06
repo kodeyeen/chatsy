@@ -10,7 +10,7 @@ type GetChatResponse struct {
 	IsPrivate               *bool               `json:"isPrivate"`
 	JoinByRequest           *bool               `json:"joinByRequest"`
 	IsJoined                *bool               `json:"isJoined"`
-	ParticipantCount        *int                `json:"participantCount"`
+	MemberCount             *int                `json:"memberCount"`
 	AreNotificationsEnabled *bool               `json:"areNotificationsEnabled"`
 	LastMessage             *GetMessageResponse `json:"lastMessage"`
 }

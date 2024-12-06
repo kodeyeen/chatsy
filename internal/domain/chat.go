@@ -17,7 +17,7 @@ type Chat struct {
 	IsPrivate               *bool
 	JoinByRequest           *bool
 	IsJoined                *bool
-	ParticipantCount        *int
+	MemberCount             *int
 	AreNotificationsEnabled *bool
 	LastMessage             *Message
 }

@@ -18,7 +18,7 @@ export const useChatsStore = defineStore('chats', () => {
     const messagesToForward = ref<any[]>([])
     // просматриваемый чат
     // состояние, определяет, что показывается справа в области контента
-    const currentState = ref<State>(State.CHAT_MESSAGES)
+    const currentState = ref<State | null>(null)
 
     const ticket = ref(null)
     const wsURL = computed(() => {

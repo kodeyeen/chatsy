@@ -12,12 +12,12 @@ import (
 type chatService interface {
 	GetByID(ctx context.Context, id int) (*api.GetChatResponse, error)
 	GetAllForUser(ctx context.Context, userID int) ([]*api.GetChatResponse, error)
-	GetForUser(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error)
+	GetByUserID(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error)
 }
 
 type messageService interface {
 	Create(ctx context.Context, req *api.CreateMessageRequest, senderID int) (*api.GetMessageResponse, error)
-	GetForChat(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*api.GetMessageResponse], error)
+	GetByChatID(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*api.GetMessageResponse], error)
 }
 
 func userGroupName(userID int) string {
@@ -58,7 +58,7 @@ func (h *EventHandler) onConnect(evt Event, cl *client) {
 		cl.mgr.addClient(cl, chatGroupName(*userChat.ID))
 	}
 
-	page, err := h.chatSvc.GetForUser(ctx, cl.usrID, 10, 0)
+	page, err := h.chatSvc.GetByUserID(ctx, cl.usrID, 10, 0)
 	if err != nil {
 		log.Println("GetForUser err", err)
 		return
@@ -102,7 +102,7 @@ func (h *EventHandler) onOpenChat(evt Event, cl *client) error {
 
 	ctx := context.Background()
 
-	page, err := h.msgSvc.GetForChat(ctx, openChatEvt.ChatID, 7, 0)
+	page, err := h.msgSvc.GetByChatID(ctx, openChatEvt.ChatID, 7, 0)
 	if err != nil {
 		log.Println("GetForChat err", err)
 		return err
@@ -170,7 +170,7 @@ func (h *EventHandler) onFetchMessages(evt Event, cl *client) error {
 
 	ctx := context.Background()
 
-	page, err := h.msgSvc.GetForChat(ctx, fetchMsgsEvt.ChatID, fetchMsgsEvt.Limit, fetchMsgsEvt.Offset)
+	page, err := h.msgSvc.GetByChatID(ctx, fetchMsgsEvt.ChatID, fetchMsgsEvt.Limit, fetchMsgsEvt.Offset)
 	if err != nil {
 		return err
 	}

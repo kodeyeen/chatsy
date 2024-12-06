@@ -5,7 +5,7 @@ import TheHeader from '@/components/TheHeader.vue'
 
 const isContentActive = ref(false)
 
-const toggleContent = (force = null) => {
+const toggleContent = (force?: boolean) => {
     isContentActive.value = force ?? !isContentActive.value
 }
 </script>

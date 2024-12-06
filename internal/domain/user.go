@@ -8,7 +8,6 @@ type User struct {
 	ID           *int
 	FirstName    *string
 	LastName     *string
-	Name         *string
 	Username     *string
 	Email        *string
 	PasswordHash *string

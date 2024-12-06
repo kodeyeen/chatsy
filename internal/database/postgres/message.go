@@ -42,7 +42,7 @@ func (r *MessageRepository) Add(ctx context.Context, msg *domain.Message) error 
 	return nil
 }
 
-func (r *MessageRepository) FindForChat(ctx context.Context, chatID int, limit, offset int) ([]*domain.Message, error) {
+func (r *MessageRepository) FindByChatID(ctx context.Context, chatID int, limit, offset int) ([]*domain.Message, error) {
 	query := `
 		SELECT
 			m.id,
