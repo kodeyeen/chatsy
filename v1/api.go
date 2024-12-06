@@ -1,4 +1,4 @@
-package api
+package chatsy
 
 type ErrorResponse struct {
 	Message string `json:"message"`

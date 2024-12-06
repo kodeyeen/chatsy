@@ -1,4 +1,4 @@
-package api
+package chatsy
 
 type GetChatResponse struct {
 	ID                      *int                `json:"id"`

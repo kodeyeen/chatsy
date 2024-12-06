@@ -6,18 +6,18 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/kodeyeen/chatsy/api/v1"
+	"github.com/kodeyeen/chatsy/v1"
 )
 
 type chatService interface {
-	GetByID(ctx context.Context, id int) (*api.GetChatResponse, error)
-	GetAllForUser(ctx context.Context, userID int) ([]*api.GetChatResponse, error)
-	GetByUserID(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error)
+	GetByID(ctx context.Context, id int) (*chatsy.GetChatResponse, error)
+	GetAllForUser(ctx context.Context, userID int) ([]*chatsy.GetChatResponse, error)
+	GetByUserID(ctx context.Context, userID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetChatResponse], error)
 }
 
 type messageService interface {
-	Create(ctx context.Context, req *api.CreateMessageRequest, senderID int) (*api.GetMessageResponse, error)
-	GetByChatID(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*api.GetMessageResponse], error)
+	Create(ctx context.Context, req *chatsy.CreateMessageRequest, senderID int) (*chatsy.GetMessageResponse, error)
+	GetByChatID(ctx context.Context, chatID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetMessageResponse], error)
 }
 
 func userGroupName(userID int) string {
@@ -132,7 +132,7 @@ func (h *EventHandler) onSendMessages(evt Event, cl *client) error {
 
 	ctx := context.Background()
 
-	var msgs []*api.GetMessageResponse
+	var msgs []*chatsy.GetMessageResponse
 
 	// TODO: bulk create
 	for _, dto := range sendMsgsEvt.Messages {

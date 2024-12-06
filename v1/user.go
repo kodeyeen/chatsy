@@ -1,4 +1,4 @@
-package api
+package chatsy
 
 import "time"
 

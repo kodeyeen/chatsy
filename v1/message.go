@@ -1,4 +1,4 @@
-package api
+package chatsy
 
 import "time"
 
@@ -23,4 +23,11 @@ type CreateMessageRequest struct {
 	OriginalID *int    `json:"originalId"`
 	AuthorName *string `json:"authorName"`
 	Text       *string `json:"text"`
+}
+
+type MessageService struct {
+}
+
+func (s *MessageService) CreateMessage(req *CreateMessageRequest) {
+
 }

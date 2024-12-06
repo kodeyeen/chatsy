@@ -7,8 +7,8 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/kodeyeen/chatsy/api/v1"
 	"github.com/kodeyeen/chatsy/internal/domain"
+	"github.com/kodeyeen/chatsy/v1"
 )
 
 var (
@@ -42,7 +42,7 @@ func NewService(
 	}
 }
 
-func (s *Service) Register(ctx context.Context, regData *api.RegisterRequest) (*api.GetUserResponse, error) {
+func (s *Service) Register(ctx context.Context, regData *chatsy.RegisterRequest) (*chatsy.GetUserResponse, error) {
 	passwordHash, err := Password(*regData.Password).Hash()
 	if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s *Service) Register(ctx context.Context, regData *api.RegisterRequest) (*
 		return nil, err
 	}
 
-	resp := &api.GetUserResponse{
+	resp := &chatsy.GetUserResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -73,7 +73,7 @@ func (s *Service) Register(ctx context.Context, regData *api.RegisterRequest) (*
 	return resp, nil
 }
 
-func (s *Service) Login(ctx context.Context, creds *api.LoginRequest) (*api.LoginResponse, error) {
+func (s *Service) Login(ctx context.Context, creds *chatsy.LoginRequest) (*chatsy.LoginResponse, error) {
 	ctx, cancel := context.WithTimeout(ctx, 2*time.Second)
 	defer cancel()
 
@@ -90,7 +90,7 @@ func (s *Service) Login(ctx context.Context, creds *api.LoginRequest) (*api.Logi
 	}
 
 	exp := time.Now().Add(s.tokenTTL)
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, api.TokenClaims{
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, chatsy.TokenClaims{
 		UserID:    *usr.ID,
 		UserEmail: *usr.Email,
 		Exp:       exp.Unix(),
@@ -101,7 +101,7 @@ func (s *Service) Login(ctx context.Context, creds *api.LoginRequest) (*api.Logi
 		return nil, err
 	}
 
-	usrResp := api.GetUserResponse{
+	usrResp := chatsy.GetUserResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -110,20 +110,20 @@ func (s *Service) Login(ctx context.Context, creds *api.LoginRequest) (*api.Logi
 		JoinedAt:  usr.JoinedAt,
 	}
 
-	return &api.LoginResponse{
+	return &chatsy.LoginResponse{
 		AccessToken: &tokenString,
 		Exp:         &exp,
 		User:        &usrResp,
 	}, nil
 }
 
-func (s *Service) GetUserByID(ctx context.Context, id int) (*api.GetUserResponse, error) {
+func (s *Service) GetUserByID(ctx context.Context, id int) (*chatsy.GetUserResponse, error) {
 	usr, err := s.users.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := api.GetUserResponse{
+	resp := chatsy.GetUserResponse{
 		ID:        usr.ID,
 		Username:  usr.Username,
 		FirstName: usr.FirstName,
@@ -137,7 +137,7 @@ func (s *Service) GetUserByID(ctx context.Context, id int) (*api.GetUserResponse
 
 func (s *Service) CreateTicket(ctx context.Context, userID int) (string, error) {
 	exp := time.Now().Add(s.ticketTTL)
-	claims := api.TicketClaims{
+	claims := chatsy.TicketClaims{
 		UserID: userID,
 		Exp:    exp.Unix(),
 	}

@@ -6,11 +6,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/kodeyeen/chatsy/api/v1"
+	"github.com/kodeyeen/chatsy/v1"
 )
 
 type chatService interface {
-	GetByUserID(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error)
+	GetByUserID(ctx context.Context, userID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetChatResponse], error)
 }
 
 type ChatController struct {
@@ -40,7 +40,7 @@ func (c *ChatController) GetMine(w http.ResponseWriter, r *http.Request) {
 	limit, err := strconv.ParseUint(query.Get("limit"), 10, 0)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(api.ErrorResponse{
+		json.NewEncoder(w).Encode(chatsy.ErrorResponse{
 			Message: "Invalid limit specified",
 		})
 		return
@@ -49,7 +49,7 @@ func (c *ChatController) GetMine(w http.ResponseWriter, r *http.Request) {
 	offset, err := strconv.ParseUint(query.Get("offset"), 10, 0)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(api.ErrorResponse{
+		json.NewEncoder(w).Encode(chatsy.ErrorResponse{
 			Message: "Invalid offset specified",
 		})
 		return
@@ -58,7 +58,7 @@ func (c *ChatController) GetMine(w http.ResponseWriter, r *http.Request) {
 	resp, err := c.svc.GetByUserID(ctx, userID, int(limit), int(offset))
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(api.ErrorResponse{
+		json.NewEncoder(w).Encode(chatsy.ErrorResponse{
 			Message: "Something went wrong",
 		})
 		return

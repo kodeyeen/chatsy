@@ -3,8 +3,8 @@ package chat
 import (
 	"context"
 
-	"github.com/kodeyeen/chatsy/api/v1"
 	"github.com/kodeyeen/chatsy/internal/domain"
+	"github.com/kodeyeen/chatsy/v1"
 )
 
 type Repository interface {
@@ -29,13 +29,13 @@ func (s *Service) Create(ctx context.Context) error {
 	return nil
 }
 
-func (s *Service) GetByID(ctx context.Context, id int) (*api.GetChatResponse, error) {
+func (s *Service) GetByID(ctx context.Context, id int) (*chatsy.GetChatResponse, error) {
 	c, err := s.chats.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := &api.GetChatResponse{
+	resp := &chatsy.GetChatResponse{
 		ID:              c.ID,
 		Type:            (*string)(c.Type),
 		Title:           c.Title,
@@ -47,7 +47,7 @@ func (s *Service) GetByID(ctx context.Context, id int) (*api.GetChatResponse, er
 	}
 
 	if c.LastMessage != nil {
-		resp.LastMessage = &api.GetMessageResponse{
+		resp.LastMessage = &chatsy.GetMessageResponse{
 			ID:         c.LastMessage.ID,
 			ChatID:     c.LastMessage.ChatID,
 			SenderID:   c.LastMessage.SenderID,
@@ -64,16 +64,16 @@ func (s *Service) GetByID(ctx context.Context, id int) (*api.GetChatResponse, er
 	return resp, nil
 }
 
-func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*api.GetChatResponse, error) {
+func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*chatsy.GetChatResponse, error) {
 	cs, err := s.chats.FindAllForUser(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := make([]*api.GetChatResponse, 0, len(cs))
+	resp := make([]*chatsy.GetChatResponse, 0, len(cs))
 
 	for _, c := range cs {
-		resp = append(resp, &api.GetChatResponse{
+		resp = append(resp, &chatsy.GetChatResponse{
 			ID:                      c.ID,
 			Type:                    (*string)(c.Type),
 			Title:                   c.Title,
@@ -91,7 +91,7 @@ func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*api.GetChat
 	return resp, nil
 }
 
-func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int) (*api.PageResponse[*api.GetChatResponse], error) {
+func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetChatResponse], error) {
 	cs, err := s.chats.FindByUserID(ctx, userID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -102,10 +102,10 @@ func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int
 		return nil, err
 	}
 
-	items := make([]*api.GetChatResponse, 0, len(cs))
+	items := make([]*chatsy.GetChatResponse, 0, len(cs))
 
 	for _, c := range cs {
-		item := &api.GetChatResponse{
+		item := &chatsy.GetChatResponse{
 			ID:                      c.ID,
 			Type:                    (*string)(c.Type),
 			Title:                   c.Title,
@@ -120,7 +120,7 @@ func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int
 		}
 
 		if c.LastMessage != nil {
-			item.LastMessage = &api.GetMessageResponse{
+			item.LastMessage = &chatsy.GetMessageResponse{
 				ID:         c.LastMessage.ID,
 				ChatID:     c.LastMessage.ChatID,
 				SenderID:   c.LastMessage.SenderID,
@@ -137,7 +137,7 @@ func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int
 		items = append(items, item)
 	}
 
-	resp := &api.PageResponse[*api.GetChatResponse]{
+	resp := &chatsy.PageResponse[*chatsy.GetChatResponse]{
 		Items:  items,
 		Count:  cnt,
 		Limit:  limit,

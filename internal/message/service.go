@@ -3,8 +3,8 @@ package message
 import (
 	"context"
 
-	"github.com/kodeyeen/chatsy/api/v1"
 	"github.com/kodeyeen/chatsy/internal/domain"
+	"github.com/kodeyeen/chatsy/v1"
 )
 
 type Repository interface {
@@ -29,7 +29,7 @@ func NewService(messages Repository, users UserRepository) *Service {
 	}
 }
 
-func (s *Service) Create(ctx context.Context, req *api.CreateMessageRequest, senderID int) (*api.GetMessageResponse, error) {
+func (s *Service) Create(ctx context.Context, req *chatsy.CreateMessageRequest, senderID int) (*chatsy.GetMessageResponse, error) {
 	sender, err := s.users.FindByID(ctx, senderID)
 	if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (s *Service) Create(ctx context.Context, req *api.CreateMessageRequest, sen
 		return nil, err
 	}
 
-	resp := &api.GetMessageResponse{
+	resp := &chatsy.GetMessageResponse{
 		ID:         msg.ID,
 		ChatID:     msg.ChatID,
 		SenderID:   msg.SenderID,
@@ -69,7 +69,7 @@ func (s *Service) Create(ctx context.Context, req *api.CreateMessageRequest, sen
 	return resp, nil
 }
 
-func (s *Service) GetByChatID(ctx context.Context, chatID int, limit, offset int) (*api.PageResponse[*api.GetMessageResponse], error) {
+func (s *Service) GetByChatID(ctx context.Context, chatID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetMessageResponse], error) {
 	msgs, err := s.messages.FindByChatID(ctx, chatID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -80,10 +80,10 @@ func (s *Service) GetByChatID(ctx context.Context, chatID int, limit, offset int
 		return nil, err
 	}
 
-	items := make([]*api.GetMessageResponse, 0, len(msgs))
+	items := make([]*chatsy.GetMessageResponse, 0, len(msgs))
 
 	for _, msg := range msgs {
-		items = append(items, &api.GetMessageResponse{
+		items = append(items, &chatsy.GetMessageResponse{
 			ID:               msg.ID,
 			ChatID:           msg.ChatID,
 			SenderID:         msg.SenderID,
@@ -99,7 +99,7 @@ func (s *Service) GetByChatID(ctx context.Context, chatID int, limit, offset int
 		})
 	}
 
-	resp := &api.PageResponse[*api.GetMessageResponse]{
+	resp := &chatsy.PageResponse[*chatsy.GetMessageResponse]{
 		Items:  items,
 		Count:  cnt,
 		Limit:  limit,
