@@ -12,9 +12,9 @@ import (
 	"github.com/kodeyeen/chatsy/internal/config"
 	"github.com/kodeyeen/chatsy/internal/database"
 	"github.com/kodeyeen/chatsy/internal/database/postgres"
+	"github.com/kodeyeen/chatsy/internal/delivery/rest/v1"
+	"github.com/kodeyeen/chatsy/internal/delivery/websocket"
 	"github.com/kodeyeen/chatsy/internal/message"
-	"github.com/kodeyeen/chatsy/internal/transport/rest/v1"
-	"github.com/kodeyeen/chatsy/internal/transport/websocket"
 	"github.com/rs/cors"
 )
 
