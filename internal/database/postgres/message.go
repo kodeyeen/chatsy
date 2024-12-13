@@ -5,7 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kodeyeen/chatsy/internal/domain"
+	"github.com/kodeyeen/chatsy/internal/entity"
 )
 
 type MessageRepository struct {
@@ -18,7 +18,7 @@ func NewMessageRepository(dbpool *pgxpool.Pool) *MessageRepository {
 	}
 }
 
-func (r *MessageRepository) Add(ctx context.Context, msg *domain.Message) error {
+func (r *MessageRepository) Add(ctx context.Context, msg *entity.Message) error {
 	query := `
 		INSERT INTO
 			messages (chat_id, sender_id, original_id, parent_id, text)
@@ -42,7 +42,7 @@ func (r *MessageRepository) Add(ctx context.Context, msg *domain.Message) error 
 	return nil
 }
 
-func (r *MessageRepository) FindByChatID(ctx context.Context, chatID int, limit, offset int) ([]*domain.Message, error) {
+func (r *MessageRepository) FindByChatID(ctx context.Context, chatID int, limit, offset int) ([]*entity.Message, error) {
 	query := `
 		SELECT
 			m.id,
@@ -93,10 +93,10 @@ func (r *MessageRepository) FindByChatID(ctx context.Context, chatID int, limit,
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var msgs []*domain.Message
+	var msgs []*entity.Message
 
 	for rows.Next() {
-		var msg domain.Message
+		var msg entity.Message
 
 		err := rows.Scan(
 			&msg.ID,

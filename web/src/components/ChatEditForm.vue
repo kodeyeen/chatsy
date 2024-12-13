@@ -61,7 +61,7 @@ const photoUrl = computed(() => {
 })
 
 const inviteLink = computed(() => {
-    return `domain/+${props.chat.invite_hash}`
+    return `entity/+${props.chat.invite_hash}`
 })
 
 const submit = async () => {

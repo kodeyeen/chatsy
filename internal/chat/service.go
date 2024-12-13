@@ -3,15 +3,15 @@ package chat
 import (
 	"context"
 
-	"github.com/kodeyeen/chatsy/internal/domain"
+	"github.com/kodeyeen/chatsy/internal/entity"
 	"github.com/kodeyeen/chatsy/v1"
 )
 
 type Repository interface {
-	Add(context.Context, *domain.Chat) error
-	FindByID(context.Context, int) (*domain.Chat, error)
-	FindByUserID(ctx context.Context, userID int, limit, offset int) ([]*domain.Chat, error)
-	FindAllForUser(ctx context.Context, userID int) ([]*domain.Chat, error)
+	Add(context.Context, *entity.Chat) error
+	FindByID(context.Context, int) (*entity.Chat, error)
+	FindByUserID(ctx context.Context, userID int, limit, offset int) ([]*entity.Chat, error)
+	FindAllForUser(ctx context.Context, userID int) ([]*entity.Chat, error)
 	CountForUser(ctx context.Context, userID int) (int, error)
 }
 
