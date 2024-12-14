@@ -1,4 +1,4 @@
-package rest
+package httpmw
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 	"github.com/kodeyeen/chatsy/v1"
 )
 
-func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFunc {
+func NewJWTChecker(secret string) func(http.HandlerFunc) http.HandlerFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			cookie, err := r.Cookie("accessToken")
@@ -48,7 +48,7 @@ func NewCheckJWTMiddleware(secret string) func(http.HandlerFunc) http.HandlerFun
 	}
 }
 
-func NewCheckTicketMiddleware(secret string) func(http.HandlerFunc) http.HandlerFunc {
+func NewTicketChecker(secret string) func(http.HandlerFunc) http.HandlerFunc {
 	return func(next http.HandlerFunc) http.HandlerFunc {
 		return func(w http.ResponseWriter, r *http.Request) {
 			ticket := r.URL.Query().Get("ticket")

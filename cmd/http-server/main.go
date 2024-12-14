@@ -11,9 +11,10 @@ import (
 	"github.com/kodeyeen/chatsy/internal/chat"
 	"github.com/kodeyeen/chatsy/internal/config"
 	"github.com/kodeyeen/chatsy/internal/database"
-	"github.com/kodeyeen/chatsy/internal/database/postgres"
-	"github.com/kodeyeen/chatsy/internal/delivery/rest/v1"
-	"github.com/kodeyeen/chatsy/internal/delivery/websocket"
+	postgresdb "github.com/kodeyeen/chatsy/internal/database/postgres"
+	"github.com/kodeyeen/chatsy/internal/delivery/http/httpmw"
+	httpdel "github.com/kodeyeen/chatsy/internal/delivery/http/v1"
+	websocketdel "github.com/kodeyeen/chatsy/internal/delivery/websocket"
 	"github.com/kodeyeen/chatsy/internal/message"
 	"github.com/rs/cors"
 )
@@ -41,24 +42,24 @@ func main() {
 		log.Fatalf("failed to ping db: %s", err.Error())
 	}
 
-	userRepo := postgres.NewUserRepository(dbpool)
+	userRepo := postgresdb.NewUserRepository(dbpool)
 
 	authSvc := auth.NewService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
-	authClr := rest.NewAuthController(authSvc)
+	authClr := httpdel.NewAuthController(authSvc)
 
-	chatRepo := postgres.NewChatRepository(dbpool)
+	chatRepo := postgresdb.NewChatRepository(dbpool)
 	chatSvc := chat.NewService(chatRepo)
-	chatClr := rest.NewChatController(chatSvc)
+	chatClr := httpdel.NewChatController(chatSvc)
 
-	msgRepo := postgres.NewMessageRepository(dbpool)
+	msgRepo := postgresdb.NewMessageRepository(dbpool)
 	msgSvc := message.NewService(msgRepo, userRepo)
-	msgClr := rest.NewMessageController(msgSvc)
+	msgClr := httpdel.NewMessageController(msgSvc)
 
-	eventHandler := websocket.NewEventHandler(chatSvc, msgSvc)
-	wsMgr := websocket.NewManager(eventHandler)
+	eventHlr := websocketdel.NewEventHandler(chatSvc, msgSvc)
+	wsMgr := websocketdel.NewManager(eventHlr)
 
-	checkJWT := rest.NewCheckJWTMiddleware(cfg.Secret)
-	checkTicket := rest.NewCheckTicketMiddleware(cfg.Secret)
+	checkJWT := httpmw.NewJWTChecker(cfg.Secret)
+	checkTicket := httpmw.NewTicketChecker(cfg.Secret)
 
 	serveMux := http.NewServeMux()
 	serveMux.HandleFunc("POST /auth/register", authClr.Register)
