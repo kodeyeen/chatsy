@@ -10,7 +10,7 @@ import (
 )
 
 type chatService interface {
-	GetByUserID(ctx context.Context, userID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetChatResponse], error)
+	GetByUserID(ctx context.Context, req *chatsy.GetUserChatsPageRequest) (*chatsy.GetUserChatsPageResponse, error)
 }
 
 type ChatController struct {
@@ -55,7 +55,13 @@ func (c *ChatController) GetMine(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	resp, err := c.svc.GetByUserID(ctx, userID, int(limit), int(offset))
+	resp, err := c.svc.GetByUserID(ctx, &chatsy.GetUserChatsPageRequest{
+		UserID: &userID,
+		Pagination: chatsy.Pagination{
+			Limit:  int(limit),
+			Offset: int(offset),
+		},
+	})
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(chatsy.ErrorResponse{

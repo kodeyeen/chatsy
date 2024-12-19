@@ -32,7 +32,7 @@ type Event struct {
 type HandlerFunc func(event Event, cl *client) error
 
 type ConnectedEvent struct {
-	Chats chatsy.PageResponse[*chatsy.GetChatResponse] `json:"chats"`
+	Chats chatsy.GetUserChatsPageResponse `json:"chats"`
 }
 
 type OpenChatEvent struct {
@@ -44,12 +44,12 @@ type ChatOpenedEvent struct {
 }
 
 type SendMessagesEvent struct {
-	ChatID   int                         `json:"chatId"`
+	ChatID   int                            `json:"chatId"`
 	Messages []*chatsy.CreateMessageRequest `json:"messages"`
 }
 
 type NewMessagesEvent struct {
-	ChatID   int                       `json:"chatId"`
+	ChatID   int                          `json:"chatId"`
 	Messages []*chatsy.GetMessageResponse `json:"messages"`
 }
 
@@ -60,7 +60,7 @@ type FetchMessagesEvent struct {
 }
 
 type LoadMessagesEvent struct {
-	ChatID   int                                       `json:"chatId"`
+	ChatID   int                                             `json:"chatId"`
 	Messages chatsy.PageResponse[*chatsy.GetMessageResponse] `json:"messages"`
 }
 

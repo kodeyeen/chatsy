@@ -29,21 +29,23 @@ func (s *Service) Create(ctx context.Context) error {
 	return nil
 }
 
-func (s *Service) GetByID(ctx context.Context, id int) (*chatsy.GetChatResponse, error) {
-	c, err := s.chats.FindByID(ctx, id)
+func (s *Service) GetByID(ctx context.Context, req *chatsy.GetChatByIDRequest) (*chatsy.GetChatByIDResponse, error) {
+	c, err := s.chats.FindByID(ctx, *req.ID)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := &chatsy.GetChatResponse{
-		ID:              c.ID,
-		Type:            (*string)(c.Type),
-		Title:           c.Title,
-		Description:     c.Description,
-		InviteHash:      c.InviteHash,
-		JoinByLinkCount: c.JoinByLinkCount,
-		IsPrivate:       c.IsPrivate,
-		JoinByRequest:   c.JoinByRequest,
+	resp := &chatsy.GetChatByIDResponse{
+		ChatResponse: &chatsy.ChatResponse{
+			ID:              c.ID,
+			Type:            (*string)(c.Type),
+			Title:           c.Title,
+			Description:     c.Description,
+			InviteHash:      c.InviteHash,
+			JoinByLinkCount: c.JoinByLinkCount,
+			IsPrivate:       c.IsPrivate,
+			JoinByRequest:   c.JoinByRequest,
+		},
 	}
 
 	if c.LastMessage != nil {
@@ -64,48 +66,50 @@ func (s *Service) GetByID(ctx context.Context, id int) (*chatsy.GetChatResponse,
 	return resp, nil
 }
 
-func (s *Service) GetAllForUser(ctx context.Context, userID int) ([]*chatsy.GetChatResponse, error) {
-	cs, err := s.chats.FindAllForUser(ctx, userID)
+func (s *Service) GetAllForUser(ctx context.Context, req *chatsy.GetUserChatsRequest) ([]*chatsy.GetUserChatsResponse, error) {
+	cs, err := s.chats.FindAllForUser(ctx, *req.UserID)
 	if err != nil {
 		return nil, err
 	}
 
-	resp := make([]*chatsy.GetChatResponse, 0, len(cs))
+	resp := make([]*chatsy.GetUserChatsResponse, 0, len(cs))
 
 	for _, c := range cs {
-		resp = append(resp, &chatsy.GetChatResponse{
-			ID:                      c.ID,
-			Type:                    (*string)(c.Type),
-			Title:                   c.Title,
-			Description:             c.Description,
-			InviteHash:              c.InviteHash,
-			JoinByLinkCount:         c.JoinByLinkCount,
-			IsPrivate:               c.IsPrivate,
-			IsJoined:                c.IsJoined,
-			MemberCount:             c.MemberCount,
-			AreNotificationsEnabled: c.AreNotificationsEnabled,
-			JoinByRequest:           c.JoinByRequest,
+		resp = append(resp, &chatsy.GetUserChatsResponse{
+			ChatResponse: &chatsy.ChatResponse{
+				ID:                      c.ID,
+				Type:                    (*string)(c.Type),
+				Title:                   c.Title,
+				Description:             c.Description,
+				InviteHash:              c.InviteHash,
+				JoinByLinkCount:         c.JoinByLinkCount,
+				IsPrivate:               c.IsPrivate,
+				IsJoined:                c.IsJoined,
+				MemberCount:             c.MemberCount,
+				AreNotificationsEnabled: c.AreNotificationsEnabled,
+				JoinByRequest:           c.JoinByRequest,
+			},
 		})
 	}
 
 	return resp, nil
 }
 
-func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetChatResponse], error) {
-	cs, err := s.chats.FindByUserID(ctx, userID, limit, offset)
+func (s *Service) GetByUserID(ctx context.Context, req *chatsy.GetUserChatsPageRequest) (*chatsy.GetUserChatsPageResponse, error) {
+	cs, err := s.chats.FindByUserID(ctx, *req.UserID, req.Pagination.Limit, req.Pagination.Offset)
 	if err != nil {
 		return nil, err
 	}
 
-	cnt, err := s.chats.CountForUser(ctx, userID)
+	cnt, err := s.chats.CountForUser(ctx, *req.UserID)
 	if err != nil {
 		return nil, err
 	}
 
-	items := make([]*chatsy.GetChatResponse, 0, len(cs))
+	items := make([]*chatsy.ChatResponse, 0, len(cs))
 
 	for _, c := range cs {
-		item := &chatsy.GetChatResponse{
+		item := &chatsy.ChatResponse{
 			ID:                      c.ID,
 			Type:                    (*string)(c.Type),
 			Title:                   c.Title,
@@ -137,11 +141,13 @@ func (s *Service) GetByUserID(ctx context.Context, userID int, limit, offset int
 		items = append(items, item)
 	}
 
-	resp := &chatsy.PageResponse[*chatsy.GetChatResponse]{
-		Items:  items,
-		Count:  cnt,
-		Limit:  limit,
-		Offset: offset,
+	resp := &chatsy.GetUserChatsPageResponse{
+		PageResponse: &chatsy.PageResponse[*chatsy.ChatResponse]{
+			Items:  items,
+			Count:  cnt,
+			Limit:  req.Pagination.Limit,
+			Offset: req.Pagination.Offset,
+		},
 	}
 
 	return resp, nil

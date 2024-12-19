@@ -10,9 +10,9 @@ import (
 )
 
 type chatService interface {
-	GetByID(ctx context.Context, id int) (*chatsy.GetChatResponse, error)
-	GetAllForUser(ctx context.Context, userID int) ([]*chatsy.GetChatResponse, error)
-	GetByUserID(ctx context.Context, userID int, limit, offset int) (*chatsy.PageResponse[*chatsy.GetChatResponse], error)
+	GetByID(ctx context.Context, req *chatsy.GetChatByIDRequest) (*chatsy.GetChatByIDResponse, error)
+	GetAllForUser(ctx context.Context, req *chatsy.GetUserChatsRequest) ([]*chatsy.GetUserChatsResponse, error)
+	GetByUserID(ctx context.Context, req *chatsy.GetUserChatsPageRequest) (*chatsy.GetUserChatsPageResponse, error)
 }
 
 type messageService interface {
@@ -46,7 +46,9 @@ func NewEventHandler(
 func (h *EventHandler) onConnect(evt Event, cl *client) {
 	ctx := context.Background()
 
-	userChats, err := h.chatSvc.GetAllForUser(ctx, cl.usrID)
+	userChats, err := h.chatSvc.GetAllForUser(ctx, &chatsy.GetUserChatsRequest{
+		UserID: &cl.usrID,
+	})
 	if err != nil {
 		log.Println(err)
 		return
@@ -58,7 +60,13 @@ func (h *EventHandler) onConnect(evt Event, cl *client) {
 		cl.mgr.addClient(cl, chatGroupName(*userChat.ID))
 	}
 
-	page, err := h.chatSvc.GetByUserID(ctx, cl.usrID, 10, 0)
+	page, err := h.chatSvc.GetByUserID(ctx, &chatsy.GetUserChatsPageRequest{
+		UserID: &cl.usrID,
+		Pagination: chatsy.Pagination{
+			Limit:  10,
+			Offset: 0,
+		},
+	})
 	if err != nil {
 		log.Println("GetForUser err", err)
 		return
@@ -80,7 +88,9 @@ func (h *EventHandler) onConnect(evt Event, cl *client) {
 func (h *EventHandler) onDisconnect(evt Event, cl *client) {
 	ctx := context.Background()
 
-	userChats, err := h.chatSvc.GetAllForUser(ctx, cl.usrID)
+	userChats, err := h.chatSvc.GetAllForUser(ctx, &chatsy.GetUserChatsRequest{
+		UserID: &cl.usrID,
+	})
 	if err != nil {
 		log.Println(err)
 		return
