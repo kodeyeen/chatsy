@@ -10,12 +10,12 @@ import (
 	"github.com/kodeyeen/chatsy/internal/auth"
 	"github.com/kodeyeen/chatsy/internal/chat"
 	"github.com/kodeyeen/chatsy/internal/config"
-	"github.com/kodeyeen/chatsy/internal/database"
-	postgresdb "github.com/kodeyeen/chatsy/internal/database/postgres"
 	"github.com/kodeyeen/chatsy/internal/delivery/http/httpmw"
-	httpdel "github.com/kodeyeen/chatsy/internal/delivery/http/v1"
-	websocketdel "github.com/kodeyeen/chatsy/internal/delivery/websocket"
+	httpdelivery "github.com/kodeyeen/chatsy/internal/delivery/http/v1"
+	websocketdelivery "github.com/kodeyeen/chatsy/internal/delivery/websocket"
 	"github.com/kodeyeen/chatsy/internal/message"
+	"github.com/kodeyeen/chatsy/internal/persistence"
+	postgrespersistence "github.com/kodeyeen/chatsy/internal/persistence/postgres"
 	"github.com/rs/cors"
 )
 
@@ -23,7 +23,7 @@ func main() {
 	ctx := context.Background()
 	cfg := config.MustLoad()
 
-	connString := database.NewConnString(
+	connString := persistence.NewConnString(
 		"postgres",
 		cfg.Database.Username,
 		cfg.Database.Password,
@@ -42,21 +42,21 @@ func main() {
 		log.Fatalf("failed to ping db: %s", err.Error())
 	}
 
-	userRepo := postgresdb.NewUserRepository(dbpool)
+	userRepo := postgrespersistence.NewUserRepository(dbpool)
 
 	authSvc := auth.NewService(cfg.Secret, cfg.TokenTTL, cfg.TicketTTL, userRepo)
-	authClr := httpdel.NewAuthController(authSvc)
+	authClr := httpdelivery.NewAuthController(authSvc)
 
-	chatRepo := postgresdb.NewChatRepository(dbpool)
+	chatRepo := postgrespersistence.NewChatRepository(dbpool)
 	chatSvc := chat.NewService(chatRepo)
-	chatClr := httpdel.NewChatController(chatSvc)
+	chatClr := httpdelivery.NewChatController(chatSvc)
 
-	msgRepo := postgresdb.NewMessageRepository(dbpool)
+	msgRepo := postgrespersistence.NewMessageRepository(dbpool)
 	msgSvc := message.NewService(msgRepo, userRepo)
-	msgClr := httpdel.NewMessageController(msgSvc)
+	msgClr := httpdelivery.NewMessageController(msgSvc)
 
-	eventHlr := websocketdel.NewEventHandler(chatSvc, msgSvc)
-	wsMgr := websocketdel.NewManager(eventHlr)
+	eventHlr := websocketdelivery.NewEventHandler(chatSvc, msgSvc)
+	wsMgr := websocketdelivery.NewManager(eventHlr)
 
 	checkJWT := httpmw.NewJWTChecker(cfg.Secret)
 	checkTicket := httpmw.NewTicketChecker(cfg.Secret)

@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 
-	"github.com/kodeyeen/chatsy/internal/database"
 	"github.com/kodeyeen/chatsy/internal/entity"
+	"github.com/kodeyeen/chatsy/internal/persistence"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5"
@@ -43,9 +43,9 @@ func (r *UserRepository) Add(ctx context.Context, usr *entity.User) error {
 		if errors.As(err, &pgErr) {
 			if pgerrcode.IsIntegrityConstraintViolation(pgErr.Code) {
 				if pgErr.ConstraintName == "users_username_key" {
-					return database.ErrUsernameAlreadyExists
+					return persistence.ErrUsernameAlreadyExists
 				} else if pgErr.ConstraintName == "users_email_key" {
-					return database.ErrEmailAlreadyExists
+					return persistence.ErrEmailAlreadyExists
 				}
 			}
 		}
