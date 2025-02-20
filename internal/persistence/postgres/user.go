@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/kodeyeen/chatsy/internal/entity"
+	"github.com/kodeyeen/chatsy/internal/domain"
 	"github.com/kodeyeen/chatsy/internal/persistence"
 
 	"github.com/jackc/pgerrcode"
@@ -23,7 +23,7 @@ func NewUserRepository(dbpool *pgxpool.Pool) *UserRepository {
 	}
 }
 
-func (r *UserRepository) Add(ctx context.Context, usr *entity.User) error {
+func (r *UserRepository) Add(ctx context.Context, usr *domain.User) error {
 	query := `
 		INSERT INTO users (first_name, last_name, username, email, password_hash)
 		VALUES (@first_name, @last_name, @username, @email, @password_hash)
@@ -56,7 +56,7 @@ func (r *UserRepository) Add(ctx context.Context, usr *entity.User) error {
 	return nil
 }
 
-func (r *UserRepository) FindByID(ctx context.Context, ID int) (*entity.User, error) {
+func (r *UserRepository) FindByID(ctx context.Context, ID int) (*domain.User, error) {
 	query := `
 		SELECT
 			id,
@@ -73,7 +73,7 @@ func (r *UserRepository) FindByID(ctx context.Context, ID int) (*entity.User, er
 		"id": ID,
 	}
 
-	var usr entity.User
+	var usr domain.User
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&usr.ID,
 		&usr.FirstName,
@@ -90,7 +90,7 @@ func (r *UserRepository) FindByID(ctx context.Context, ID int) (*entity.User, er
 	return &usr, nil
 }
 
-func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity.User, error) {
+func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*domain.User, error) {
 	query := `
 		SELECT id, first_name, last_name, username, email, password_hash, joined_at
 		FROM users
@@ -100,7 +100,7 @@ func (r *UserRepository) FindByEmail(ctx context.Context, email string) (*entity
 		"email": email,
 	}
 
-	var usr entity.User
+	var usr domain.User
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&usr.ID,
 		&usr.FirstName,

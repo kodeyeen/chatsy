@@ -3,18 +3,18 @@ package message
 import (
 	"context"
 
-	"github.com/kodeyeen/chatsy/internal/entity"
+	"github.com/kodeyeen/chatsy/internal/domain"
 	"github.com/kodeyeen/chatsy/v1"
 )
 
 type Repository interface {
-	Add(context.Context, *entity.Message) error
-	FindByChatID(ctx context.Context, chatID int, limit, offset int) ([]*entity.Message, error)
+	Add(context.Context, *domain.Message) error
+	FindByChatID(ctx context.Context, chatID int, limit, offset int) ([]*domain.Message, error)
 	CountForChat(ctx context.Context, chatID int) (int, error)
 }
 
 type UserRepository interface {
-	FindByID(ctx context.Context, ID int) (*entity.User, error)
+	FindByID(ctx context.Context, ID int) (*domain.User, error)
 }
 
 type Service struct {
@@ -37,7 +37,7 @@ func (s *Service) Create(ctx context.Context, req *chatsy.CreateMessageRequest, 
 
 	tmp := "tmp"
 
-	msg := &entity.Message{
+	msg := &domain.Message{
 		ChatID:     req.ChatID,
 		SenderID:   sender.ID,
 		SenderName: &tmp,

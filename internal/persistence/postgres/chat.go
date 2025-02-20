@@ -5,7 +5,7 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/kodeyeen/chatsy/internal/entity"
+	"github.com/kodeyeen/chatsy/internal/domain"
 )
 
 type ChatRepository struct {
@@ -18,7 +18,7 @@ func NewChatRepository(dbpool *pgxpool.Pool) *ChatRepository {
 	}
 }
 
-func (r *ChatRepository) Add(ctx context.Context, c *entity.Chat) error {
+func (r *ChatRepository) Add(ctx context.Context, c *domain.Chat) error {
 	query := `
 		INSERT INTO
 			chats (type, title, invite_hash)
@@ -40,7 +40,7 @@ func (r *ChatRepository) Add(ctx context.Context, c *entity.Chat) error {
 	return nil
 }
 
-func (r *ChatRepository) FindByID(ctx context.Context, id int) (*entity.Chat, error) {
+func (r *ChatRepository) FindByID(ctx context.Context, id int) (*domain.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -96,8 +96,8 @@ func (r *ChatRepository) FindByID(ctx context.Context, id int) (*entity.Chat, er
 		"id": id,
 	}
 
-	var cht entity.Chat
-	var lastMsg entity.Message
+	var cht domain.Chat
+	var lastMsg domain.Message
 	err := r.dbpool.QueryRow(ctx, query, args).Scan(
 		&cht.ID,
 		&cht.Type,
@@ -130,7 +130,7 @@ func (r *ChatRepository) FindByID(ctx context.Context, id int) (*entity.Chat, er
 	return &cht, nil
 }
 
-func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*entity.Chat, error) {
+func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*domain.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -154,10 +154,10 @@ func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*ent
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var chats []*entity.Chat
+	var chats []*domain.Chat
 
 	for rows.Next() {
-		var cht entity.Chat
+		var cht domain.Chat
 
 		err := rows.Scan(
 			&cht.ID,
@@ -179,7 +179,7 @@ func (r *ChatRepository) FindAllForUser(ctx context.Context, userID int) ([]*ent
 	return chats, nil
 }
 
-func (r *ChatRepository) FindByUserID(ctx context.Context, userID int, limit, offset int) ([]*entity.Chat, error) {
+func (r *ChatRepository) FindByUserID(ctx context.Context, userID int, limit, offset int) ([]*domain.Chat, error) {
 	query := `
 		SELECT
 			c.id,
@@ -263,11 +263,11 @@ func (r *ChatRepository) FindByUserID(ctx context.Context, userID int, limit, of
 
 	rows, _ := r.dbpool.Query(ctx, query, args)
 
-	var chats []*entity.Chat
+	var chats []*domain.Chat
 
 	for rows.Next() {
-		var cht entity.Chat
-		var lastMsg entity.Message
+		var cht domain.Chat
+		var lastMsg domain.Message
 
 		err := rows.Scan(
 			&cht.ID,
